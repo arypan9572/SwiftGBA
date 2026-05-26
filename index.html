@@ -437,24 +437,27 @@
 /* ════════════════════════════════════════════
    CONFIG & STATE
    ════════════════════════════════════════════ */
-const DB_NAME   = 'SwiftGBA_v2';
-const DB_VER    = 1;
-const S_ROMS    = 'roms';
-const S_META    = 'meta';
-const S_STATES  = 'states';
-const NUM_SLOTS = 5;
+const DB_NAME      = 'SwiftGBA_v2';
+const DB_VER       = 1;
+const S_ROMS       = 'roms';
+const S_META       = 'meta';
+const S_STATES     = 'states';
+const NUM_SLOTS    = 5;
+const AUTOSAVE_INTERVAL_MS = 30000;
 
-let db             = null;
-let ejsReady       = false;
-let ejsEmu         = null;
-let currentRomName = '';
-let currentRomData = null;
-let currentRomUrl  = null;
-let isPaused       = false;
-let isMuted        = false;
-let currentSpeed   = 1;
+let db              = null;
+let ejsReady        = false;
+let ejsEmu          = null;
+let currentRomName  = '';
+let currentRomData  = null;
+let currentRomUrl   = null;
+let isPaused        = false;
+let isMuted         = false;
+let currentSpeed    = 1;
 let emuScriptLoaded = false;
-let sidebarOpen    = true;
+let sidebarOpen     = true;
+let autosaveTimer   = null;
+let pendingSavData  = null; // .sav bytes waiting to be injected after EJS starts
 
 /* ════════════════════════════════════════════
    INDEXEDDB
@@ -666,29 +669,7 @@ async function launchROM(file) {
    - EJS_Buttons disables built-in UI
    - EJS_onGameStart hook captures the emulator ref
    ════════════════════════════════════════════ */
-function setEJSGlobals(romURL) {
-    window.EJS_player             = '#game';
-    window.EJS_core               = 'gba';
-    window.EJS_gameUrl            = romURL;
-    window.EJS_pathtodata         = 'https://cdn.emulatorjs.org/stable/data/';
-    window.EJS_color              = '#00bcf0';
-    window.EJS_startOnLoaded      = true;
-    window.EJS_fullscreenOnLoaded = false;
-    window.EJS_language           = 'en-US';
-    window.EJS_Buttons = {
-        playPause:false, restart:false, mute:false,
-        settings:false, fullscreen:false,
-        saveState:false, loadState:false,
-        screenRecord:false, gamepad:false,
-    };
-    window.EJS_onGameStart = () => {
-        ejsEmu   = window.EJS_emulator;
-        ejsReady = true;
-        applySpeed(currentSpeed);
-        if (isMuted) applyMuteToEmu(true);
-        toast(`${currentRomName} loaded`, 'success');
-    };
-}
+
 
 function initEmulatorJS(romURL) {
     setEJSGlobals(romURL);
