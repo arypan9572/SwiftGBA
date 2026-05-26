@@ -5,48 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
         <meta name="theme-color" content="#0F1114">
-        <!-- Canonical -->
         <link rel="canonical" href="https://rustygba.com">
-        <!-- Open Graph -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://rustygba.com">
         <meta property="og:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
         <meta property="og:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
         <meta property="og:image" content="https://rustygba.com/og-image.png">
         <meta property="og:site_name" content="RustyGBA">
-        <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
         <meta name="twitter:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
         <meta name="twitter:image" content="https://rustygba.com/og-image.png">
-        <!-- Fonts -->
         <link rel="preload" href="https://rustygba.com/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="https://rustygba.com/fonts/ClashDisplay-Semibold.woff2" as="font" type="font/woff2" crossorigin>
-        <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">
         <link rel="icon" href="/favicon.ico" sizes="32x32">
         <title>RustyGBA — Play Game Boy Advance Games in Your Browser</title>
-        <!-- Structured Data -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "WebApplication",
-                "name": "RustyGBA",
-                "url": "https://rustygba.com",
-                "description": "Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.",
-                "applicationCategory": "GameApplication",
-                "operatingSystem": "Any (Web Browser)",
-                "offers": {
-                    "@type": "Offer",
-                    "price": "0",
-                    "priceCurrency": "USD"
-                },
-                "author": {
-                    "@type": "Organization",
-                    "name": "OrCat Studios"
-                },
-                "browserRequirements": "Requires WebAssembly and WebGL2 support"
-            }</script>
         <style>
             @font-face {
                 font-family: Clash Display;
@@ -139,13 +113,8 @@
                 -moz-osx-font-smoothing: grayscale
             }
 
-            .font-display {
-                font-family: var(--font-display)
-            }
-
-            .font-mono {
-                font-family: var(--font-mono)
-            }
+            .font-display { font-family: var(--font-display) }
+            .font-mono { font-family: var(--font-mono) }
 
             @media(prefers-reduced-motion:reduce) {
                 *,*:before,*:after {
@@ -164,19 +133,14 @@
                 transition: opacity .6s ease
             }
 
-            .emulator-idle.fade-out {
-                opacity: 0
-            }
-
-            .emulator-idle.fade-out .showcase-title {
-                animation: title-exit .4s ease-in forwards
-            }
-
-            .emulator-idle.fade-out .showcase-art {
-                animation: art-exit .4s ease-in .1s forwards
-            }
-
-            .emulator-idle.fade-out .showcase-slash,.emulator-idle.fade-out .landing-brand,.emulator-idle.fade-out .landing-controls,.emulator-idle.fade-out .landing-disclaimer,.emulator-idle.fade-out .landing-copyright {
+            .emulator-idle.fade-out { opacity: 0 }
+            .emulator-idle.fade-out .showcase-title { animation: title-exit .4s ease-in forwards }
+            .emulator-idle.fade-out .showcase-art { animation: art-exit .4s ease-in .1s forwards }
+            .emulator-idle.fade-out .showcase-slash,
+            .emulator-idle.fade-out .landing-brand,
+            .emulator-idle.fade-out .landing-controls,
+            .emulator-idle.fade-out .landing-disclaimer,
+            .emulator-idle.fade-out .landing-copyright {
                 opacity: 0;
                 transition: opacity .3s ease
             }
@@ -204,9 +168,7 @@
                 justify-content: center
             }
 
-            .gba-shell {
-                transform: translate(-6vw)
-            }
+            .gba-shell { transform: translate(-6vw) }
 
             .gba-image {
                 width: min(65vw,640px);
@@ -242,13 +204,8 @@
             }
 
             @keyframes screen-fade-in {
-                0% {
-                    opacity: 0
-                }
-
-                to {
-                    opacity: 1
-                }
+                0% { opacity: 0 }
+                to { opacity: 1 }
             }
 
             .gba-screen-text {
@@ -300,14 +257,8 @@
                 transition: transform 1s var(--ease-spring)
             }
 
-            .gba-play-shell .gba-image {
-                width: 100%;
-                transition: opacity .6s ease
-            }
-
-            .gba-play-shell .gba-power-led {
-                transition: opacity .6s ease
-            }
+            .gba-play-shell .gba-image { width: 100%; transition: opacity .6s ease }
+            .gba-play-shell .gba-power-led { transition: opacity .6s ease }
 
             .gba-screen-overlay-live {
                 transition: border-radius 1s var(--ease-spring),box-shadow 1s var(--ease-spring)
@@ -320,9 +271,8 @@
                 image-rendering: crisp-edges
             }
 
-            .emulator-playing.in-shell .gba-play-shell .gba-image,.emulator-playing.in-shell .gba-play-shell .gba-power-led {
-                opacity: 1
-            }
+            .emulator-playing.in-shell .gba-play-shell .gba-image,
+            .emulator-playing.in-shell .gba-play-shell .gba-power-led { opacity: 1 }
 
             .emulator-playing.expanded .gba-play-shell .gba-image {
                 opacity: 0;
@@ -371,7 +321,8 @@
 
             .showcase-bg {
                 position: absolute;
-                inset: 0
+                inset: 0;
+                transition: background 0.6s ease
             }
 
             .showcase-wipe {
@@ -383,13 +334,8 @@
             }
 
             @keyframes wipe-sweep {
-                0% {
-                    transform: translate(-100%) rotate(15deg)
-                }
-
-                to {
-                    transform: translate(100%) rotate(15deg)
-                }
+                0% { transform: translate(-100%) rotate(15deg) }
+                to { transform: translate(100%) rotate(15deg) }
             }
 
             .showcase-flash {
@@ -402,13 +348,8 @@
             }
 
             @keyframes flash-pop {
-                0% {
-                    opacity: .2
-                }
-
-                to {
-                    opacity: 0
-                }
+                0% { opacity: .2 }
+                to { opacity: 0 }
             }
 
             .showcase-slash {
@@ -419,7 +360,8 @@
                 height: 140%;
                 border-right: 2px solid rgba(255,255,255,.04);
                 transform: rotate(15deg);
-                pointer-events: none
+                pointer-events: none;
+                transition: border-color 0.6s ease
             }
 
             .showcase-title {
@@ -432,41 +374,18 @@
                 z-index: 2
             }
 
-            .showcase-title.slam {
-                animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards
-            }
-
-            .showcase-title.out {
-                animation: title-exit .25s ease-in forwards
-            }
+            .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+            .showcase-title.out { animation: title-exit .25s ease-in forwards }
 
             @keyframes title-slam {
-                0% {
-                    opacity: 0;
-                    transform: translate(-80px) scale(1.1)
-                }
-
-                60% {
-                    opacity: 1;
-                    transform: translate(8px) scale(1)
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translate(0) scale(1)
-                }
+                0% { opacity: 0; transform: translate(-80px) scale(1.1) }
+                60% { opacity: 1; transform: translate(8px) scale(1) }
+                to { opacity: 1; transform: translate(0) scale(1) }
             }
 
             @keyframes title-exit {
-                0% {
-                    opacity: 1;
-                    transform: translate(0)
-                }
-
-                to {
-                    opacity: 0;
-                    transform: translate(-40px)
-                }
+                0% { opacity: 1; transform: translate(0) }
+                to { opacity: 0; transform: translate(-40px) }
             }
 
             .showcase-label {
@@ -495,13 +414,8 @@
             }
 
             @keyframes underline-grow {
-                0% {
-                    width: 0
-                }
-
-                to {
-                    width: 50px
-                }
+                0% { width: 0 }
+                to { width: 50px }
             }
 
             .showcase-art {
@@ -511,41 +425,18 @@
                 z-index: 2
             }
 
-            .showcase-art.slam {
-                animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards
-            }
-
-            .showcase-art.out {
-                animation: art-exit .25s ease-in forwards
-            }
+            .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+            .showcase-art.out { animation: art-exit .25s ease-in forwards }
 
             @keyframes art-slam {
-                0% {
-                    opacity: 0;
-                    transform: translate(120px) scale(.8) rotate(3deg)
-                }
-
-                50% {
-                    opacity: 1;
-                    transform: translate(-10px) scale(1.03) rotate(-1deg)
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translate(0) scale(1) rotate(0)
-                }
+                0% { opacity: 0; transform: translate(120px) scale(.8) rotate(3deg) }
+                50% { opacity: 1; transform: translate(-10px) scale(1.03) rotate(-1deg) }
+                to { opacity: 1; transform: translate(0) scale(1) rotate(0) }
             }
 
             @keyframes art-exit {
-                0% {
-                    opacity: 1;
-                    transform: translate(0) scale(1)
-                }
-
-                to {
-                    opacity: 0;
-                    transform: translate(80px) scale(.9)
-                }
+                0% { opacity: 1; transform: translate(0) scale(1) }
+                to { opacity: 0; transform: translate(80px) scale(.9) }
             }
 
             .showcase-art-img {
@@ -558,20 +449,9 @@
             }
 
             @media(prefers-reduced-motion:reduce) {
-                .showcase-wipe,.showcase-flash {
-                    display: none
-                }
-
-                .showcase-title.slam,.showcase-art.slam {
-                    animation: none;
-                    opacity: 1;
-                    transform: none
-                }
-
-                .showcase-title.out,.showcase-art.out {
-                    animation: none;
-                    opacity: 0
-                }
+                .showcase-wipe,.showcase-flash { display: none }
+                .showcase-title.slam,.showcase-art.slam { animation: none; opacity: 1; transform: none }
+                .showcase-title.out,.showcase-art.out { animation: none; opacity: 0 }
             }
 
             .landing-brand {
@@ -590,14 +470,8 @@
                 line-height: 1
             }
 
-            .landing-title .accent {
-                color: var(--accent);
-                letter-spacing: .06em
-            }
-
-            .landing-title .dot {
-                color: var(--text-tertiary)
-            }
+            .landing-title .accent { color: var(--accent); letter-spacing: .06em }
+            .landing-title .dot { color: var(--text-tertiary) }
 
             .landing-error {
                 position: fixed;
@@ -658,20 +532,11 @@
                 min-width: 20px
             }
 
-            .mobile-promo {
-                display: none
-            }
+            .mobile-promo { display: none }
 
             @media(max-width: 760px) {
-                html,body {
-                    overflow:hidden
-                }
-
-                .emulator-idle {
-                    min-height: 100dvh;
-                    height: 100dvh
-                }
-
+                html,body { overflow: hidden }
+                .emulator-idle { min-height: 100dvh; height: 100dvh }
                 .landing {
                     justify-content: flex-start;
                     min-height: 100dvh;
@@ -679,21 +544,9 @@
                     cursor: default;
                     background: radial-gradient(circle at 20% 14%,rgba(46,125,50,.18),transparent 34%),radial-gradient(circle at 86% 68%,rgba(232,84,62,.14),transparent 32%),linear-gradient(160deg,#101318,#0a0d11 58%,#121a15)
                 }
-
-                .showcase-title,.showcase-art,.showcase-slash,.showcase-wipe,.showcase-flash,.gba-shell,.landing-brand,.landing-controls,.landing-disclaimer,.landing-copyright {
-                    display: none
-                }
-
-                .showcase {
-                    opacity: .48;
-                    mix-blend-mode: screen
-                }
-
-                .showcase-bg {
-                    filter: blur(20px) saturate(1.35);
-                    transform: scale(1.12)
-                }
-
+                .showcase-title,.showcase-art,.showcase-slash,.showcase-wipe,.showcase-flash,.gba-shell,.landing-brand,.landing-controls,.landing-disclaimer,.landing-copyright { display: none }
+                .showcase { opacity: .48; mix-blend-mode: screen }
+                .showcase-bg { filter: blur(20px) saturate(1.35); transform: scale(1.12) }
                 .mobile-promo {
                     position: relative;
                     z-index: 2;
@@ -705,7 +558,6 @@
                     gap: clamp(18px,5dvh,36px);
                     overflow: hidden
                 }
-
                 .mobile-promo:before {
                     content: "";
                     position: absolute;
@@ -716,7 +568,6 @@
                     transform: rotate(-18deg);
                     pointer-events: none
                 }
-
                 .mobile-promo-orbit {
                     position: absolute;
                     right: -86px;
@@ -728,7 +579,6 @@
                     filter: blur(.2px);
                     opacity: .42
                 }
-
                 .mobile-promo-card {
                     position: relative;
                     align-self: start;
@@ -741,7 +591,6 @@
                     backdrop-filter: blur(18px);
                     -webkit-backdrop-filter: blur(18px)
                 }
-
                 .mobile-promo-badge {
                     width: max-content;
                     margin-bottom: 12px;
@@ -754,7 +603,6 @@
                     letter-spacing: .14em;
                     text-transform: uppercase
                 }
-
                 .mobile-promo-title {
                     max-width: 10ch;
                     font-size: clamp(38px,13vw,64px);
@@ -763,7 +611,6 @@
                     color: #f6f8fcf2;
                     text-wrap: balance
                 }
-
                 .mobile-promo-copy {
                     max-width: 31ch;
                     margin-top: 14px;
@@ -771,7 +618,6 @@
                     font-size: 14px;
                     line-height: 1.55
                 }
-
                 .mobile-promo-url {
                     display: inline-flex;
                     margin-top: 18px;
@@ -782,7 +628,6 @@
                     font-size: 12px;
                     letter-spacing: .04em
                 }
-
                 .mobile-promo-device {
                     position: relative;
                     align-self: end;
@@ -792,7 +637,6 @@
                     transform: rotate(-4deg) translate(-3%);
                     filter: drop-shadow(0 30px 60px rgba(0,0,0,.56))
                 }
-
                 .mobile-promo-device img {
                     display: block;
                     width: 100%;
@@ -800,7 +644,6 @@
                     pointer-events: none;
                     user-select: none
                 }
-
                 .mobile-promo-screen {
                     position: absolute;
                     left: 29.4%;
@@ -863,10 +706,7 @@
                 line-height: 1
             }
 
-            .toolbar-btn:hover {
-                color: var(--text-primary);
-                background: var(--bg-elevated)
-            }
+            .toolbar-btn:hover { color: var(--text-primary); background: var(--bg-elevated) }
 
             .toolbar-volume {
                 width: 80px;
@@ -889,9 +729,7 @@
                 transition: background var(--duration-fast) ease
             }
 
-            .toolbar-volume::-webkit-slider-thumb:hover {
-                background: var(--text-primary)
-            }
+            .toolbar-volume::-webkit-slider-thumb:hover { background: var(--text-primary) }
 
             .toolbar-volume::-moz-range-thumb {
                 width: 12px;
@@ -932,15 +770,8 @@
             }
 
             @keyframes scanline-down {
-                0% {
-                    top: 0;
-                    opacity: 1
-                }
-
-                to {
-                    top: 100%;
-                    opacity: 0
-                }
+                0% { top: 0; opacity: 1 }
+                to { top: 100%; opacity: 0 }
             }
 
             .ambient-light {
@@ -955,17 +786,13 @@
                 border-radius: 50%
             }
 
-            .ambient-light.active {
-                opacity: .25
-            }
+            .ambient-light.active { opacity: .25 }
 
             @media(prefers-reduced-motion:reduce) {
-                .ambient-light {
-                    display: none
-                }
+                .ambient-light { display: none }
             }
 
-            #seo-content[data-astro-cid-j7pv25f6] {
+            #seo-content {
                 position: absolute;
                 width: 1px;
                 height: 1px;
@@ -976,302 +803,173 @@
         </style>
     </head>
     <body>
-        <div id="seo-content" data-astro-cid-j7pv25f6>
-            <h1 data-astro-cid-j7pv25f6>RustyGBA — Game Boy Advance Emulator</h1>
-            <p data-astro-cid-j7pv25f6>Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.</p>
-            <h2 data-astro-cid-j7pv25f6>Play GBA Games Online</h2>
-            <p data-astro-cid-j7pv25f6>RustyGBA is a free, open-source Game Boy Advance emulator that runs entirely in your browser.
-      Built with Rust and compiled to WebAssembly, it delivers near-native performance with zero setup.
-      Your ROMs never leave your device — everything is processed locally.
-</p>
-            <h2 data-astro-cid-j7pv25f6>Features</h2>
-            <ul data-astro-cid-j7pv25f6>
-                <li data-astro-cid-j7pv25f6>Full GBA emulation — CPU, graphics, audio, and input</li>
-                <li data-astro-cid-j7pv25f6>Save support — cartridge saves persist in your browser</li>
-                <li data-astro-cid-j7pv25f6>Save states — quick save and load with F5/F8</li>
-                <li data-astro-cid-j7pv25f6>Keyboard and gamepad support</li>
-                <li data-astro-cid-j7pv25f6>100% client-side — no uploads, no servers, no tracking</li>
-                <li data-astro-cid-j7pv25f6>Built with Rust — zero unsafe code, maximum performance</li>
-            </ul>
-            <h2 data-astro-cid-j7pv25f6>Controls</h2>
-            <p data-astro-cid-j7pv25f6>Z = A, X = B, Arrow Keys = D-Pad, Enter = Start, Shift = Select, A = L, S = R</p>
+        <div id="seo-content">
+            <h1>RustyGBA — Game Boy Advance Emulator</h1>
+            <p>Free GBA emulator running entirely in your browser via WebAssembly.</p>
         </div>
-        <style>
-            astro-island,astro-slot,astro-static-slot {
-                display: contents
-            }
-        </style>
-        <script>
-            ( () => {
-                var e = async t => {
-                    await (await t())()
-                }
-                ;
-                (self.Astro || (self.Astro = {})).load = e;
-                window.dispatchEvent(new Event("astro:load"));
-            }
-            )();
-        </script>
-        <script>
-            ( () => {
-                var A = Object.defineProperty;
-                var g = (i, o, a) => o in i ? A(i, o, {
-                    enumerable: !0,
-                    configurable: !0,
-                    writable: !0,
-                    value: a
-                }) : i[o] = a;
-                var d = (i, o, a) => g(i, typeof o != "symbol" ? o + "" : o, a);
-                {
-                    let i = {
-                        0: t => m(t),
-                        1: t => a(t),
-                        2: t => new RegExp(t),
-                        3: t => new Date(t),
-                        4: t => new Map(a(t)),
-                        5: t => new Set(a(t)),
-                        6: t => BigInt(t),
-                        7: t => new URL(t),
-                        8: t => new Uint8Array(t),
-                        9: t => new Uint16Array(t),
-                        10: t => new Uint32Array(t),
-                        11: t => Number.POSITIVE_INFINITY * t
-                    }
-                      , o = t => {
-                        let[l,e] = t;
-                        return l in i ? i[l](e) : void 0
-                    }
-                      , a = t => t.map(o)
-                      , m = t => typeof t != "object" || t === null ? t : Object.fromEntries(Object.entries(t).map( ([l,e]) => [l, o(e)]));
-                    class y extends HTMLElement {
-                        constructor() {
-                            super(...arguments);
-                            d(this, "Component");
-                            d(this, "hydrator");
-                            d(this, "hydrate", async () => {
-                                var b;
-                                if (!this.hydrator || !this.isConnected)
-                                    return;
-                                let e = (b = this.parentElement) == null ? void 0 : b.closest("astro-island[ssr]");
-                                if (e) {
-                                    e.addEventListener("astro:hydrate", this.hydrate, {
-                                        once: !0
-                                    });
-                                    return
-                                }
-                                let c = this.querySelectorAll("astro-slot")
-                                  , n = {}
-                                  , h = this.querySelectorAll("template[data-astro-template]");
-                                for (let r of h) {
-                                    let s = r.closest(this.tagName);
-                                    s != null && s.isSameNode(this) && (n[r.getAttribute("data-astro-template") || "default"] = r.innerHTML,
-                                    r.remove())
-                                }
-                                for (let r of c) {
-                                    let s = r.closest(this.tagName);
-                                    s != null && s.isSameNode(this) && (n[r.getAttribute("name") || "default"] = r.innerHTML)
-                                }
-                                let p;
-                                try {
-                                    p = this.hasAttribute("props") ? m(JSON.parse(this.getAttribute("props"))) : {}
-                                } catch (r) {
-                                    let s = this.getAttribute("component-url") || "<unknown>"
-                                      , v = this.getAttribute("component-export");
-                                    throw v && (s += ` (export ${v})`),
-                                    console.error(`[hydrate] Error parsing props for component ${s}`, this.getAttribute("props"), r),
-                                    r
-                                }
-                                let u;
-                                await this.hydrator(this)(this.Component, p, n, {
-                                    client: this.getAttribute("client")
-                                }),
-                                this.removeAttribute("ssr"),
-                                this.dispatchEvent(new CustomEvent("astro:hydrate"))
-                            }
-                            );
-                            d(this, "unmount", () => {
-                                this.isConnected || this.dispatchEvent(new CustomEvent("astro:unmount"))
-                            }
-                            )
-                        }
-                        disconnectedCallback() {
-                            document.removeEventListener("astro:after-swap", this.unmount),
-                            document.addEventListener("astro:after-swap", this.unmount, {
-                                once: !0
-                            })
-                        }
-                        connectedCallback() {
-                            if (!this.hasAttribute("await-children") || document.readyState === "interactive" || document.readyState === "complete")
-                                this.childrenConnectedCallback();
-                            else {
-                                let e = () => {
-                                    document.removeEventListener("DOMContentLoaded", e),
-                                    c.disconnect(),
-                                    this.childrenConnectedCallback()
-                                }
-                                  , c = new MutationObserver( () => {
-                                    var n;
-                                    ((n = this.lastChild) == null ? void 0 : n.nodeType) === Node.COMMENT_NODE && this.lastChild.nodeValue === "astro:end" && (this.lastChild.remove(),
-                                    e())
-                                }
-                                );
-                                c.observe(this, {
-                                    childList: !0
-                                }),
-                                document.addEventListener("DOMContentLoaded", e)
-                            }
-                        }
-                        async childrenConnectedCallback() {
-                            let e = this.getAttribute("before-hydration-url");
-                            e && await import(e),
-                            this.start()
-                        }
-                        async start() {
-                            let e = JSON.parse(this.getAttribute("opts"))
-                              , c = this.getAttribute("client");
-                            if (Astro[c] === void 0) {
-                                window.addEventListener(`astro:${c}`, () => this.start(), {
-                                    once: !0
-                                });
-                                return
-                            }
-                            try {
-                                await Astro[c](async () => {
-                                    let n = this.getAttribute("renderer-url")
-                                      , [h,{default: p}] = await Promise.all([import(this.getAttribute("component-url")), n ? import(n) : () => () => {}
-                                    ])
-                                      , u = this.getAttribute("component-export") || "default";
-                                    if (!u.includes("."))
-                                        this.Component = h[u];
-                                    else {
-                                        this.Component = h;
-                                        for (let f of u.split("."))
-                                            this.Component = this.Component[f]
-                                    }
-                                    return this.hydrator = p,
-                                    this.hydrate
-                                }
-                                , e, this)
-                            } catch (n) {
-                                console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`, n)
-                            }
-                        }
-                        attributeChangedCallback() {
-                            this.hydrate()
-                        }
-                    }
-                    d(y, "observedAttributes", ["props"]),
-                    customElements.get("astro-island") || customElements.define("astro-island", y)
-                }
-            }
-            )();
-        </script>
-        <astro-island uid="2mb6Kw" data-preact-island-id="1" component-url="/_astro/Emulator.BMYy4QcN.js" component-export="Emulator" renderer-url="/_astro/client.D0cr761a.js" props="{&quot;data-astro-cid-j7pv25f6&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;Emulator&quot;,&quot;value&quot;:true}" await-children>
-            <div class="emulator-idle ">
-                <div class="landing ">
-                    <input type="file" accept=".gba,.bin" style="display:none;"/>
-                    <div class="showcase">
-                        <div class="showcase-bg" style="background:radial-gradient(ellipse at 80% 40%, #2E7D3230 0%, transparent 50%), var(--bg-deep);transition:background 0.6s ease;"></div>
-                        <div class="showcase-flash" style="background:#2E7D32;"></div>
-                        <div class="showcase-slash" style="border-color:#2E7D3225;"></div>
-                        <div class="showcase-title slam">
-                            <span class="showcase-label font-mono">GAME BOY ADVANCE</span>
-                            <h2 class="showcase-name font-display">Pokemon Emerald</h2>
-                            <div class="showcase-underline" style="background:#2E7D32;"></div>
-                        </div>
-                        <div class="showcase-art slam">
-                            <img src="https://rustygba.com/games/pokemon-emerald.webp" alt="Pokemon Emerald" class="showcase-art-img" draggable="false"/>
-                        </div>
+
+        <div class="emulator-idle">
+            <div class="landing">
+                <input type="file" accept=".gba,.bin" style="display:none;"/>
+                <div class="showcase">
+                    <div class="showcase-bg" id="showcase-bg"></div>
+                    <div class="showcase-flash" id="showcase-flash"></div>
+                    <div class="showcase-slash" id="showcase-slash"></div>
+                    <div class="showcase-title slam" id="showcase-title">
+                        <span class="showcase-label font-mono">GAME BOY ADVANCE</span>
+                        <h2 class="showcase-name font-display" id="showcase-name"></h2>
+                        <div class="showcase-underline" id="showcase-underline"></div>
                     </div>
-                    <section class="mobile-promo" aria-label="RustyGBA mobile preview">
-                        <div class="mobile-promo-orbit" aria-hidden="true"></div>
-                        <div class="mobile-promo-card">
-                            <div class="mobile-promo-badge font-mono">Pocket-sized preview</div>
-                            <h1 class="mobile-promo-title font-display">Play the full emulator on desktop</h1>
-                            <p class="mobile-promo-copy">RustyGBA runs real Game Boy Advance ROMs in-browser with local saves, keyboard controls, gamepad support, and no uploads.</p>
-                            <div class="mobile-promo-url font-mono">rustygba.com</div>
-                        </div>
-                        <div class="mobile-promo-device" aria-hidden="true">
-                            <img src="https://rustygba.com/gba.webp" alt draggable="false"/>
-                            <div class="mobile-promo-screen">
-                                <span>Desktop Ready</span>
-                            </div>
-                        </div>
-                    </section>
-                    <div class="gba-shell">
-                        <div class="gba-screen-overlay">
-                            <div class="gba-screen-content">
-                                <span class="gba-screen-text font-display">Load BIOS</span>
-                                <span class="gba-screen-hint">Drop bios.bin anywhere</span>
-                            </div>
-                        </div>
-                        <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
-                        <div class="gba-power-led "></div>
+                    <div class="showcase-art slam" id="showcase-art">
+                        <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
                     </div>
-                    <div class="landing-brand">
-                        <h1 class="landing-title font-display">
-                            <span>Rusty</span>
-                            <span class="accent">GBA</span>
-                            <span class="dot">.</span>
-                        </h1>
-                    </div>
-                    <div class="landing-controls font-mono">
-                        <span class="landing-key">Z</span>
-                        A<span class="landing-key">X</span>
-                        B<span class="landing-key">←↑↓→</span>
-                        D-Pad<span class="landing-key">Enter</span>
-                        Start<span class="landing-key">M</span>
-                        Mute
-                    </div>
-                    <div class="landing-disclaimer">Your ROM never leaves your device. Everything runs locally in your browser via WebAssembly — no uploads, no servers, no tracking. You are responsible for owning any ROMs you load.</div>
-                    <div class="landing-copyright font-mono">© 2026 OrCat Studios</div>
                 </div>
+                <section class="mobile-promo" aria-label="RustyGBA mobile preview">
+                    <div class="mobile-promo-orbit" aria-hidden="true"></div>
+                    <div class="mobile-promo-card">
+                        <div class="mobile-promo-badge font-mono">Pocket-sized preview</div>
+                        <h1 class="mobile-promo-title font-display">Play the full emulator on desktop</h1>
+                        <p class="mobile-promo-copy">RustyGBA runs real Game Boy Advance ROMs in-browser with local saves, keyboard controls, gamepad support, and no uploads.</p>
+                        <div class="mobile-promo-url font-mono">rustygba.com</div>
+                    </div>
+                    <div class="mobile-promo-device" aria-hidden="true">
+                        <img src="https://rustygba.com/gba.webp" alt draggable="false"/>
+                        <div class="mobile-promo-screen"><span>Desktop Ready</span></div>
+                    </div>
+                </section>
+                <div class="gba-shell">
+                    <div class="gba-screen-overlay">
+                        <div class="gba-screen-content">
+                            <span class="gba-screen-text font-display">Load BIOS</span>
+                            <span class="gba-screen-hint">Drop bios.bin anywhere</span>
+                        </div>
+                    </div>
+                    <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
+                    <div class="gba-power-led"></div>
+                </div>
+                <div class="landing-brand">
+                    <h1 class="landing-title font-display">
+                        <span>Rusty</span><span class="accent">GBA</span><span class="dot">.</span>
+                    </h1>
+                </div>
+                <div class="landing-controls font-mono">
+                    <span class="landing-key">Z</span> A
+                    <span class="landing-key">X</span> B
+                    <span class="landing-key">←↑↓→</span> D-Pad
+                    <span class="landing-key">Enter</span> Start
+                    <span class="landing-key">M</span> Mute
+                </div>
+                <div class="landing-disclaimer">Your ROM never leaves your device. Everything runs locally in your browser via WebAssembly — no uploads, no servers, no tracking. You are responsible for owning any ROMs you load.</div>
+                <div class="landing-copyright font-mono">© 2026 OrCat Studios</div>
             </div>
-            <!--astro:end-->
-        </astro-island>
+        </div>
+
         <noscript>
             <div style="padding: 2rem; text-align: center; color: #8B8F96; font-family: system-ui;">
                 <h1>RustyGBA</h1>
                 <p>JavaScript is required to run the GBA emulator. Please enable JavaScript and reload the page.</p>
             </div>
         </noscript>
-        <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"ad1a880ee7f14542ab308cc51db65c6d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+
         <script>
-            (function() {
-                function c() {
-                    var b = a.contentDocument || a.contentWindow.document;
-                    if (b) {
-                        var d = b.createElement('script');
-                        d.innerHTML = "window.__CF$cv$params={r:'a01e18222cf16c30',t:'MTc3OTgxMjI5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
-                        b.getElementsByTagName('head')[0].appendChild(d)
-                    }
-                }
-                if (document.body) {
-                    var a = document.createElement('iframe');
-                    a.height = 1;
-                    a.width = 1;
-                    a.style.position = 'absolute';
-                    a.style.top = 0;
-                    a.style.left = 0;
-                    a.style.border = 'none';
-                    a.style.visibility = 'hidden';
-                    document.body.appendChild(a);
-                    if ('loading' !== document.readyState)
-                        c();
-                    else if (window.addEventListener)
-                        document.addEventListener('DOMContentLoaded', c);
-                    else {
-                        var e = document.onreadystatechange || function() {}
-                        ;
-                        document.onreadystatechange = function(b) {
-                            e(b);
-                            'loading' !== document.readyState && (document.onreadystatechange = e,
-                            c())
-                        }
-                    }
+        (() => {
+            const GAMES = [
+                { name: "Pokemon Emerald",        img: "https://rustygba.com/games/pokemon-emerald.webp",        color: "#2E7D32" },
+                { name: "Pokemon FireRed",         img: "https://rustygba.com/games/pokemon-firered.webp",        color: "#C62828" },
+                { name: "Pokemon Ruby",            img: "https://rustygba.com/games/pokemon-ruby.webp",           color: "#AD1457" },
+                { name: "Pokemon Sapphire",        img: "https://rustygba.com/games/pokemon-sapphire.webp",       color: "#1565C0" },
+                { name: "Mario Kart: Super Circuit",img: "https://rustygba.com/games/mario-kart-super-circuit.webp", color: "#E53935" },
+                { name: "The Legend of Zelda: Minish Cap", img: "https://rustygba.com/games/zelda-minish-cap.webp", color: "#2E7D32" },
+                { name: "Metroid Fusion",          img: "https://rustygba.com/games/metroid-fusion.webp",         color: "#E65100" },
+                { name: "Golden Sun",              img: "https://rustygba.com/games/golden-sun.webp",             color: "#F9A825" },
+                { name: "Castlevania: Aria of Sorrow", img: "https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color: "#4A148C" },
+                { name: "Fire Emblem",             img: "https://rustygba.com/games/fire-emblem.webp",            color: "#B71C1C" },
+            ];
+
+            const INTERVAL_MS = 3500;
+            const EXIT_MS = 250;    // how long the .out animation takes
+            const ENTER_MS = 500;   // slam animation duration
+
+            let currentIndex = 0;
+            let timer = null;
+
+            const bgEl        = document.getElementById('showcase-bg');
+            const flashEl     = document.getElementById('showcase-flash');
+            const slashEl     = document.getElementById('showcase-slash');
+            const titleEl     = document.getElementById('showcase-title');
+            const nameEl      = document.getElementById('showcase-name');
+            const underlineEl = document.getElementById('showcase-underline');
+            const artEl       = document.getElementById('showcase-art');
+            const imgEl       = document.getElementById('showcase-img');
+
+            function applyGame(game, animate) {
+                nameEl.textContent = game.name;
+                imgEl.src = game.img;
+                imgEl.alt = game.name;
+
+                bgEl.style.background = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
+                flashEl.style.background = game.color;
+                slashEl.style.borderColor = `${game.color}25`;
+                underlineEl.style.background = game.color;
+
+                if (animate) {
+                    // Re-trigger wipe: clone & replace
+                    const oldWipe = document.querySelector('.showcase-wipe');
+                    if (oldWipe) oldWipe.remove();
+                    const wipe = document.createElement('div');
+                    wipe.className = 'showcase-wipe';
+                    wipe.style.background = `linear-gradient(to right, transparent, ${game.color}18, transparent)`;
+                    bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
+                    wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
+
+                    // Re-trigger flash
+                    flashEl.style.animation = 'none';
+                    flashEl.offsetHeight; // reflow
+                    flashEl.style.animation = '';
+
+                    // Slam title
+                    titleEl.classList.remove('slam', 'out');
+                    titleEl.offsetHeight;
+                    titleEl.classList.add('slam');
+
+                    // Slam art
+                    artEl.classList.remove('slam', 'out');
+                    artEl.offsetHeight;
+                    artEl.classList.add('slam');
+
+                    // Re-trigger underline grow
+                    underlineEl.style.animation = 'none';
+                    underlineEl.offsetHeight;
+                    underlineEl.style.animation = '';
                 }
             }
-            )();
+
+            function showNext() {
+                const nextIndex = (currentIndex + 1) % GAMES.length;
+
+                // Exit current
+                titleEl.classList.remove('slam');
+                titleEl.classList.add('out');
+                artEl.classList.remove('slam');
+                artEl.classList.add('out');
+
+                setTimeout(() => {
+                    currentIndex = nextIndex;
+                    applyGame(GAMES[currentIndex], true);
+                }, EXIT_MS);
+            }
+
+            function startCycling() {
+                timer = setInterval(showNext, INTERVAL_MS);
+            }
+
+            // Init: show first game immediately, no animation on very first load
+            applyGame(GAMES[0], false);
+            // Trigger the initial slam after a short delay so fonts/images have a moment
+            setTimeout(() => applyGame(GAMES[0], true), 200);
+
+            startCycling();
+        })();
         </script>
     </body>
 </html>
