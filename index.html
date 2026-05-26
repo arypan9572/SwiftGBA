@@ -750,7 +750,6 @@ function launchEmulator(id,name,url){
     window.EJS_color         = '#00bcf0';
     window.EJS_startOnLoaded = true;
     window.EJS_language      = 'en-US';
-    window.EJS_defaultControls = 1;
 
     /* Disable EJS's own UI entirely */
     window.EJS_Buttons = {
@@ -760,25 +759,14 @@ function launchEmulator(id,name,url){
         volume:false, netplay:false,
     };
 
-    window.EJS_onGameStart = onEmuReady;
+    window.EJS_onGameLoaded = onEmuReady;
     window.EJS_onLoadState = ()=>{};
     window.EJS_onSaveState = ()=>{};
 
     setBar(40);
     document.getElementById('loading-status').textContent='Fetching engine…';
 
-    if(ejsLoaded){
-        /* Re-inject loader for new ROM */
-        const old=document.getElementById('ejs-loader');
-        if(old) old.remove();
-    }
-    const s=document.createElement('script');
-    s.id='ejs-loader';
-    s.src='https://cdn.emulatorjs.org/stable/data/loader.js';
-    s.onload=()=>{ setBar(70); document.getElementById('loading-status').textContent='Booting GBA…' };
-    s.onerror=()=>showError('Failed to load EmulatorJS. Check your internet connection.');
-    document.body.appendChild(s);
-    ejsLoaded=true;
+  
 }
 
 /* ─── Called when EmulatorJS signals game started ─── */
@@ -858,6 +846,10 @@ function triggerZoom(){
     /* After spring transition completes (~1s), mark as expanded */
     setTimeout(()=>{
         playing.classList.add('expanded');
+
+            setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+}, 1200);
         /* Now stretch the overlay to fill its zoomed area fully */
         overlay.style.borderRadius='0';
     },1050);
@@ -865,9 +857,11 @@ function triggerZoom(){
 
 /* ─── Save / Load ─── */
 async function triggerAutoSave(){
-    if(!emuReady||!window.EJS_emulator) return;
+    const emu = window.EJS_emulator;
+
+    if(!emuReady || !emu) return;
     try{
-        const state=window.EJS_emulator.saveState();
+        const state = emu.saveState ? emu.saveState() : null;
         if(!state) return;
         const data=typeof state==='string'?state:JSON.stringify(state);
         await dbPut(S_SAVES,{id:romId,state:data,savedAt:Date.now()});
@@ -880,7 +874,9 @@ async function loadSaveState(){
         const saved=await dbGet(S_SAVES,romId);
         if(!saved?.state) return;
         const state=typeof saved.state==='string'?saved.state:JSON.parse(saved.state);
-        window.EJS_emulator.loadState(state);
+        if (window.EJS_emulator?.loadState) {
+    window.EJS_emulator.loadState(state);
+}
     }catch(e){}
 }
 function flashSave(){
@@ -983,6 +979,21 @@ async function boot(){
     startShowcase();
     await renderShelf();
 }
+const emulatorScript = document.createElement('script');
+
+emulatorScript.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+
+emulatorScript.onload = () => {
+    console.log("EmulatorJS loaded");
+    ejsLoaded = true;
+};
+
+emulatorScript.onerror = () => {
+    showError('Failed to load EmulatorJS.');
+};
+
+document.body.appendChild(emulatorScript);
+    
 boot().catch(console.error);
 
 })();
