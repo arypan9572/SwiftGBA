@@ -124,31 +124,28 @@
 
         #emu-body { flex:1; display:flex; overflow:hidden; position:relative }
 
-        /* FIX: emu-wrap must be position:relative with explicit sizing so EJS canvas fills it */
         #emu-wrap {
             flex:1; display:flex; align-items:center; justify-content:center;
             overflow:hidden; position:relative; background:#000;
             min-width:0; min-height:0;
         }
 
-        /* FIX: #game must be position:relative with 100% width/height so EJS mounts correctly */
+        /* EJS mounts into #game — must fill the wrapper */
         #game {
             position:relative;
             width:100%;
             height:100%;
         }
 
-        /* Aggressively hide EmulatorJS chrome */
+        /* Hide all built-in EmulatorJS UI chrome */
         .ejs_menu_bar, .ejs_buttons_container, .ejs_bottom_bar,
         .ejs-bar-menu, .ejs-top-bar, .ejs_control_bar,
         #ejs_controls_bar, .ejs-bar,
-        /* Also target the new EJS UI container names */
         .ejs_ui_container > .ejs_menu,
         .ejs_volume_slider,
         .ejs_netplay { display:none !important; height:0 !important; overflow:hidden !important }
 
         /* ── SIDEBAR TOGGLE TAB ── */
-        /* FIX: sidebar-tab moved OUT of emu-wrap to avoid intercepting game input */
         #sidebar-tab {
             position:relative;
             width:20px; flex-shrink:0;
@@ -175,11 +172,9 @@
         #sidebar::-webkit-scrollbar { width:4px }
         #sidebar::-webkit-scrollbar-thumb { background:var(--border-subtle); border-radius:2px }
 
-        /* Collapsed state */
         #emu-body.sidebar-collapsed #sidebar { width:0; opacity:0; pointer-events:none; border-left:none }
         #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow { transform:rotate(180deg) }
 
-        /* Sidebar sections */
         .sidebar-game-header { padding:var(--sp4); border-bottom:1px solid var(--border-subtle); background:var(--bg-elevated); flex-shrink:0 }
         .sidebar-game-title { font-size:var(--sm); font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
         .sidebar-game-size { font-size:var(--xs); color:var(--text-tertiary); font-family:var(--font-mono); margin-top:2px }
@@ -201,13 +196,11 @@
         .sb-btn-sub { font-size:10px; color:var(--text-tertiary); display:block; margin-top:1px }
         .sb-btn.active-state .sb-btn-sub { color:rgba(0,232,90,.6) }
 
-        /* Status */
         .status-row { display:flex; align-items:center; gap:var(--sp2); font-size:var(--sm); color:var(--text-secondary) }
         .status-dot { width:7px; height:7px; border-radius:50%; background:var(--text-ghost); flex-shrink:0 }
         .status-dot.on { background:var(--led-green); box-shadow:0 0 5px var(--led-green-glow) }
         .status-dot.paused { background:var(--warn); box-shadow:0 0 5px rgba(245,158,11,.4) }
 
-        /* Speed */
         .speed-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp2) }
         .speed-label { font-size:var(--sm); color:var(--text-secondary) }
         .speed-val { font-family:var(--font-mono); font-size:var(--sm); color:var(--accent); min-width:36px; text-align:right }
@@ -218,7 +211,6 @@
         .speed-preset { flex:1; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:6px; padding:4px 0; font-size:var(--xs); color:var(--text-secondary); cursor:pointer; text-align:center; font-family:var(--font-mono); transition:border-color var(--fast),color var(--fast) }
         .speed-preset:hover,.speed-preset.active { border-color:var(--accent); color:var(--accent) }
 
-        /* Save Slots */
         .save-slots { display:flex; flex-direction:column; gap:var(--sp2) }
         .save-slot { display:flex; align-items:center; gap:var(--sp2); background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:8px; padding:8px var(--sp3) }
         .save-slot.has-data { border-color:rgba(0,188,240,.2) }
@@ -233,7 +225,6 @@
         .slot-btn.load:hover { color:var(--led-green); border-color:var(--led-green); background:rgba(0,232,90,.08) }
         .slot-btn.del:hover { color:var(--error); border-color:var(--error); background:rgba(232,64,87,.08) }
 
-        /* Hidden file inputs */
         #rom-input, #sav-input { display:none }
 
         /* ── TOAST STACK ── */
@@ -323,8 +314,6 @@
             <div id="game"></div>
         </div>
 
-        <!-- FIX: sidebar-tab is now a sibling of emu-wrap, not a child,
-             so it never sits over the game canvas -->
         <div id="sidebar-tab" title="Toggle sidebar">
             <span class="tab-arrow">›</span>
         </div>
@@ -336,7 +325,6 @@
                 <div class="sidebar-game-size" id="sb-game-size">—</div>
             </div>
 
-            <!-- Status -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Status</div>
                 <div class="status-row">
@@ -345,7 +333,6 @@
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Controls</div>
                 <button class="sb-btn" id="sb-pause">
@@ -362,7 +349,6 @@
                 </button>
             </div>
 
-            <!-- Speed -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Speed</div>
                 <div class="speed-row">
@@ -378,7 +364,6 @@
                 </div>
             </div>
 
-            <!-- Save States -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Save States</div>
                 <div class="save-slots" id="save-slots">
@@ -386,7 +371,6 @@
                 </div>
             </div>
 
-            <!-- Browser Cache -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Browser Cache</div>
                 <button class="sb-btn accent-btn" id="sb-cache-save">
@@ -399,7 +383,6 @@
                 </button>
             </div>
 
-            <!-- Import / Export -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Save File</div>
                 <button class="sb-btn" id="sb-import-sav">
@@ -412,7 +395,6 @@
                 </button>
             </div>
 
-            <!-- ROM Export -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">ROM</div>
                 <button class="sb-btn" id="sb-export-rom">
@@ -443,11 +425,9 @@ const S_ROMS       = 'roms';
 const S_META       = 'meta';
 const S_STATES     = 'states';
 const NUM_SLOTS    = 5;
-const AUTOSAVE_INTERVAL_MS = 30000;
 
 let db              = null;
 let ejsReady        = false;
-let ejsEmu          = null;
 let currentRomName  = '';
 let currentRomData  = null;
 let currentRomUrl   = null;
@@ -456,12 +436,9 @@ let isMuted         = false;
 let currentSpeed    = 1;
 let emuScriptLoaded = false;
 let sidebarOpen     = true;
-let autosaveTimer   = null;
-let pendingSavData  = null; // .sav bytes waiting to be injected after EJS starts
 
 /* ════════════════════════════════════════════
    INDEXEDDB
-   FIX: use keyPath:'id' consistently for all stores
    ════════════════════════════════════════════ */
 function openDB() {
     return new Promise((res, rej) => {
@@ -647,58 +624,91 @@ async function launchROM(file) {
         await dbPut(S_ROMS, { id: file.name, name: file.name, data: buf, size: file.size, lastPlayed: Date.now() });
     } catch(e) { console.warn('IDB ROM cache:', e) }
 
-    isPaused = false; isMuted = false; ejsReady = false; ejsEmu = null;
+    isPaused = false; isMuted = false; ejsReady = false;
+    window.EJS_emulator = undefined;
     updatePauseUI(false);
     updateMuteUI(false);
     buildSaveSlots();
     refreshCacheLoadSub();
 
-    if (!emuScriptLoaded) {
-        emuScriptLoaded = true;
-        initEmulatorJS(currentRomUrl);
-    } else {
-        reinitEmulatorJS(currentRomUrl);
-    }
+    startEmulator(currentRomUrl);
 }
 
 /* ════════════════════════════════════════════
-   EMULATORJS INIT
-   FIX: Match the working v1 setup exactly:
-   - Set all globals BEFORE appending the script
-   - EJS_player must point to the element selector
-   - EJS_Buttons disables built-in UI
-   - EJS_onGameStart hook captures the emulator ref
+   EMULATORJS — THE FIX
+   
+   The original code called setEJSGlobals() which was
+   never defined anywhere, causing a ReferenceError that
+   silently killed the entire emulator boot.
+   
+   Fix: inline the globals setup directly, and use the
+   correct EJS config properties for stable CDN build.
    ════════════════════════════════════════════ */
-
-
-function initEmulatorJS(romURL) {
-    setEJSGlobals(romURL);
-    const s = document.createElement('script');
-    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-    s.onerror = () => toast('Failed to load EmulatorJS. Check your connection.', 'error');
-    document.body.appendChild(s);
-}
-
-function reinitEmulatorJS(romURL) {
-    // FIX: Fully reset the game container and all EJS globals before re-running loader
+function startEmulator(romURL) {
+    // Tear down any previous EJS instance
     const gameDiv = $('game');
     gameDiv.innerHTML = '';
 
-    // Remove any lingering EJS canvas/style elements EJS may have inserted outside #game
-    document.querySelectorAll('script[src*="emulatorjs"]').forEach(s => s.remove());
+    // Remove any EJS scripts previously injected
+    document.querySelectorAll('script[src*="emulatorjs"], script[src*="loader.js"]')
+        .forEach(s => s.remove());
 
-    // Clear EJS state
-    ejsEmu = null; ejsReady = false;
-    delete window.EJS_emulator;
+    // Wipe all previous EJS globals
+    const ejsKeys = Object.keys(window).filter(k => k.startsWith('EJS_'));
+    ejsKeys.forEach(k => { try { delete window[k] } catch(e) { window[k] = undefined } });
 
-    // Brief delay lets the DOM settle before EJS re-mounts
+    ejsReady = false;
+    window.EJS_emulator = undefined;
+
+    // --- Set ALL required EJS globals BEFORE the loader script runs ---
+    window.EJS_player        = '#game';          // CSS selector for the mount element
+    window.EJS_gameUrl       = romURL;            // blob URL of the ROM
+    window.EJS_core          = 'mgba';            // best GBA core
+    window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_startOnLoaded = true;
+    window.EJS_backgroundColor = '#000000';
+    window.EJS_color         = '#00bcf0';
+
+    // Disable ALL built-in UI — we have our own sidebar
+    window.EJS_Buttons = {
+        playPause:    false,
+        restart:      false,
+        mute:         false,
+        settings:     false,
+        fullscreen:   false,
+        saveState:    false,
+        loadState:    false,
+        screenRecord: false,
+        gamepad:      false,
+        cheat:        false,
+        volume:       false,
+        saveSavFiles: false,
+        loadSavFiles: false,
+        quickSave:    false,
+        quickLoad:    false,
+    };
+
+    // Callback fired when EJS is fully booted and emulation starts
+    window.EJS_onGameStart = () => {
+        ejsReady = true;
+        // EJS sets window.EJS_emulator after this callback fires
+        // Give it one tick to settle
+        setTimeout(() => {
+            const emu = getEmu();
+            if (!emu) return;
+            // Re-apply any settings that were set before the emu was ready
+            applySpeed(currentSpeed);
+            if (isMuted) applyMuteToEmu(true);
+        }, 100);
+    };
+
+    // Append the loader — must come AFTER all globals are set
     setTimeout(() => {
-        setEJSGlobals(romURL);
         const s = document.createElement('script');
-        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js?' + Date.now(); // cache-bust
-        s.onerror = () => toast('Failed to reload EmulatorJS.', 'error');
+        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js?t=' + Date.now();
+        s.onerror = () => toast('Failed to load EmulatorJS. Check your connection.', 'error', 5000);
         document.body.appendChild(s);
-    }, 100);
+    }, 50); // small delay ensures #game is in DOM and any previous cleanup has settled
 }
 
 /* ════════════════════════════════════════════
@@ -755,7 +765,7 @@ $('sb-restart').addEventListener('click', () => {
     try {
         if (emu && typeof emu.restart === 'function') emu.restart();
         else if (emu && emu.gameManager && typeof emu.gameManager.restart === 'function') emu.gameManager.restart();
-        else { toast('Reloading game…', 'info'); reinitEmulatorJS(currentRomUrl); return; }
+        else { toast('Reloading game…', 'info'); startEmulator(currentRomUrl); return; }
     } catch(e) { console.warn('restart:', e) }
     updatePauseUI(false);
     toast('Game restarted', 'info', 1500);
