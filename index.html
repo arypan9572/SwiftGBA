@@ -8,519 +8,238 @@
     <title>SwiftGBA</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        @font-face {
-            font-family: Clash Display;
-            src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2");
-            font-weight: 600; font-style: normal; font-display: swap
-        }
-        @font-face {
-            font-family: Satoshi;
-            src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2");
-            font-weight: 400 700; font-style: normal; font-display: swap
-        }
-        @font-face {
-            font-family: Departure Mono;
-            src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2");
-            font-weight: 400; font-style: normal; font-display: swap
-        }
+        @font-face { font-family: Clash Display; src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2"); font-weight: 600; font-style: normal; font-display: swap }
+        @font-face { font-family: Satoshi; src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap }
+        @font-face { font-family: Departure Mono; src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2"); font-weight: 400; font-style: normal; font-display: swap }
 
         :root {
-            --bg-deep: #0F1114;
-            --bg-base: #14161B;
-            --bg-panel: #1C1F24;
-            --bg-elevated: #252830;
-            --bg-input: #292C31;
+            --bg-deep: #0F1114; --bg-base: #14161B; --bg-panel: #1C1F24;
+            --bg-elevated: #252830; --bg-input: #292C31;
             --border-subtle: #2E3238;
-            --text-primary: #E6E8EC;
-            --text-secondary: #8B8F96;
-            --text-tertiary: #585C64;
-            --text-ghost: #3A3E46;
-            --accent: #00bcf0;
-            --accent-dim: rgba(0,188,240,.12);
-            --accent-glow: rgba(0,188,240,.3);
-            --led-green: #00E85A;
-            --led-green-glow: rgba(0, 232, 90, .3);
-            --error: #E84057;
-            --success: #00E85A;
-            --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-            --space-5: 24px; --space-6: 32px; --space-7: 48px;
-            --font-display: "Clash Display", system-ui, sans-serif;
-            --font-ui: "Satoshi", system-ui, sans-serif;
-            --font-mono: "Departure Mono", ui-monospace, monospace;
-            --text-xs: 11px; --text-sm: 13px; --text-base: 15px;
-            --text-lg: 18px; --text-xl: 24px; --text-2xl: 32px;
-            --ease-spring: cubic-bezier(.22, 1, .36, 1);
-            --duration-fast: .15s; --duration-normal: .28s;
-            --sidebar-w: 260px;
+            --text-primary: #E6E8EC; --text-secondary: #8B8F96;
+            --text-tertiary: #585C64; --text-ghost: #3A3E46;
+            --accent: #00bcf0; --accent-dim: rgba(0,188,240,.12); --accent-glow: rgba(0,188,240,.3);
+            --led-green: #00E85A; --led-green-glow: rgba(0,232,90,.3);
+            --error: #E84057; --warn: #F59E0B;
+            --sp1:4px; --sp2:8px; --sp3:12px; --sp4:16px; --sp5:24px; --sp6:32px; --sp7:48px;
+            --font-display:"Clash Display",system-ui,sans-serif;
+            --font-ui:"Satoshi",system-ui,sans-serif;
+            --font-mono:"Departure Mono",ui-monospace,monospace;
+            --xs:11px; --sm:13px; --base:15px; --lg:18px; --xl:24px; --2xl:32px;
+            --ease-spring:cubic-bezier(.22,1,.36,1);
+            --fast:.15s; --normal:.28s;
+            --sidebar-w: 264px;
         }
+        *,*:before,*:after { box-sizing:border-box; margin:0; padding:0 }
+        html,body { height:100dvh; width:100vw; overflow:hidden; background:var(--bg-deep); color:var(--text-primary); font-family:var(--font-ui); font-size:var(--base); line-height:1.5; -webkit-font-smoothing:antialiased }
+        .font-display { font-family:var(--font-display) }
+        .font-mono { font-family:var(--font-mono) }
 
-        *, *:before, *:after { box-sizing: border-box; margin: 0; padding: 0 }
-
-        html, body {
-            height: 100dvh; width: 100vw; overflow: hidden;
-            background: var(--bg-deep); color: var(--text-primary);
-            font-family: var(--font-ui); font-size: var(--text-base);
-            line-height: 1.5; -webkit-font-smoothing: antialiased;
-        }
-
-        .font-display { font-family: var(--font-display) }
-        .font-mono { font-family: var(--font-mono) }
-
-        /* ── IDLE / LANDING ── */
+        /* ════ IDLE / LANDING ════ */
         #idle-screen {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100dvh; width: 100vw;
-            position: relative; overflow: hidden;
-            cursor: pointer;
-            transition: opacity .5s ease;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            height:100dvh; width:100vw; position:relative; overflow:hidden;
+            cursor:pointer; transition:opacity .5s ease;
         }
-        #idle-screen.fade-out { opacity: 0; pointer-events: none }
-
-        .showcase {
-            position: absolute; inset: 0; z-index: 0;
-            overflow: hidden; pointer-events: none;
-        }
-        .showcase-bg { position: absolute; inset: 0; transition: background 0.6s ease }
-        .showcase-flash {
-            position: absolute; inset: 0; z-index: 4;
-            opacity: .15; pointer-events: none;
-            animation: flash-pop .3s ease-out forwards;
-        }
-        @keyframes flash-pop { 0% { opacity: .2 } to { opacity: 0 } }
-        .showcase-wipe {
-            position: absolute; inset: -50%; z-index: 5;
-            animation: wipe-sweep .4s ease-out forwards; pointer-events: none;
-        }
-        @keyframes wipe-sweep {
-            0% { transform: translate(-100%) rotate(15deg) }
-            to { transform: translate(100%) rotate(15deg) }
-        }
-        .showcase-slash {
-            position: absolute; top: -20%; right: 18%;
-            width: 1px; height: 140%;
-            border-right: 2px solid rgba(255,255,255,.04);
-            transform: rotate(15deg); pointer-events: none;
-            transition: border-color 0.6s ease;
-        }
-        .showcase-title {
-            position: absolute; top: 6%; left: 4%;
-            display: flex; flex-direction: column; gap: 6px; z-index: 2;
-        }
-        .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-        .showcase-title.out  { animation: title-exit .25s ease-in forwards }
-        @keyframes title-slam {
-            0%  { opacity: 0; transform: translate(-80px) scale(1.1) }
-            60% { opacity: 1; transform: translate(8px) scale(1) }
-            to  { opacity: 1; transform: translate(0) scale(1) }
-        }
-        @keyframes title-exit {
-            0%  { opacity: 1; transform: translate(0) }
-            to  { opacity: 0; transform: translate(-40px) }
-        }
-        .showcase-label {
-            font-size: 10px; letter-spacing: .2em;
-            color: var(--text-ghost); text-transform: uppercase;
-        }
-        .showcase-name {
-            font-size: clamp(18px,2.5vw,32px); font-weight: 600;
-            color: #ffffffe6; line-height: 1.1;
-            text-shadow: 0 2px 20px rgba(0,0,0,.6);
-            max-width: 320px; white-space: nowrap;
-        }
-        .showcase-underline {
-            width: 0; height: 3px; border-radius: 2px; margin-top: 4px;
-            animation: underline-grow .4s ease-out .2s forwards;
-        }
-        @keyframes underline-grow { 0% { width: 0 } to { width: 50px } }
-        .showcase-art {
-            position: absolute; right: 8vw; top: 28%; z-index: 2;
-        }
-        .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-        .showcase-art.out  { animation: art-exit .25s ease-in forwards }
-        @keyframes art-slam {
-            0%  { opacity: 0; transform: translate(120px) scale(.8) rotate(3deg) }
-            50% { opacity: 1; transform: translate(-10px) scale(1.03) rotate(-1deg) }
-            to  { opacity: 1; transform: translate(0) scale(1) rotate(0) }
-        }
-        @keyframes art-exit {
-            0%  { opacity: 1; transform: translate(0) scale(1) }
-            to  { opacity: 0; transform: translate(80px) scale(.9) }
-        }
-        .showcase-art-img {
-            width: clamp(160px,20vw,280px); height: auto;
-            border-radius: 8px;
-            box-shadow: 0 12px 48px #000000b3, 0 4px 12px #00000080;
-            user-select: none; pointer-events: none;
-        }
+        #idle-screen.fade-out { opacity:0; pointer-events:none }
+        .showcase { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none }
+        .showcase-bg { position:absolute; inset:0; transition:background 0.6s ease }
+        .showcase-flash { position:absolute; inset:0; z-index:4; opacity:.15; pointer-events:none; animation:flash-pop .3s ease-out forwards }
+        @keyframes flash-pop { 0%{opacity:.2} to{opacity:0} }
+        .showcase-wipe { position:absolute; inset:-50%; z-index:5; animation:wipe-sweep .4s ease-out forwards; pointer-events:none }
+        @keyframes wipe-sweep { 0%{transform:translate(-100%) rotate(15deg)} to{transform:translate(100%) rotate(15deg)} }
+        .showcase-slash { position:absolute; top:-20%; right:18%; width:1px; height:140%; border-right:2px solid rgba(255,255,255,.04); transform:rotate(15deg); pointer-events:none; transition:border-color 0.6s ease }
+        .showcase-title { position:absolute; top:6%; left:4%; display:flex; flex-direction:column; gap:6px; z-index:2 }
+        .showcase-title.slam { animation:title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+        .showcase-title.out  { animation:title-exit .25s ease-in forwards }
+        @keyframes title-slam { 0%{opacity:0;transform:translate(-80px) scale(1.1)} 60%{opacity:1;transform:translate(8px) scale(1)} to{opacity:1;transform:translate(0) scale(1)} }
+        @keyframes title-exit { 0%{opacity:1;transform:translate(0)} to{opacity:0;transform:translate(-40px)} }
+        .showcase-label { font-size:10px; letter-spacing:.2em; color:var(--text-ghost); text-transform:uppercase }
+        .showcase-name { font-size:clamp(18px,2.5vw,32px); font-weight:600; color:#ffffffe6; line-height:1.1; text-shadow:0 2px 20px rgba(0,0,0,.6); max-width:320px; white-space:nowrap }
+        .showcase-underline { width:0; height:3px; border-radius:2px; margin-top:4px; animation:underline-grow .4s ease-out .2s forwards }
+        @keyframes underline-grow { 0%{width:0} to{width:50px} }
+        .showcase-art { position:absolute; right:8vw; top:28%; z-index:2 }
+        .showcase-art.slam { animation:art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+        .showcase-art.out  { animation:art-exit .25s ease-in forwards }
+        @keyframes art-slam { 0%{opacity:0;transform:translate(120px) scale(.8) rotate(3deg)} 50%{opacity:1;transform:translate(-10px) scale(1.03) rotate(-1deg)} to{opacity:1;transform:translate(0) scale(1) rotate(0)} }
+        @keyframes art-exit { 0%{opacity:1;transform:translate(0) scale(1)} to{opacity:0;transform:translate(80px) scale(.9)} }
+        .showcase-art-img { width:clamp(160px,20vw,280px); height:auto; border-radius:8px; box-shadow:0 12px 48px #000000b3,0 4px 12px #00000080; user-select:none; pointer-events:none }
 
         /* GBA shell */
         .gba-shell {
-            --gba-screen-left: 29.4%; --gba-screen-top: 22.2%;
-            --gba-screen-width: 40.6%; --gba-screen-height: 45.1%;
-            position: relative; display: flex;
-            align-items: center; justify-content: center;
-            transform: translate(-6vw); z-index: 1;
+            --gba-screen-left:29.4%; --gba-screen-top:22.2%; --gba-screen-width:40.6%; --gba-screen-height:45.1%;
+            position:relative; display:flex; align-items:center; justify-content:center;
+            transform:translate(-6vw); z-index:1;
         }
-        .gba-image {
-            width: min(65vw,640px); height: auto;
-            user-select: none; pointer-events: none;
-            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
-        }
-        .gba-screen-overlay {
-            position: absolute;
-            left: var(--gba-screen-left); top: var(--gba-screen-top);
-            width: var(--gba-screen-width); height: var(--gba-screen-height);
-            z-index: 1; overflow: hidden; border-radius: 2px;
-        }
-        .gba-screen-content {
-            position: absolute; inset: 0;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: var(--space-2); padding: 0 6%; text-align: center;
-            animation: screen-fade-in 1s ease forwards;
-        }
-        @keyframes screen-fade-in { 0% { opacity: 0 } to { opacity: 1 } }
-        .gba-screen-text {
-            display: block; width: 100%;
-            font-size: clamp(14px,2vw,20px); font-weight: 600;
-            color: #c8ccd2; text-shadow: 0 0 12px rgba(200,204,210,.5);
-        }
-        .gba-screen-hint {
-            display: block; width: 100%;
-            font-size: clamp(10px,1.2vw,13px); color: #8b8f96;
-            text-shadow: 0 0 8px rgba(139,143,150,.4);
-        }
-        .gba-power-led {
-            position: absolute; left: 30.5%; top: 22%;
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--text-ghost); transition: all .4s ease;
-        }
-        .gba-power-led.on {
-            background: var(--led-green);
-            box-shadow: 0 0 6px var(--led-green-glow), 0 0 16px var(--led-green-glow);
-        }
+        .gba-image { width:min(65vw,640px); height:auto; user-select:none; pointer-events:none; filter:drop-shadow(0 8px 40px rgba(0,0,0,.5)) }
+        .gba-screen-overlay { position:absolute; left:var(--gba-screen-left); top:var(--gba-screen-top); width:var(--gba-screen-width); height:var(--gba-screen-height); z-index:1; overflow:hidden; border-radius:2px }
+        .gba-screen-content { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp2); padding:0 6%; text-align:center; animation:screen-fade-in 1s ease forwards }
+        @keyframes screen-fade-in { 0%{opacity:0} to{opacity:1} }
+        .gba-screen-text { display:block; width:100%; font-size:clamp(14px,2vw,20px); font-weight:600; color:#c8ccd2; text-shadow:0 0 12px rgba(200,204,210,.5) }
+        .gba-screen-hint { display:block; width:100%; font-size:clamp(10px,1.2vw,13px); color:#8b8f96; text-shadow:0 0 8px rgba(139,143,150,.4) }
+        .gba-power-led { position:absolute; left:30.5%; top:22%; width:6px; height:6px; border-radius:50%; background:var(--text-ghost); transition:all .4s ease }
+        .gba-power-led.on { background:var(--led-green); box-shadow:0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow) }
 
-        .landing-brand {
-            display: flex; flex-direction: column; align-items: center;
-            gap: var(--space-2); z-index: 1; transform: translate(-6vw);
-        }
-        .landing-title {
-            font-size: var(--text-2xl); font-weight: 600;
-            letter-spacing: -.02em; line-height: 1;
-        }
-        .landing-title .accent { color: var(--accent); letter-spacing: .06em }
-        .landing-title .dot { color: var(--text-tertiary) }
+        .landing-brand { display:flex; flex-direction:column; align-items:center; gap:var(--sp2); z-index:1; transform:translate(-6vw) }
+        .landing-title { font-size:var(--2xl); font-weight:600; letter-spacing:-.02em; line-height:1 }
+        .landing-title .accent { color:var(--accent); letter-spacing:.06em }
+        .landing-title .dot { color:var(--text-tertiary) }
+        .landing-controls { display:flex; align-items:center; gap:var(--sp3); font-size:var(--xs); color:var(--text-ghost); z-index:1; transform:translate(-6vw) }
+        .landing-key { display:inline-flex; align-items:center; justify-content:center; padding:2px 6px; border:1px solid var(--border-subtle); border-radius:4px; background:var(--bg-elevated); color:var(--text-tertiary); font-size:10px; line-height:1.4; min-width:20px }
+        .landing-disclaimer { max-width:480px; text-align:center; font-size:var(--xs); line-height:1.6; color:var(--text-ghost); z-index:1; transform:translate(-6vw) }
+        #idle-screen.drag-over .gba-image { filter:drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px rgba(0,188,240,.4)) }
 
-        .landing-controls {
-            display: flex; align-items: center; gap: var(--space-3);
-            font-size: var(--text-xs); color: var(--text-ghost);
-            z-index: 1; transform: translate(-6vw);
-        }
-        .landing-key {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 2px 6px; border: 1px solid var(--border-subtle);
-            border-radius: 4px; background: var(--bg-elevated);
-            color: var(--text-tertiary); font-size: 10px; line-height: 1.4; min-width: 20px;
-        }
-        .landing-disclaimer {
-            max-width: 480px; text-align: center;
-            font-size: var(--text-xs); line-height: 1.6;
-            color: var(--text-ghost); z-index: 1; transform: translate(-6vw);
-        }
+        /* ── CONTINUE BAR ── */
+        #continue-bar { position:absolute; bottom:0; left:0; right:0; z-index:10; background:linear-gradient(to top,var(--bg-base) 0%,transparent 100%); padding:var(--sp4) var(--sp5) var(--sp5); display:none }
+        #continue-bar.visible { display:block }
+        .continue-label { font-size:var(--xs); letter-spacing:.12em; text-transform:uppercase; color:var(--text-tertiary); font-family:var(--font-mono); margin-bottom:var(--sp3) }
+        .continue-list { display:flex; gap:var(--sp3); overflow-x:auto; scrollbar-width:none; padding-bottom:2px }
+        .continue-list::-webkit-scrollbar { display:none }
+        .continue-card { flex-shrink:0; display:flex; align-items:center; gap:var(--sp3); background:var(--bg-panel); border:1px solid var(--border-subtle); border-radius:10px; padding:var(--sp2) var(--sp3); cursor:pointer; transition:border-color var(--fast),background var(--fast); min-width:200px; max-width:240px; position:relative; overflow:hidden }
+        .continue-card:hover { border-color:var(--accent); background:var(--bg-elevated) }
+        .continue-card-glow { position:absolute; inset:0; opacity:0; background:radial-gradient(ellipse at 50% 100%,var(--accent-dim),transparent 70%); transition:opacity var(--fast) }
+        .continue-card:hover .continue-card-glow { opacity:1 }
+        .continue-card-icon { width:36px; height:36px; border-radius:6px; background:var(--bg-elevated); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px }
+        .continue-card-info { flex:1; min-width:0 }
+        .continue-card-name { font-size:var(--sm); font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+        .continue-card-meta { font-size:var(--xs); color:var(--text-tertiary); font-family:var(--font-mono) }
+        .continue-card-play { width:28px; height:28px; border-radius:50%; background:var(--accent); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#000; font-size:11px; transition:transform var(--fast),box-shadow var(--fast) }
+        .continue-card-play:hover { transform:scale(1.1); box-shadow:0 0 12px var(--accent-glow) }
+        .continue-card-del { position:absolute; top:4px; right:4px; width:16px; height:16px; border-radius:50%; background:var(--bg-elevated); border:none; cursor:pointer; color:var(--text-tertiary); font-size:9px; line-height:1; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity var(--fast) }
+        .continue-card:hover .continue-card-del { opacity:1 }
 
-        #idle-screen.drag-over .gba-image {
-            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px rgba(0,188,240,.4));
-        }
+        /* ════ EMULATOR SCREEN ════ */
+        #emu-screen { display:none; position:fixed; inset:0; z-index:100; background:#000 }
+        #emu-screen.active { display:flex; flex-direction:column }
 
-        /* ── CONTINUE PLAYING BAR ── */
-        #continue-bar {
-            position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
-            background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%);
-            padding: var(--space-4) var(--space-5) var(--space-5);
-            display: none;
-        }
-        #continue-bar.visible { display: block }
-        .continue-label {
-            font-size: var(--text-xs); letter-spacing: .12em; text-transform: uppercase;
-            color: var(--text-tertiary); font-family: var(--font-mono);
-            margin-bottom: var(--space-3);
-        }
-        .continue-list {
-            display: flex; gap: var(--space-3); overflow-x: auto;
-            scrollbar-width: none; padding-bottom: 2px;
-        }
-        .continue-list::-webkit-scrollbar { display: none }
-        .continue-card {
-            flex-shrink: 0; display: flex; align-items: center; gap: var(--space-3);
-            background: var(--bg-panel); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: var(--space-2) var(--space-3);
-            cursor: pointer; transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
-            min-width: 200px; max-width: 240px;
-            position: relative; overflow: hidden;
-        }
-        .continue-card:hover { border-color: var(--accent); background: var(--bg-elevated) }
-        .continue-card-glow {
-            position: absolute; inset: 0; opacity: 0;
-            background: radial-gradient(ellipse at 50% 100%, var(--accent-dim), transparent 70%);
-            transition: opacity var(--duration-fast) ease;
-        }
-        .continue-card:hover .continue-card-glow { opacity: 1 }
-        .continue-card-icon {
-            width: 36px; height: 36px; border-radius: 6px;
-            background: var(--bg-elevated); flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-        }
-        .continue-card-info { flex: 1; min-width: 0 }
-        .continue-card-name {
-            font-size: var(--text-sm); font-weight: 600; color: var(--text-primary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .continue-card-meta {
-            font-size: var(--text-xs); color: var(--text-tertiary);
-            font-family: var(--font-mono);
-        }
-        .continue-card-play {
-            width: 28px; height: 28px; border-radius: 50%;
-            background: var(--accent); border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; color: #000; font-size: 11px;
-            transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
-        }
-        .continue-card-play:hover { transform: scale(1.1); box-shadow: 0 0 12px var(--accent-glow) }
-        .continue-card-del {
-            position: absolute; top: 4px; right: 4px;
-            width: 16px; height: 16px; border-radius: 50%;
-            background: var(--bg-elevated); border: none; cursor: pointer;
-            color: var(--text-tertiary); font-size: 9px; line-height: 1;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity var(--duration-fast) ease;
-        }
-        .continue-card:hover .continue-card-del { opacity: 1 }
+        #emu-toolbar { display:flex; align-items:center; justify-content:space-between; height:48px; padding:0 var(--sp5); background:#1c1f24eb; backdrop-filter:blur(8px); border-bottom:1px solid var(--border-subtle); flex-shrink:0; z-index:10 }
+        .toolbar-logo { font-size:var(--lg); font-weight:600; letter-spacing:.02em }
+        .toolbar-logo .accent { color:var(--accent) }
+        .toolbar-logo .dot { color:var(--text-tertiary) }
+        .toolbar-game-name { font-size:var(--sm); color:var(--text-secondary); font-family:var(--font-mono); letter-spacing:.04em; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+        .toolbar-actions { display:flex; align-items:center; gap:var(--sp2) }
+        .toolbar-btn { background:none; border:none; color:var(--text-secondary); font-size:var(--lg); padding:var(--sp2); cursor:pointer; border-radius:6px; transition:color var(--fast),background var(--fast); line-height:1 }
+        .toolbar-btn:hover { color:var(--text-primary); background:var(--bg-elevated) }
+        .toolbar-btn.active { color:var(--accent) }
 
-        /* ── EMULATOR SCREEN ── */
-        #emu-screen {
-            display: none;
-            position: fixed; inset: 0; z-index: 100;
-            background: #000;
-        }
-        #emu-screen.active { display: flex; flex-direction: column }
+        #emu-body { flex:1; display:flex; overflow:hidden; position:relative }
 
-        #emu-toolbar {
-            display: flex; align-items: center; justify-content: space-between;
-            height: 48px; padding: 0 var(--space-5);
-            background: #1c1f24eb; backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-subtle);
-            flex-shrink: 0; z-index: 10;
-        }
-        .toolbar-logo { font-size: var(--text-lg); font-weight: 600; letter-spacing: .02em }
-        .toolbar-logo .accent { color: var(--accent) }
-        .toolbar-logo .dot { color: var(--text-tertiary) }
-        .toolbar-game-name {
-            font-size: var(--text-sm); color: var(--text-secondary);
-            font-family: var(--font-mono); letter-spacing: .04em;
-            max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        .toolbar-actions { display: flex; align-items: center; gap: var(--space-2) }
-        .toolbar-btn {
-            background: none; border: none; color: var(--text-secondary);
-            font-size: var(--text-lg); padding: var(--space-2);
-            cursor: pointer; border-radius: 6px;
-            transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
-            line-height: 1;
-        }
-        .toolbar-btn:hover { color: var(--text-primary); background: var(--bg-elevated) }
+        #emu-wrap { flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; background:#000; transition:margin-right var(--normal) var(--ease-spring) }
 
-        /* ── MAIN EMU BODY ── */
-        #emu-body {
-            flex: 1; display: flex; overflow: hidden;
+        #game { width:100%; height:100% }
+
+        /* Aggressively hide EmulatorJS chrome */
+        .ejs_menu_bar, .ejs_buttons_container, .ejs_bottom_bar,
+        .ejs-bar-menu, .ejs-top-bar, .ejs_control_bar,
+        #ejs_controls_bar, .ejs-bar { display:none !important; height:0 !important; overflow:hidden !important }
+
+        /* ── SIDEBAR TOGGLE TAB ── */
+        #sidebar-tab {
+            position:absolute; right:0; top:50%; transform:translateY(-50%);
+            width:20px; height:64px; background:var(--bg-panel);
+            border-left:1px solid var(--border-subtle);
+            border-top:1px solid var(--border-subtle);
+            border-bottom:1px solid var(--border-subtle);
+            border-radius:8px 0 0 8px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; z-index:20;
+            transition:right var(--normal) var(--ease-spring), background var(--fast), color var(--fast);
+            color:var(--text-tertiary); font-size:11px;
+            user-select:none;
         }
+        #sidebar-tab:hover { background:var(--bg-elevated); color:var(--text-primary) }
+        #sidebar-tab .tab-arrow { transition:transform var(--normal) var(--ease-spring); line-height:1 }
 
-        #emu-wrap {
-            flex: 1; display: flex;
-            align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-            background: #000;
-        }
-
-        #game {
-            width: 100%; height: 100%;
-        }
-
-        /* Hide EmulatorJS built-in UI elements */
-        #game .ejs_menu_bar,
-        #game .ejs_buttons_container,
-        #game .ejs_bottom_bar,
-        #game .ejs-bar-menu,
-        #game .ejs-top-bar { display: none !important }
-
-        /* ── RIGHT SIDEBAR ── */
+        /* ── SIDEBAR ── */
         #sidebar {
-            width: var(--sidebar-w); flex-shrink: 0;
-            background: var(--bg-panel); border-left: 1px solid var(--border-subtle);
-            display: flex; flex-direction: column;
-            overflow-y: auto; overflow-x: hidden;
-            scrollbar-width: thin; scrollbar-color: var(--border-subtle) transparent;
+            width:var(--sidebar-w); flex-shrink:0;
+            background:var(--bg-panel); border-left:1px solid var(--border-subtle);
+            display:flex; flex-direction:column;
+            overflow-y:auto; overflow-x:hidden;
+            scrollbar-width:thin; scrollbar-color:var(--border-subtle) transparent;
+            transition:width var(--normal) var(--ease-spring), opacity var(--normal) ease;
+            position:relative;
         }
-        #sidebar::-webkit-scrollbar { width: 4px }
-        #sidebar::-webkit-scrollbar-track { background: transparent }
-        #sidebar::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px }
+        #sidebar::-webkit-scrollbar { width:4px }
+        #sidebar::-webkit-scrollbar-thumb { background:var(--border-subtle); border-radius:2px }
 
-        .sidebar-section {
-            padding: var(--space-4);
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        .sidebar-section:last-child { border-bottom: none }
-        .sidebar-section-title {
-            font-size: var(--text-xs); letter-spacing: .14em; text-transform: uppercase;
-            color: var(--text-tertiary); font-family: var(--font-mono);
-            margin-bottom: var(--space-3);
-        }
+        /* Collapsed state */
+        #emu-body.sidebar-collapsed #sidebar { width:0; opacity:0; pointer-events:none; border-left:none }
+        #emu-body.sidebar-collapsed #sidebar-tab { right:0 }
+        #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow { transform:rotate(180deg) }
 
-        /* Sidebar buttons */
-        .sb-btn {
-            width: 100%; display: flex; align-items: center; gap: var(--space-3);
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 8px; padding: 10px var(--space-3);
-            color: var(--text-primary); font-size: var(--text-sm);
-            font-family: var(--font-ui); cursor: pointer;
-            transition: border-color var(--duration-fast), background var(--duration-fast);
-            margin-bottom: var(--space-2); text-align: left;
-        }
-        .sb-btn:last-child { margin-bottom: 0 }
-        .sb-btn:hover { border-color: var(--accent); background: var(--bg-input) }
-        .sb-btn.accent-btn {
-            background: var(--accent-dim); border-color: var(--accent);
-            color: var(--accent);
-        }
-        .sb-btn.accent-btn:hover { background: rgba(0,188,240,.2) }
-        .sb-btn-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center }
-        .sb-btn-text { flex: 1 }
-        .sb-btn-sub { font-size: 10px; color: var(--text-tertiary); display: block; margin-top: 1px }
+        /* Sidebar sections */
+        .sidebar-game-header { padding:var(--sp4); border-bottom:1px solid var(--border-subtle); background:var(--bg-elevated); flex-shrink:0 }
+        .sidebar-game-title { font-size:var(--sm); font-weight:600; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+        .sidebar-game-size { font-size:var(--xs); color:var(--text-tertiary); font-family:var(--font-mono); margin-top:2px }
 
-        /* Save slots */
-        .save-slots { display: flex; flex-direction: column; gap: var(--space-2) }
-        .save-slot {
-            display: flex; align-items: center; gap: var(--space-2);
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 8px; padding: 8px var(--space-3); cursor: pointer;
-            transition: border-color var(--duration-fast);
-        }
-        .save-slot:hover { border-color: var(--border-subtle); }
-        .save-slot-num {
-            font-family: var(--font-mono); font-size: var(--text-xs);
-            color: var(--text-tertiary); width: 16px; text-align: center; flex-shrink: 0;
-        }
-        .save-slot-info { flex: 1; min-width: 0 }
-        .save-slot-name {
-            font-size: var(--text-xs); color: var(--text-secondary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .save-slot-time {
-            font-size: 10px; color: var(--text-ghost);
-            font-family: var(--font-mono);
-        }
-        .save-slot-actions { display: flex; gap: 4px }
-        .slot-action-btn {
-            background: none; border: 1px solid var(--border-subtle);
-            border-radius: 4px; padding: 2px 6px;
-            font-size: 10px; color: var(--text-tertiary); cursor: pointer;
-            transition: color var(--duration-fast), border-color var(--duration-fast);
-        }
-        .slot-action-btn:hover { color: var(--text-primary); border-color: var(--text-tertiary) }
-        .slot-action-btn.save-action:hover { color: var(--accent); border-color: var(--accent) }
-        .slot-action-btn.load-action:hover { color: var(--led-green); border-color: var(--led-green) }
+        .sidebar-section { padding:var(--sp4); border-bottom:1px solid var(--border-subtle) }
+        .sidebar-section:last-child { border-bottom:none }
+        .sidebar-section-title { font-size:var(--xs); letter-spacing:.14em; text-transform:uppercase; color:var(--text-tertiary); font-family:var(--font-mono); margin-bottom:var(--sp3) }
 
-        /* Speed control */
-        .speed-control { display: flex; flex-direction: column; gap: var(--space-2) }
-        .speed-row {
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .speed-label { font-size: var(--text-sm); color: var(--text-secondary) }
-        .speed-val {
-            font-family: var(--font-mono); font-size: var(--text-sm);
-            color: var(--accent); min-width: 36px; text-align: right;
-        }
-        .speed-slider {
-            width: 100%; height: 4px; border-radius: 2px;
-            background: var(--bg-elevated); outline: none; border: none;
-            appearance: none; cursor: pointer;
-            background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,33%), var(--bg-elevated) var(--pct,33%));
-        }
-        .speed-slider::-webkit-slider-thumb {
-            appearance: none; width: 14px; height: 14px; border-radius: 50%;
-            background: var(--accent); box-shadow: 0 0 6px var(--accent-glow);
-            cursor: pointer;
-        }
-        .speed-presets { display: flex; gap: var(--space-2) }
-        .speed-preset {
-            flex: 1; background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            border-radius: 6px; padding: 4px 0; font-size: var(--text-xs);
-            color: var(--text-secondary); cursor: pointer; text-align: center;
-            font-family: var(--font-mono);
-            transition: border-color var(--duration-fast), color var(--duration-fast);
-        }
-        .speed-preset:hover, .speed-preset.active {
-            border-color: var(--accent); color: var(--accent);
-        }
+        .sb-btn { width:100%; display:flex; align-items:center; gap:var(--sp3); background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:8px; padding:10px var(--sp3); color:var(--text-primary); font-size:var(--sm); font-family:var(--font-ui); cursor:pointer; transition:border-color var(--fast),background var(--fast); margin-bottom:var(--sp2); text-align:left }
+        .sb-btn:last-child { margin-bottom:0 }
+        .sb-btn:hover { border-color:var(--accent); background:var(--bg-input) }
+        .sb-btn:active { transform:scale(.98) }
+        .sb-btn.accent-btn { background:var(--accent-dim); border-color:var(--accent); color:var(--accent) }
+        .sb-btn.accent-btn:hover { background:rgba(0,188,240,.2) }
+        .sb-btn.warn-btn { background:rgba(245,158,11,.1); border-color:var(--warn); color:var(--warn) }
+        .sb-btn.active-state { border-color:var(--led-green) !important; color:var(--led-green) !important }
+        .sb-btn-icon { font-size:16px; flex-shrink:0; width:20px; text-align:center }
+        .sb-btn-text { flex:1 }
+        .sb-btn-sub { font-size:10px; color:var(--text-tertiary); display:block; margin-top:1px }
+        .sb-btn.active-state .sb-btn-sub { color:rgba(0,232,90,.6) }
 
-        /* Status dot */
-        .status-row {
-            display: flex; align-items: center; gap: var(--space-2);
-            font-size: var(--text-xs); color: var(--text-tertiary); font-family: var(--font-mono);
-        }
-        .status-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--text-ghost);
-        }
-        .status-dot.on {
-            background: var(--led-green);
-            box-shadow: 0 0 4px var(--led-green-glow);
-        }
+        /* Status */
+        .status-row { display:flex; align-items:center; gap:var(--sp2); font-size:var(--sm); color:var(--text-secondary) }
+        .status-dot { width:7px; height:7px; border-radius:50%; background:var(--text-ghost); flex-shrink:0 }
+        .status-dot.on { background:var(--led-green); box-shadow:0 0 5px var(--led-green-glow) }
+        .status-dot.paused { background:var(--warn); box-shadow:0 0 5px rgba(245,158,11,.4) }
 
-        /* Toast notifications */
-        #toast-stack {
-            position: fixed; bottom: var(--space-5); left: 50%;
-            transform: translateX(-50%);
-            display: flex; flex-direction: column; gap: var(--space-2);
-            z-index: 300; pointer-events: none;
-        }
-        .toast {
-            padding: 8px 16px; border-radius: 8px;
-            font-size: var(--text-sm); font-family: var(--font-mono);
-            animation: toast-in .2s var(--ease-spring) forwards;
-            pointer-events: none;
-        }
-        .toast.success { background: rgba(0,232,90,.15); border: 1px solid var(--led-green); color: var(--led-green) }
-        .toast.error   { background: rgba(232,64,87,.15); border: 1px solid var(--error); color: var(--error) }
-        .toast.info    { background: var(--bg-panel); border: 1px solid var(--border-subtle); color: var(--text-secondary) }
-        @keyframes toast-in {
-            0% { opacity: 0; transform: translateY(8px) scale(.96) }
-            to { opacity: 1; transform: translateY(0) scale(1) }
-        }
+        /* Speed */
+        .speed-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp2) }
+        .speed-label { font-size:var(--sm); color:var(--text-secondary) }
+        .speed-val { font-family:var(--font-mono); font-size:var(--sm); color:var(--accent); min-width:36px; text-align:right }
+        .speed-slider { width:100%; height:4px; border-radius:2px; background:var(--bg-elevated); outline:none; border:none; appearance:none; cursor:pointer; margin-bottom:var(--sp3);
+            background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--pct,33%),var(--bg-elevated) var(--pct,33%)) }
+        .speed-slider::-webkit-slider-thumb { appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px var(--accent-glow); cursor:pointer }
+        .speed-presets { display:flex; gap:var(--sp2) }
+        .speed-preset { flex:1; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:6px; padding:4px 0; font-size:var(--xs); color:var(--text-secondary); cursor:pointer; text-align:center; font-family:var(--font-mono); transition:border-color var(--fast),color var(--fast) }
+        .speed-preset:hover,.speed-preset.active { border-color:var(--accent); color:var(--accent) }
 
-        #rom-input { display: none }
+        /* Save Slots */
+        .save-slots { display:flex; flex-direction:column; gap:var(--sp2) }
+        .save-slot { display:flex; align-items:center; gap:var(--sp2); background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:8px; padding:8px var(--sp3) }
+        .save-slot.has-data { border-color:rgba(0,188,240,.2) }
+        .save-slot-num { font-family:var(--font-mono); font-size:var(--xs); color:var(--text-tertiary); width:16px; text-align:center; flex-shrink:0 }
+        .save-slot-info { flex:1; min-width:0 }
+        .save-slot-name { font-size:var(--xs); color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+        .save-slot-time { font-size:10px; color:var(--text-ghost); font-family:var(--font-mono) }
+        .save-slot-actions { display:flex; gap:4px }
+        .slot-btn { background:none; border:1px solid var(--border-subtle); border-radius:4px; padding:2px 7px; font-size:10px; font-family:var(--font-mono); color:var(--text-tertiary); cursor:pointer; transition:color var(--fast),border-color var(--fast),background var(--fast) }
+        .slot-btn:hover { color:var(--text-primary); border-color:var(--text-tertiary) }
+        .slot-btn.sav:hover { color:var(--accent); border-color:var(--accent); background:var(--accent-dim) }
+        .slot-btn.load:hover { color:var(--led-green); border-color:var(--led-green); background:rgba(0,232,90,.08) }
+        .slot-btn.del:hover { color:var(--error); border-color:var(--error); background:rgba(232,64,87,.08) }
+
+        /* Hidden file inputs */
+        #rom-input, #sav-input { display:none }
+
+        /* ── TOAST STACK ── */
+        #toast-stack { position:fixed; bottom:var(--sp5); left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:var(--sp2); z-index:300; pointer-events:none; align-items:center }
+        .toast { padding:8px 16px; border-radius:8px; font-size:var(--sm); font-family:var(--font-mono); animation:toast-in .2s var(--ease-spring) forwards; white-space:nowrap }
+        .toast.success { background:rgba(0,232,90,.15); border:1px solid var(--led-green); color:var(--led-green) }
+        .toast.error   { background:rgba(232,64,87,.15); border:1px solid var(--error); color:var(--error) }
+        .toast.info    { background:var(--bg-panel); border:1px solid var(--border-subtle); color:var(--text-secondary) }
+        .toast.warn    { background:rgba(245,158,11,.15); border:1px solid var(--warn); color:var(--warn) }
+        @keyframes toast-in { 0%{opacity:0;transform:translateY(8px) scale(.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes toast-out { 0%{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(.9)} }
+        .toast.out { animation:toast-out .2s ease forwards }
 
         @media(prefers-reduced-motion:reduce) {
-            .showcase-wipe, .showcase-flash { display: none }
-            .showcase-title.slam, .showcase-art.slam { animation: none; opacity: 1; transform: none }
-            .showcase-title.out, .showcase-art.out { animation: none; opacity: 0 }
-        }
-
-        /* Sidebar game info header */
-        .sidebar-game-header {
-            padding: var(--space-4);
-            border-bottom: 1px solid var(--border-subtle);
-            background: var(--bg-elevated);
-        }
-        .sidebar-game-title {
-            font-size: var(--text-sm); font-weight: 600; color: var(--text-primary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .sidebar-game-size {
-            font-size: var(--text-xs); color: var(--text-tertiary);
-            font-family: var(--font-mono); margin-top: 2px;
+            .showcase-wipe,.showcase-flash { display:none }
+            .showcase-title.slam,.showcase-art.slam { animation:none; opacity:1; transform:none }
+            .showcase-title.out,.showcase-art.out { animation:none; opacity:0 }
         }
     </style>
 </head>
@@ -528,7 +247,8 @@
 
 <!-- ══════════════ IDLE / LANDING ══════════════ -->
 <div id="idle-screen">
-    <input type="file" id="rom-input" accept=".gba,.zip">
+    <input type="file" id="rom-input" accept=".gba,.zip,.GBA">
+    <input type="file" id="sav-input" accept=".sav,.SAV,.srm,.SRM">
 
     <div class="showcase">
         <div class="showcase-bg" id="showcase-bg"></div>
@@ -556,15 +276,13 @@
     </div>
 
     <div class="landing-brand">
-        <h1 class="landing-title font-display">
-            <span>Swift</span><span class="accent">GBA</span><span class="dot">.</span>
-        </h1>
+        <h1 class="landing-title font-display"><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
     </div>
     <div class="landing-controls font-mono">
-        <span class="landing-key">Z</span> A
-        <span class="landing-key">X</span> B
-        <span class="landing-key">←↑↓→</span> D-Pad
-        <span class="landing-key">Enter</span> Start
+        <span class="landing-key">Z</span> A &nbsp;
+        <span class="landing-key">X</span> B &nbsp;
+        <span class="landing-key">←↑↓→</span> D-Pad &nbsp;
+        <span class="landing-key">Enter</span> Start &nbsp;
         <span class="landing-key">M</span> Mute
     </div>
     <div class="landing-disclaimer">
@@ -572,7 +290,6 @@
         You are responsible for owning any ROMs you load.
     </div>
 
-    <!-- Continue Playing Bar -->
     <div id="continue-bar">
         <div class="continue-label">Continue Playing</div>
         <div class="continue-list" id="continue-list"></div>
@@ -582,12 +299,11 @@
 <!-- ══════════════ EMULATOR ══════════════ -->
 <div id="emu-screen">
     <div id="emu-toolbar">
-        <span class="toolbar-logo font-display">
-            Swift<span class="accent">GBA</span><span class="dot">.</span>
-        </span>
+        <span class="toolbar-logo font-display">Swift<span class="accent">GBA</span><span class="dot">.</span></span>
         <span class="toolbar-game-name font-mono" id="toolbar-game-name">—</span>
         <div class="toolbar-actions">
-            <button class="toolbar-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
+            <button class="toolbar-btn" id="btn-fullscreen" title="Fullscreen (F)">⛶</button>
+            <button class="toolbar-btn" id="btn-sidebar-toggle" title="Toggle sidebar (S)">⊟</button>
             <button class="toolbar-btn" id="btn-back" title="Back to menu">✕</button>
         </div>
     </div>
@@ -596,12 +312,16 @@
             <div id="game"></div>
         </div>
 
-        <!-- ── RIGHT SIDEBAR ── -->
+        <!-- Sidebar collapse tab (sits on edge of emu-wrap) -->
+        <div id="sidebar-tab" title="Toggle sidebar">
+            <span class="tab-arrow">‹</span>
+        </div>
+
+        <!-- ── SIDEBAR ── -->
         <div id="sidebar">
-            <!-- Game info -->
             <div class="sidebar-game-header">
                 <div class="sidebar-game-title" id="sb-game-title">No game loaded</div>
-                <div class="sidebar-game-size" id="sb-game-size">—</div>
+                <div class="sidebar-game-size" id="sb-game-size font-mono">—</div>
             </div>
 
             <!-- Status -->
@@ -613,642 +333,769 @@
                 </div>
             </div>
 
-            <!-- Emulation Controls -->
+            <!-- Controls -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Controls</div>
                 <button class="sb-btn" id="sb-pause">
                     <span class="sb-btn-icon">⏸</span>
-                    <span class="sb-btn-text">Pause / Resume</span>
+                    <span class="sb-btn-text">Pause / Resume<span class="sb-btn-sub">Space or P</span></span>
                 </button>
                 <button class="sb-btn" id="sb-restart">
                     <span class="sb-btn-icon">🔄</span>
-                    <span class="sb-btn-text">Restart Game</span>
+                    <span class="sb-btn-text">Restart Game<span class="sb-btn-sub">Reset emulator</span></span>
                 </button>
                 <button class="sb-btn" id="sb-mute">
                     <span class="sb-btn-icon">🔊</span>
-                    <span class="sb-btn-text">Toggle Mute</span>
+                    <span class="sb-btn-text">Toggle Mute<span class="sb-btn-sub">Keyboard: M</span></span>
                 </button>
             </div>
 
             <!-- Speed -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Speed</div>
-                <div class="speed-control">
-                    <div class="speed-row">
-                        <span class="speed-label">Multiplier</span>
-                        <span class="speed-val" id="speed-val">1×</span>
-                    </div>
-                    <input type="range" class="speed-slider" id="speed-slider"
-                           min="0.25" max="4" step="0.25" value="1">
-                    <div class="speed-presets">
-                        <button class="speed-preset active" data-speed="1">1×</button>
-                        <button class="speed-preset" data-speed="2">2×</button>
-                        <button class="speed-preset" data-speed="3">3×</button>
-                        <button class="speed-preset" data-speed="4">4×</button>
-                    </div>
+                <div class="speed-row">
+                    <span class="speed-label">Multiplier</span>
+                    <span class="speed-val" id="speed-val">1×</span>
+                </div>
+                <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="4" step="0.5" value="1">
+                <div class="speed-presets">
+                    <button class="speed-preset active" data-speed="1">1×</button>
+                    <button class="speed-preset" data-speed="2">2×</button>
+                    <button class="speed-preset" data-speed="3">3×</button>
+                    <button class="speed-preset" data-speed="4">4×</button>
                 </div>
             </div>
 
             <!-- Save States -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Save States</div>
-                <div class="save-slots" id="save-slots"></div>
+                <div class="save-slots" id="save-slots">
+                    <div style="font-size:var(--xs);color:var(--text-ghost);font-family:var(--font-mono)">Load a game first</div>
+                </div>
             </div>
 
-            <!-- Browser Cache Saves -->
+            <!-- Browser Cache -->
             <div class="sidebar-section">
                 <div class="sidebar-section-title">Browser Cache</div>
                 <button class="sb-btn accent-btn" id="sb-cache-save">
                     <span class="sb-btn-icon">💾</span>
-                    <span class="sb-btn-text">
-                        Save to Cache
-                        <span class="sb-btn-sub">Quick save in browser storage</span>
-                    </span>
+                    <span class="sb-btn-text">Save to Cache<span class="sb-btn-sub">Quick save to browser storage</span></span>
                 </button>
                 <button class="sb-btn" id="sb-cache-load">
                     <span class="sb-btn-icon">📂</span>
-                    <span class="sb-btn-text">
-                        Load from Cache
-                        <span class="sb-btn-sub">Restore last quick save</span>
-                    </span>
+                    <span class="sb-btn-text">Load from Cache<span class="sb-btn-sub" id="cache-load-sub">No quick save yet</span></span>
                 </button>
             </div>
 
-            <!-- Export -->
+            <!-- Import / Export -->
             <div class="sidebar-section">
-                <div class="sidebar-section-title">Export</div>
-                <button class="sb-btn" id="sb-export-rom">
-                    <span class="sb-btn-icon">🎮</span>
-                    <span class="sb-btn-text">
-                        Export ROM
-                        <span class="sb-btn-sub">Download .gba file</span>
-                    </span>
+                <div class="sidebar-section-title">Save File</div>
+                <button class="sb-btn" id="sb-import-sav">
+                    <span class="sb-btn-icon">📥</span>
+                    <span class="sb-btn-text">Load .sav File<span class="sb-btn-sub">Import battery save</span></span>
                 </button>
                 <button class="sb-btn" id="sb-export-save">
-                    <span class="sb-btn-icon">💿</span>
-                    <span class="sb-btn-text">
-                        Export Save File
-                        <span class="sb-btn-sub">Download .sav file</span>
-                    </span>
+                    <span class="sb-btn-icon">📤</span>
+                    <span class="sb-btn-text">Export .sav File<span class="sb-btn-sub">Download battery save</span></span>
                 </button>
             </div>
 
-            <!-- Load New -->
+            <!-- ROM Export -->
             <div class="sidebar-section">
+                <div class="sidebar-section-title">ROM</div>
+                <button class="sb-btn" id="sb-export-rom">
+                    <span class="sb-btn-icon">🎮</span>
+                    <span class="sb-btn-text">Export ROM<span class="sb-btn-sub">Download .gba file</span></span>
+                </button>
                 <button class="sb-btn" id="sb-load-new">
                     <span class="sb-btn-icon">📁</span>
-                    <span class="sb-btn-text">Load New ROM</span>
+                    <span class="sb-btn-text">Load New ROM<span class="sb-btn-sub">Open file picker</span></span>
                 </button>
             </div>
-        </div>
-    </div>
-</div>
+        </div><!-- /sidebar -->
+    </div><!-- /emu-body -->
+</div><!-- /emu-screen -->
 
-<!-- Toast stack -->
 <div id="toast-stack"></div>
 
 <script>
 (() => {
-    /* ─────────── Constants & State ─────────── */
-    const DB_NAME     = 'SwiftGBA';
-    const DB_VER      = 1;
-    const STORE_ROMS  = 'roms';
-    const STORE_META  = 'meta';
-    const STORE_SAVES = 'saves';
-    const STORE_STATES = 'states';
+'use strict';
 
-    const GAMES = [
-        { name: "Pokemon Emerald",              img: "https://rustygba.com/games/pokemon-emerald.webp",            color: "#2E7D32" },
-        { name: "Pokemon FireRed",               img: "https://rustygba.com/games/pokemon-firered.webp",            color: "#C62828" },
-        { name: "Pokemon Ruby",                  img: "https://rustygba.com/games/pokemon-ruby.webp",               color: "#AD1457" },
-        { name: "Pokemon Sapphire",              img: "https://rustygba.com/games/pokemon-sapphire.webp",           color: "#1565C0" },
-        { name: "Mario Kart: Super Circuit",     img: "https://rustygba.com/games/mario-kart-super-circuit.webp",  color: "#E53935" },
-        { name: "The Legend of Zelda: Minish Cap", img: "https://rustygba.com/games/zelda-minish-cap.webp",        color: "#2E7D32" },
-        { name: "Metroid Fusion",                img: "https://rustygba.com/games/metroid-fusion.webp",             color: "#E65100" },
-        { name: "Golden Sun",                    img: "https://rustygba.com/games/golden-sun.webp",                 color: "#F9A825" },
-        { name: "Castlevania: Aria of Sorrow",  img: "https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color: "#4A148C" },
-        { name: "Fire Emblem",                   img: "https://rustygba.com/games/fire-emblem.webp",                color: "#B71C1C" },
-    ];
+/* ════════════════════════════════════════════
+   CONFIG & STATE
+   ════════════════════════════════════════════ */
+const DB_NAME    = 'SwiftGBA_v2';
+const DB_VER     = 1;
+const S_ROMS     = 'roms';
+const S_META     = 'meta';
+const S_STATES   = 'states';
+const NUM_SLOTS  = 5;
 
-    let db = null;
-    let currentRomName = '';
-    let currentRomData = null; // ArrayBuffer
-    let currentRomUrl  = null;
-    let isPaused = false;
-    let isMuted  = false;
-    let emuLoaded = false;
-    let currentSpeed = 1;
+let db           = null;
+let ejsReady     = false;        // true once EJS fires onGameStart
+let ejsEmu       = null;         // reference to window.EJS_emulator
+let currentRomName = '';
+let currentRomData = null;       // ArrayBuffer of the loaded ROM
+let currentRomUrl  = null;
+let isPaused     = false;
+let isMuted      = false;
+let currentSpeed = 1;
+let emuScriptLoaded = false;
+let sidebarOpen  = true;
 
-    /* ─────────── IndexedDB setup ─────────── */
-    function openDB() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(DB_NAME, DB_VER);
-            req.onupgradeneeded = e => {
-                const d = e.target.result;
-                if (!d.objectStoreNames.contains(STORE_ROMS))   d.createObjectStore(STORE_ROMS,   { keyPath: 'name' });
-                if (!d.objectStoreNames.contains(STORE_META))   d.createObjectStore(STORE_META,   { keyPath: 'key' });
-                if (!d.objectStoreNames.contains(STORE_SAVES))  d.createObjectStore(STORE_SAVES,  { keyPath: 'id' });
-                if (!d.objectStoreNames.contains(STORE_STATES)) d.createObjectStore(STORE_STATES, { keyPath: 'id' });
-            };
-            req.onsuccess = e => resolve(e.target.result);
-            req.onerror   = e => reject(e.target.error);
-        });
-    }
-
-    function dbPut(store, val) {
-        return new Promise((res, rej) => {
-            const tx  = db.transaction(store, 'readwrite');
-            const req = tx.objectStore(store).put(val);
-            req.onsuccess = () => res();
-            req.onerror   = e  => rej(e.target.error);
-        });
-    }
-
-    function dbGet(store, key) {
-        return new Promise((res, rej) => {
-            const tx  = db.transaction(store, 'readonly');
-            const req = tx.objectStore(store).get(key);
-            req.onsuccess = e => res(e.target.result);
-            req.onerror   = e => rej(e.target.error);
-        });
-    }
-
-    function dbGetAll(store) {
-        return new Promise((res, rej) => {
-            const tx  = db.transaction(store, 'readonly');
-            const req = tx.objectStore(store).getAll();
-            req.onsuccess = e => res(e.target.result);
-            req.onerror   = e => rej(e.target.error);
-        });
-    }
-
-    function dbDelete(store, key) {
-        return new Promise((res, rej) => {
-            const tx  = db.transaction(store, 'readwrite');
-            const req = tx.objectStore(store).delete(key);
-            req.onsuccess = () => res();
-            req.onerror   = e  => rej(e.target.error);
-        });
-    }
-
-    /* ─────────── Toast ─────────── */
-    function toast(msg, type = 'info', dur = 2500) {
-        const stack = document.getElementById('toast-stack');
-        const el = document.createElement('div');
-        el.className = `toast ${type}`;
-        el.textContent = msg;
-        stack.appendChild(el);
-        setTimeout(() => el.remove(), dur);
-    }
-
-    /* ─────────── Continue Bar ─────────── */
-    async function buildContinueBar() {
-        const list = document.getElementById('continue-list');
-        const bar  = document.getElementById('continue-bar');
-        list.innerHTML = '';
-
-        let roms = [];
-        try { roms = await dbGetAll(STORE_ROMS) } catch(e) {}
-        if (!roms.length) { bar.classList.remove('visible'); return; }
-
-        roms.sort((a,b) => (b.lastPlayed||0) - (a.lastPlayed||0));
-        bar.classList.add('visible');
-
-        for (const rom of roms) {
-            const card = document.createElement('div');
-            card.className = 'continue-card';
-
-            const elapsed = timeAgo(rom.lastPlayed);
-            card.innerHTML = `
-                <div class="continue-card-glow"></div>
-                <div class="continue-card-icon">🎮</div>
-                <div class="continue-card-info">
-                    <div class="continue-card-name">${escHtml(rom.name)}</div>
-                    <div class="continue-card-meta">${elapsed} · ${fmtSize(rom.size)}</div>
-                </div>
-                <button class="continue-card-play" title="Play">▶</button>
-                <button class="continue-card-del" title="Remove">✕</button>
-            `;
-
-            card.querySelector('.continue-card-play').addEventListener('click', e => {
-                e.stopPropagation();
-                loadFromCache(rom.name);
+/* ════════════════════════════════════════════
+   INDEXEDDB
+   ════════════════════════════════════════════ */
+function openDB() {
+    return new Promise((res, rej) => {
+        const req = indexedDB.open(DB_NAME, DB_VER);
+        req.onupgradeneeded = e => {
+            const d = e.target.result;
+            [S_ROMS, S_META, S_STATES].forEach(s => {
+                if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath: 'id' });
             });
-            card.querySelector('.continue-card-del').addEventListener('click', async e => {
-                e.stopPropagation();
-                await dbDelete(STORE_ROMS, rom.name);
-                buildContinueBar();
-            });
-            card.addEventListener('click', () => loadFromCache(rom.name));
-            list.appendChild(card);
-        }
-    }
-
-    async function loadFromCache(romName) {
-        try {
-            const rom = await dbGet(STORE_ROMS, romName);
-            if (!rom) { toast('ROM not found in cache', 'error'); return; }
-            const file = new File([rom.data], rom.name, { type: 'application/octet-stream' });
-            launchROM(file);
-        } catch(e) {
-            toast('Failed to load ROM from cache', 'error');
-        }
-    }
-
-    function timeAgo(ts) {
-        if (!ts) return 'never';
-        const diff = Date.now() - ts;
-        const mins = Math.floor(diff / 60000);
-        if (mins < 1) return 'just now';
-        if (mins < 60) return `${mins}m ago`;
-        const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return `${hrs}h ago`;
-        return `${Math.floor(hrs/24)}d ago`;
-    }
-
-    function fmtSize(bytes) {
-        if (!bytes) return '';
-        if (bytes < 1024) return `${bytes} B`;
-        if (bytes < 1048576) return `${(bytes/1024).toFixed(0)} KB`;
-        return `${(bytes/1048576).toFixed(1)} MB`;
-    }
-
-    function escHtml(s) {
-        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    /* ─────────── Showcase cycling ─────────── */
-    const INTERVAL_MS = 3500;
-    const EXIT_MS = 250;
-    let currentIndex = 0;
-    let cycleTimer = null;
-
-    const bgEl        = document.getElementById('showcase-bg');
-    const flashEl     = document.getElementById('showcase-flash');
-    const slashEl     = document.getElementById('showcase-slash');
-    const titleEl     = document.getElementById('showcase-title');
-    const nameEl      = document.getElementById('showcase-name');
-    const underlineEl = document.getElementById('showcase-underline');
-    const artEl       = document.getElementById('showcase-art');
-    const imgEl       = document.getElementById('showcase-img');
-
-    function applyGame(game, animate) {
-        nameEl.textContent = game.name;
-        imgEl.src = game.img; imgEl.alt = game.name;
-        bgEl.style.background = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
-        flashEl.style.background = game.color;
-        slashEl.style.borderColor = `${game.color}25`;
-        underlineEl.style.background = game.color;
-        if (animate) {
-            const oldWipe = document.querySelector('.showcase-wipe');
-            if (oldWipe) oldWipe.remove();
-            const wipe = document.createElement('div');
-            wipe.className = 'showcase-wipe';
-            wipe.style.background = `linear-gradient(to right, transparent, ${game.color}18, transparent)`;
-            bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
-            wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
-            flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = '';
-            titleEl.classList.remove('slam','out'); titleEl.offsetHeight; titleEl.classList.add('slam');
-            artEl.classList.remove('slam','out'); artEl.offsetHeight; artEl.classList.add('slam');
-            underlineEl.style.animation = 'none'; underlineEl.offsetHeight; underlineEl.style.animation = '';
-        }
-    }
-
-    function showNext() {
-        titleEl.classList.remove('slam'); titleEl.classList.add('out');
-        artEl.classList.remove('slam'); artEl.classList.add('out');
-        setTimeout(() => {
-            currentIndex = (currentIndex + 1) % GAMES.length;
-            applyGame(GAMES[currentIndex], true);
-        }, EXIT_MS);
-    }
-
-    applyGame(GAMES[0], false);
-    setTimeout(() => applyGame(GAMES[0], true), 200);
-    cycleTimer = setInterval(showNext, INTERVAL_MS);
-
-    /* ─────────── ROM loading ─────────── */
-    const idleScreen = document.getElementById('idle-screen');
-
-    idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over') });
-    idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
-    idleScreen.addEventListener('drop', e => {
-        e.preventDefault(); idleScreen.classList.remove('drag-over');
-        const file = e.dataTransfer.files[0];
-        if (file) launchROM(file);
-    });
-    idleScreen.addEventListener('click', e => {
-        // Don't trigger file picker if clicking continue bar buttons
-        if (e.target.closest('#continue-bar')) return;
-        document.getElementById('rom-input').click();
-    });
-    document.getElementById('rom-input').addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (file) launchROM(file);
-    });
-
-    async function launchROM(file) {
-        clearInterval(cycleTimer);
-        idleScreen.classList.add('fade-out');
-        setTimeout(() => { idleScreen.style.display = 'none' }, 500);
-
-        document.getElementById('emu-screen').classList.add('active');
-        document.getElementById('power-led').classList.add('on');
-
-        // Read file into ArrayBuffer
-        const buf = await file.arrayBuffer();
-        currentRomData = buf;
-        currentRomName = file.name;
-        currentRomUrl  = URL.createObjectURL(new Blob([buf]));
-
-        // Update UI
-        document.getElementById('toolbar-game-name').textContent = file.name;
-        document.getElementById('sb-game-title').textContent = file.name;
-        document.getElementById('sb-game-size').textContent  = fmtSize(file.size);
-
-        // Persist ROM in IndexedDB
-        try {
-            await dbPut(STORE_ROMS, {
-                name: file.name,
-                data: buf,
-                size: file.size,
-                lastPlayed: Date.now()
-            });
-        } catch(e) { console.warn('Could not cache ROM:', e) }
-
-        // Build save slots
-        buildSaveSlots();
-
-        // Load emulator
-        if (!emuLoaded) {
-            emuLoaded = true;
-            loadEmulatorJS(currentRomUrl);
-        } else {
-            restartWithROM(currentRomUrl);
-        }
-    }
-
-    function loadEmulatorJS(romURL) {
-        window.EJS_player             = '#game';
-        window.EJS_core               = 'gba';
-        window.EJS_gameUrl            = romURL;
-        window.EJS_pathtodata         = 'https://cdn.emulatorjs.org/stable/data/';
-        window.EJS_color              = '#00bcf0';
-        window.EJS_startOnLoaded      = true;
-        window.EJS_fullscreenOnLoaded = false;
-        window.EJS_language           = 'en-US';
-        // Disable EmulatorJS built-in UI
-        window.EJS_Buttons = {
-            playPause: false, restart: false, mute: false,
-            settings: false, fullscreen: false,
-            saveState: false, loadState: false,
-            screenRecord: false, gamepad: false,
         };
+        req.onsuccess = e => res(e.target.result);
+        req.onerror   = e => rej(e.target.error);
+    });
+}
+function dbPut(store, val)    { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).put(val); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
+function dbGet(store, key)    { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).get(key); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
+function dbDel(store, key)    { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).delete(key); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
+function dbAll(store)         { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).getAll(); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
 
-        const script = document.createElement('script');
-        script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-        script.onerror = () => toast('Failed to load EmulatorJS. Check your connection.', 'error');
-        document.body.appendChild(script);
-    }
+/* ════════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════════ */
+function toast(msg, type='info', dur=2800) {
+    const stack = document.getElementById('toast-stack');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    stack.appendChild(el);
+    setTimeout(() => {
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 250);
+    }, dur);
+}
 
-    function restartWithROM(romURL) {
-        document.getElementById('game').innerHTML = '';
-        window.EJS_gameUrl       = romURL;
-        window.EJS_startOnLoaded = true;
-        const script = document.createElement('script');
-        script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-        document.body.appendChild(script);
-    }
+/* ════════════════════════════════════════════
+   UTILS
+   ════════════════════════════════════════════ */
+function timeAgo(ts) {
+    if (!ts) return 'never';
+    const d = Date.now() - ts, m = Math.floor(d/60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m/60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h/24)}d ago`;
+}
+function fmtSize(b) {
+    if (!b) return '';
+    if (b < 1048576) return `${(b/1024).toFixed(0)} KB`;
+    return `${(b/1048576).toFixed(1)} MB`;
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function download(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a   = Object.assign(document.createElement('a'), { href:url, download:name });
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function savName(romName) { return romName.replace(/\.[^.]+$/, '.sav') }
+function getEmu() {
+    // Try multiple access patterns EmulatorJS exposes
+    return window.EJS_emulator || null;
+}
 
-    /* ─────────── Save Slots (5 slots via IndexedDB) ─────────── */
-    const NUM_SLOTS = 5;
-
-    async function buildSaveSlots() {
-        const container = document.getElementById('save-slots');
-        container.innerHTML = '';
-        for (let i = 1; i <= NUM_SLOTS; i++) {
-            const slotId = `${currentRomName}::slot${i}`;
-            let meta = null;
-            try { meta = await dbGet(STORE_STATES, slotId) } catch(e) {}
-
-            const el = document.createElement('div');
-            el.className = 'save-slot';
-            el.innerHTML = `
-                <span class="save-slot-num font-mono">${i}</span>
-                <div class="save-slot-info">
-                    <div class="save-slot-name">${meta ? 'Saved state' : 'Empty slot'}</div>
-                    <div class="save-slot-time font-mono">${meta ? timeAgo(meta.ts) : '—'}</div>
-                </div>
-                <div class="save-slot-actions">
-                    <button class="slot-action-btn save-action" title="Save to slot ${i}">SAV</button>
-                    ${meta ? `<button class="slot-action-btn load-action" title="Load slot ${i}">LOAD</button>` : ''}
-                </div>
-            `;
-            el.querySelector('.save-action').addEventListener('click', () => saveToSlot(i));
-            if (meta) el.querySelector('.load-action').addEventListener('click', () => loadFromSlot(i));
-            container.appendChild(el);
-        }
-    }
-
-    async function saveToSlot(i) {
-        const slotId = `${currentRomName}::slot${i}`;
-        // Use EmulatorJS saveState if available
-        try {
-            if (window.EJS_emulator && window.EJS_emulator.gameManager) {
-                const state = window.EJS_emulator.gameManager.saveState();
-                await dbPut(STORE_STATES, { id: slotId, data: state, ts: Date.now() });
-                toast(`Saved to slot ${i}`, 'success');
-                buildSaveSlots();
-                return;
+/* ════════════════════════════════════════════
+   EMULATORJS — READY HOOK
+   We poll because EJS_onGameStart fires internally,
+   but we can also watch for window.EJS_emulator to appear.
+   ════════════════════════════════════════════ */
+function waitForEmu() {
+    return new Promise(resolve => {
+        if (ejsReady && ejsEmu) { resolve(ejsEmu); return; }
+        const iv = setInterval(() => {
+            const e = getEmu();
+            if (e && e.gameManager) {
+                clearInterval(iv);
+                ejsEmu   = e;
+                ejsReady = true;
+                resolve(e);
             }
-        } catch(e) {}
-        // Fallback: store a timestamp as placeholder
-        await dbPut(STORE_STATES, { id: slotId, data: null, ts: Date.now() });
-        toast(`Slot ${i} marked (emulator save API not ready)`, 'info');
+        }, 300);
+        // give up after 30s
+        setTimeout(() => clearInterval(iv), 30000);
+    });
+}
+
+/* ════════════════════════════════════════════
+   SHOWCASE CYCLING
+   ════════════════════════════════════════════ */
+const GAMES = [
+    { name:"Pokemon Emerald",              img:"https://rustygba.com/games/pokemon-emerald.webp",            color:"#2E7D32" },
+    { name:"Pokemon FireRed",              img:"https://rustygba.com/games/pokemon-firered.webp",            color:"#C62828" },
+    { name:"Pokemon Ruby",                 img:"https://rustygba.com/games/pokemon-ruby.webp",               color:"#AD1457" },
+    { name:"Pokemon Sapphire",             img:"https://rustygba.com/games/pokemon-sapphire.webp",           color:"#1565C0" },
+    { name:"Mario Kart: Super Circuit",    img:"https://rustygba.com/games/mario-kart-super-circuit.webp",   color:"#E53935" },
+    { name:"Zelda: Minish Cap",            img:"https://rustygba.com/games/zelda-minish-cap.webp",           color:"#2E7D32" },
+    { name:"Metroid Fusion",               img:"https://rustygba.com/games/metroid-fusion.webp",             color:"#E65100" },
+    { name:"Golden Sun",                   img:"https://rustygba.com/games/golden-sun.webp",                 color:"#F9A825" },
+    { name:"Castlevania: Aria of Sorrow",  img:"https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color:"#4A148C" },
+    { name:"Fire Emblem",                  img:"https://rustygba.com/games/fire-emblem.webp",                color:"#B71C1C" },
+];
+let idx=0, cycleTimer=null;
+const $bg=document.getElementById('showcase-bg'), $flash=document.getElementById('showcase-flash'),
+      $slash=document.getElementById('showcase-slash'), $title=document.getElementById('showcase-title'),
+      $name=document.getElementById('showcase-name'), $ul=document.getElementById('showcase-underline'),
+      $art=document.getElementById('showcase-art'), $img=document.getElementById('showcase-img');
+
+function applyGame(g, anim) {
+    $name.textContent = g.name; $img.src = g.img; $img.alt = g.name;
+    $bg.style.background = `radial-gradient(ellipse at 80% 40%,${g.color}30 0%,transparent 50%),var(--bg-deep)`;
+    $flash.style.background = g.color; $slash.style.borderColor = `${g.color}25`; $ul.style.background = g.color;
+    if (anim) {
+        const old = document.querySelector('.showcase-wipe'); if (old) old.remove();
+        const w = document.createElement('div'); w.className='showcase-wipe';
+        w.style.background=`linear-gradient(to right,transparent,${g.color}18,transparent)`;
+        $bg.parentElement.insertBefore(w, $bg.nextSibling);
+        w.addEventListener('animationend',()=>w.remove(),{once:true});
+        $flash.style.animation='none'; $flash.offsetHeight; $flash.style.animation='';
+        [$title,$art].forEach(el=>{ el.classList.remove('slam','out'); el.offsetHeight; el.classList.add('slam') });
+        $ul.style.animation='none'; $ul.offsetHeight; $ul.style.animation='';
+    }
+}
+function showNext() {
+    $title.classList.remove('slam'); $title.classList.add('out');
+    $art.classList.remove('slam'); $art.classList.add('out');
+    setTimeout(()=>{ idx=(idx+1)%GAMES.length; applyGame(GAMES[idx],true) }, 250);
+}
+applyGame(GAMES[0], false);
+setTimeout(()=>applyGame(GAMES[0],true), 200);
+cycleTimer = setInterval(showNext, 3500);
+
+/* ════════════════════════════════════════════
+   CONTINUE BAR
+   ════════════════════════════════════════════ */
+async function buildContinueBar() {
+    if (!db) return;
+    const list = document.getElementById('continue-list');
+    const bar  = document.getElementById('continue-bar');
+    list.innerHTML = '';
+    let roms = [];
+    try { roms = await dbAll(S_ROMS) } catch(e) {}
+    if (!roms.length) { bar.classList.remove('visible'); return; }
+    roms.sort((a,b)=>(b.lastPlayed||0)-(a.lastPlayed||0));
+    bar.classList.add('visible');
+    for (const rom of roms) {
+        const card = document.createElement('div');
+        card.className = 'continue-card';
+        card.innerHTML = `
+            <div class="continue-card-glow"></div>
+            <div class="continue-card-icon">🎮</div>
+            <div class="continue-card-info">
+                <div class="continue-card-name">${esc(rom.name)}</div>
+                <div class="continue-card-meta">${timeAgo(rom.lastPlayed)} · ${fmtSize(rom.size)}</div>
+            </div>
+            <button class="continue-card-play" title="Play">▶</button>
+            <button class="continue-card-del" title="Remove from list">✕</button>`;
+        card.querySelector('.continue-card-play').addEventListener('click', e => { e.stopPropagation(); loadRomFromCache(rom.id) });
+        card.querySelector('.continue-card-del').addEventListener('click', async e => { e.stopPropagation(); await dbDel(S_ROMS, rom.id); buildContinueBar() });
+        card.addEventListener('click', () => loadRomFromCache(rom.id));
+        list.appendChild(card);
+    }
+}
+
+async function loadRomFromCache(id) {
+    try {
+        const rom = await dbGet(S_ROMS, id);
+        if (!rom) { toast('ROM not found in cache', 'error'); return; }
+        const file = new File([rom.data], rom.name, { type:'application/octet-stream' });
+        launchROM(file);
+    } catch(e) { toast('Failed to load from cache', 'error') }
+}
+
+/* ════════════════════════════════════════════
+   ROM LAUNCH
+   ════════════════════════════════════════════ */
+const idleScreen = document.getElementById('idle-screen');
+idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over') });
+idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
+idleScreen.addEventListener('drop', e => {
+    e.preventDefault(); idleScreen.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0]; if (f) launchROM(f);
+});
+idleScreen.addEventListener('click', e => {
+    if (e.target.closest('#continue-bar')) return;
+    document.getElementById('rom-input').click();
+});
+document.getElementById('rom-input').addEventListener('change', e => {
+    const f = e.target.files[0]; if (f) { launchROM(f); e.target.value='' }
+});
+
+async function launchROM(file) {
+    clearInterval(cycleTimer);
+    idleScreen.classList.add('fade-out');
+    setTimeout(() => { idleScreen.style.display = 'none' }, 500);
+
+    document.getElementById('emu-screen').classList.add('active');
+    document.getElementById('power-led').classList.add('on');
+
+    // Read to ArrayBuffer
+    const buf = await file.arrayBuffer();
+    currentRomData = buf;
+    currentRomName = file.name;
+    if (currentRomUrl) URL.revokeObjectURL(currentRomUrl);
+    currentRomUrl  = URL.createObjectURL(new Blob([buf], { type:'application/octet-stream' }));
+
+    // Update UI labels
+    document.getElementById('toolbar-game-name').textContent = file.name;
+    document.getElementById('sb-game-title').textContent     = file.name;
+    document.getElementById('sb-game-size').textContent      = fmtSize(file.size);
+
+    // Persist in IDB
+    try {
+        await dbPut(S_ROMS, { id: file.name, name: file.name, data: buf, size: file.size, lastPlayed: Date.now() });
+    } catch(e) { console.warn('IDB ROM cache:', e) }
+
+    // Reset emu state
+    isPaused = false; isMuted = false; ejsReady = false; ejsEmu = null;
+    updatePauseUI(false);
+    updateMuteUI(false);
+    buildSaveSlots();
+    refreshCacheLoadSub();
+
+    // Load or reinit EmulatorJS
+    if (!emuScriptLoaded) {
+        emuScriptLoaded = true;
+        initEmulatorJS(currentRomUrl);
+    } else {
+        reinitEmulatorJS(currentRomUrl);
+    }
+
+    // Once ready, restore speed
+    waitForEmu().then(emu => {
+        toast(`${file.name} loaded`, 'success');
+        applySpeed(currentSpeed);
+    });
+}
+
+function initEmulatorJS(romURL) {
+    window.EJS_player             = '#game';
+    window.EJS_core               = 'gba';
+    window.EJS_gameUrl            = romURL;
+    window.EJS_pathtodata         = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_color              = '#00bcf0';
+    window.EJS_startOnLoaded      = true;
+    window.EJS_fullscreenOnLoaded = false;
+    window.EJS_language           = 'en-US';
+    // Disable all built-in UI buttons
+    window.EJS_Buttons = {
+        playPause:false, restart:false, mute:false,
+        settings:false, fullscreen:false,
+        saveState:false, loadState:false,
+        screenRecord:false, gamepad:false,
+    };
+    // Hook into ready event
+    window.EJS_onGameStart = () => {
+        ejsEmu   = getEmu();
+        ejsReady = true;
+        applySpeed(currentSpeed);
+        if (isMuted && ejsEmu) { try { ejsEmu.setVolume(0) } catch(e){} }
+    };
+    const s = document.createElement('script');
+    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+    s.onerror = () => toast('Failed to load EmulatorJS. Check your connection.', 'error');
+    document.body.appendChild(s);
+}
+
+function reinitEmulatorJS(romURL) {
+    // Cleanest method: replace game div contents and re-run loader
+    const gameDiv = document.getElementById('game');
+    gameDiv.innerHTML = '';
+    ejsEmu = null; ejsReady = false;
+    window.EJS_gameUrl       = romURL;
+    window.EJS_startOnLoaded = true;
+    window.EJS_onGameStart   = () => {
+        ejsEmu   = getEmu();
+        ejsReady = true;
+        applySpeed(currentSpeed);
+    };
+    const s = document.createElement('script');
+    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+    document.body.appendChild(s);
+}
+
+/* ════════════════════════════════════════════
+   SIDEBAR COLLAPSE
+   ════════════════════════════════════════════ */
+function setSidebar(open) {
+    sidebarOpen = open;
+    document.getElementById('emu-body').classList.toggle('sidebar-collapsed', !open);
+    document.getElementById('sidebar-tab').querySelector('.tab-arrow').textContent = open ? '›' : '‹';
+    document.getElementById('btn-sidebar-toggle').classList.toggle('active', !open);
+}
+document.getElementById('sidebar-tab').addEventListener('click', () => setSidebar(!sidebarOpen));
+document.getElementById('btn-sidebar-toggle').addEventListener('click', () => setSidebar(!sidebarOpen));
+setSidebar(true); // start open, arrow points right (close)
+
+/* ════════════════════════════════════════════
+   PAUSE / RESUME
+   ════════════════════════════════════════════ */
+function updatePauseUI(paused) {
+    isPaused = paused;
+    const dot  = document.getElementById('emu-status-dot');
+    const text = document.getElementById('emu-status-text');
+    const btn  = document.getElementById('sb-pause');
+    dot.className  = 'status-dot ' + (paused ? 'paused' : 'on');
+    text.textContent = paused ? 'Paused' : 'Running';
+    btn.querySelector('.sb-btn-icon').textContent = paused ? '▶' : '⏸';
+    btn.classList.toggle('active-state', paused);
+}
+
+document.getElementById('sb-pause').addEventListener('click', async () => {
+    const emu = getEmu();
+    const next = !isPaused;
+    try {
+        if (emu) {
+            // EmulatorJS exposes pause() / resume() or play()
+            if (next) {
+                if (typeof emu.pause  === 'function') emu.pause();
+                else if (typeof emu.togglePause === 'function') emu.togglePause();
+            } else {
+                if (typeof emu.resume === 'function') emu.resume();
+                else if (typeof emu.play === 'function') emu.play();
+                else if (typeof emu.togglePause === 'function') emu.togglePause();
+            }
+        }
+    } catch(e) {}
+    updatePauseUI(next);
+    toast(next ? 'Paused' : 'Resumed', 'info', 1500);
+});
+
+/* ════════════════════════════════════════════
+   RESTART
+   ════════════════════════════════════════════ */
+document.getElementById('sb-restart').addEventListener('click', () => {
+    const emu = getEmu();
+    try {
+        if (emu && typeof emu.restart === 'function') emu.restart();
+        else if (emu && emu.gameManager && typeof emu.gameManager.restart === 'function') emu.gameManager.restart();
+        else { toast('Reloading game…', 'info'); reinitEmulatorJS(currentRomUrl); return; }
+    } catch(e) { console.warn('restart:', e) }
+    updatePauseUI(false);
+    toast('Game restarted', 'info', 1500);
+});
+
+/* ════════════════════════════════════════════
+   MUTE
+   ════════════════════════════════════════════ */
+function updateMuteUI(muted) {
+    isMuted = muted;
+    document.getElementById('sb-mute').querySelector('.sb-btn-icon').textContent = muted ? '🔇' : '🔊';
+    document.getElementById('sb-mute').classList.toggle('active-state', muted);
+}
+
+function applyMute(muted) {
+    const emu = getEmu();
+    try {
+        if (emu) {
+            if (typeof emu.setVolume === 'function') emu.setVolume(muted ? 0 : 1);
+            else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(muted ? 0 : 1);
+        }
+    } catch(e) {}
+}
+
+document.getElementById('sb-mute').addEventListener('click', () => {
+    const next = !isMuted;
+    applyMute(next);
+    updateMuteUI(next);
+    toast(next ? 'Muted' : 'Unmuted', 'info', 1500);
+});
+
+/* ════════════════════════════════════════════
+   SPEED
+   ════════════════════════════════════════════ */
+function applySpeed(val) {
+    currentSpeed = val;
+    const pct = ((val - 0.5) / (4 - 0.5) * 100).toFixed(1);
+    const slider = document.getElementById('speed-slider');
+    slider.value = val;
+    slider.style.setProperty('--pct', pct + '%');
+    document.getElementById('speed-val').textContent = `${val}×`;
+    document.querySelectorAll('.speed-preset').forEach(p => p.classList.toggle('active', +p.dataset.speed === val));
+    const emu = getEmu();
+    try {
+        if (emu) {
+            if (typeof emu.setSpeed === 'function') emu.setSpeed(val);
+            else if (emu.gameManager && typeof emu.gameManager.setSpeed === 'function') emu.gameManager.setSpeed(val);
+            // EmulatorJS also uses emu.Module?.setSpeed or emu.emulator?.setSpeed
+            else if (emu.Module && typeof emu.Module.setSpeed === 'function') emu.Module.setSpeed(val);
+        }
+    } catch(e) {}
+}
+
+document.getElementById('speed-slider').addEventListener('input', e => applySpeed(+e.target.value));
+document.querySelectorAll('.speed-preset').forEach(p => p.addEventListener('click', () => applySpeed(+p.dataset.speed)));
+applySpeed(1);
+
+/* ════════════════════════════════════════════
+   SAVE STATES (IndexedDB)
+   ════════════════════════════════════════════ */
+async function buildSaveSlots() {
+    if (!db || !currentRomName) return;
+    const container = document.getElementById('save-slots');
+    container.innerHTML = '';
+    for (let i = 1; i <= NUM_SLOTS; i++) {
+        const key  = `${currentRomName}::slot${i}`;
+        let   meta = null;
+        try { meta = await dbGet(S_STATES, key) } catch(e) {}
+
+        const el = document.createElement('div');
+        el.className = 'save-slot' + (meta ? ' has-data' : '');
+        el.innerHTML = `
+            <span class="save-slot-num">${i}</span>
+            <div class="save-slot-info">
+                <div class="save-slot-name">${meta ? 'Saved state' : 'Empty slot'}</div>
+                <div class="save-slot-time">${meta ? timeAgo(meta.ts) : '—'}</div>
+            </div>
+            <div class="save-slot-actions">
+                <button class="slot-btn sav" title="Save to slot ${i}">SAV</button>
+                ${meta ? `<button class="slot-btn load" title="Load slot ${i}">LOAD</button>
+                           <button class="slot-btn del" title="Delete slot ${i}">DEL</button>` : ''}
+            </div>`;
+        el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
+        if (meta) {
+            el.querySelector('.slot-btn.load').addEventListener('click', () => loadFromSlot(i));
+            el.querySelector('.slot-btn.del').addEventListener('click', () => deleteSlot(i));
+        }
+        container.appendChild(el);
+    }
+}
+
+async function saveToSlot(i) {
+    if (!currentRomName) { toast('No game loaded', 'error'); return; }
+    const emu = getEmu();
+    let stateData = null;
+
+    if (emu && emu.gameManager) {
+        try {
+            // saveState returns Uint8Array or similar
+            stateData = emu.gameManager.saveState();
+        } catch(e) { console.warn('saveState:', e) }
+    }
+    if (!stateData) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
+
+    const key = `${currentRomName}::slot${i}`;
+    try {
+        await dbPut(S_STATES, { id: key, data: stateData, ts: Date.now() });
+        toast(`Slot ${i} saved ✓`, 'success');
         buildSaveSlots();
+    } catch(e) { toast('Failed to save state', 'error') }
+}
+
+async function loadFromSlot(i) {
+    const key = `${currentRomName}::slot${i}`;
+    try {
+        const meta = await dbGet(S_STATES, key);
+        if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
+        const emu = getEmu();
+        if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
+        emu.gameManager.loadState(meta.data);
+        if (isPaused) updatePauseUI(false);
+        toast(`Slot ${i} loaded ✓`, 'success');
+    } catch(e) { toast('Failed to load state', 'error') }
+}
+
+async function deleteSlot(i) {
+    const key = `${currentRomName}::slot${i}`;
+    try { await dbDel(S_STATES, key); toast(`Slot ${i} deleted`, 'info', 1500); buildSaveSlots() }
+    catch(e) { toast('Delete failed', 'error') }
+}
+
+/* ════════════════════════════════════════════
+   BROWSER CACHE QUICK SAVE/LOAD
+   ════════════════════════════════════════════ */
+async function refreshCacheLoadSub() {
+    if (!db) return;
+    try {
+        const qs = await dbGet(S_META, 'quicksave_' + currentRomName);
+        document.getElementById('cache-load-sub').textContent =
+            qs ? `Last saved ${timeAgo(qs.ts)}` : 'No quick save yet';
+    } catch(e) {}
+}
+
+document.getElementById('sb-cache-save').addEventListener('click', async () => {
+    if (!currentRomName) { toast('No game loaded', 'error'); return; }
+    const emu = getEmu();
+    let stateData = null;
+    if (emu && emu.gameManager) {
+        try { stateData = emu.gameManager.saveState() } catch(e) {}
     }
+    if (!stateData) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
+    try {
+        await dbPut(S_META, { id: 'quicksave_' + currentRomName, romName: currentRomName, data: stateData, ts: Date.now() });
+        toast('Quick saved to browser cache ✓', 'success');
+        refreshCacheLoadSub();
+    } catch(e) { toast('Cache save failed', 'error') }
+});
 
-    async function loadFromSlot(i) {
-        const slotId = `${currentRomName}::slot${i}`;
-        try {
-            const meta = await dbGet(STORE_STATES, slotId);
-            if (!meta || !meta.data) { toast('No save data in this slot', 'error'); return; }
-            if (window.EJS_emulator && window.EJS_emulator.gameManager) {
-                window.EJS_emulator.gameManager.loadState(meta.data);
-                toast(`Loaded slot ${i}`, 'success');
-            } else {
-                toast('Emulator not ready', 'error');
-            }
-        } catch(e) { toast('Failed to load slot', 'error') }
+document.getElementById('sb-cache-load').addEventListener('click', async () => {
+    if (!currentRomName) { toast('No game loaded', 'error'); return; }
+    try {
+        const qs = await dbGet(S_META, 'quicksave_' + currentRomName);
+        if (!qs || !qs.data) { toast('No quick save found for this game', 'error'); return; }
+        const emu = getEmu();
+        if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
+        emu.gameManager.loadState(qs.data);
+        if (isPaused) updatePauseUI(false);
+        toast(`Cache restored (${timeAgo(qs.ts)}) ✓`, 'success');
+    } catch(e) { toast('Cache load failed', 'error') }
+});
+
+/* ════════════════════════════════════════════
+   IMPORT .SAV FILE
+   ════════════════════════════════════════════ */
+document.getElementById('sb-import-sav').addEventListener('click', () => {
+    if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
+    document.getElementById('sav-input').click();
+});
+
+document.getElementById('sav-input').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = '';
+
+    const emu = getEmu();
+    if (!emu || !emu.gameManager) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
+
+    try {
+        const buf = await file.arrayBuffer();
+        const u8  = new Uint8Array(buf);
+        // EmulatorJS exposes uploadSaveFiles or setSaveFile
+        if (typeof emu.gameManager.uploadSaveFiles === 'function') {
+            // Takes {filename: Uint8Array}
+            const name = savName(currentRomName);
+            emu.gameManager.uploadSaveFiles({ [name]: u8 });
+            toast(`.sav imported: ${file.name} ✓`, 'success');
+        } else if (typeof emu.gameManager.setSaveFile === 'function') {
+            emu.gameManager.setSaveFile(u8);
+            toast(`.sav imported ✓`, 'success');
+        } else {
+            // Fallback: store in IDB and inform user
+            await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
+            toast('Save stored — will apply on next game load', 'warn');
+        }
+    } catch(err) {
+        console.error('import sav:', err);
+        toast('Failed to import .sav file', 'error');
     }
+});
 
-    /* ─────────── Speed Control ─────────── */
-    const slider    = document.getElementById('speed-slider');
-    const speedVal  = document.getElementById('speed-val');
-    const presets   = document.querySelectorAll('.speed-preset');
+/* ════════════════════════════════════════════
+   EXPORT .SAV FILE
+   ════════════════════════════════════════════ */
+document.getElementById('sb-export-save').addEventListener('click', async () => {
+    if (!currentRomName) { toast('No game loaded', 'error'); return; }
+    const emu = getEmu();
 
-    function setSpeed(val) {
-        currentSpeed = val;
-        slider.value = val;
-        speedVal.textContent = `${val}×`;
-        const pct = ((val - 0.25) / (4 - 0.25) * 100).toFixed(1);
-        slider.style.setProperty('--pct', pct + '%');
-        presets.forEach(p => p.classList.toggle('active', +p.dataset.speed === val));
-        // Apply to EmulatorJS
+    // Method 1: getSaveFile (returns Uint8Array)
+    if (emu && emu.gameManager) {
         try {
-            if (window.EJS_emulator) {
-                window.EJS_emulator.setSpeed(val);
-            }
-        } catch(e) {}
-    }
+            let sav = null;
+            if (typeof emu.gameManager.getSaveFile === 'function') sav = emu.gameManager.getSaveFile();
+            else if (typeof emu.gameManager.getState  === 'function') sav = emu.gameManager.getState();
 
-    slider.addEventListener('input', () => setSpeed(+slider.value));
-    presets.forEach(p => p.addEventListener('click', () => setSpeed(+p.dataset.speed)));
-    setSpeed(1);
-
-    /* ─────────── Sidebar Buttons ─────────── */
-    document.getElementById('sb-pause').addEventListener('click', () => {
-        isPaused = !isPaused;
-        try {
-            if (window.EJS_emulator) {
-                if (isPaused) window.EJS_emulator.pause();
-                else window.EJS_emulator.play();
-            }
-        } catch(e) {}
-        const dot  = document.getElementById('emu-status-dot');
-        const text = document.getElementById('emu-status-text');
-        dot.classList.toggle('on', !isPaused);
-        text.textContent = isPaused ? 'Paused' : 'Running';
-        document.getElementById('sb-pause').querySelector('.sb-btn-icon').textContent = isPaused ? '▶' : '⏸';
-        toast(isPaused ? 'Paused' : 'Resumed', 'info');
-    });
-
-    document.getElementById('sb-restart').addEventListener('click', () => {
-        try {
-            if (window.EJS_emulator) window.EJS_emulator.restart();
-        } catch(e) {}
-        isPaused = false;
-        document.getElementById('emu-status-dot').classList.add('on');
-        document.getElementById('emu-status-text').textContent = 'Running';
-        document.getElementById('sb-pause').querySelector('.sb-btn-icon').textContent = '⏸';
-        toast('Game restarted', 'info');
-    });
-
-    document.getElementById('sb-mute').addEventListener('click', () => {
-        isMuted = !isMuted;
-        try {
-            if (window.EJS_emulator) window.EJS_emulator.setVolume(isMuted ? 0 : 1);
-        } catch(e) {}
-        document.getElementById('sb-mute').querySelector('.sb-btn-icon').textContent = isMuted ? '🔇' : '🔊';
-        toast(isMuted ? 'Muted' : 'Unmuted', 'info');
-    });
-
-    /* Browser Cache Save/Load */
-    document.getElementById('sb-cache-save').addEventListener('click', async () => {
-        if (!currentRomName || !currentRomData) { toast('No game loaded', 'error'); return; }
-        try {
-            // Save emulator state snapshot if possible
-            let stateData = null;
-            if (window.EJS_emulator && window.EJS_emulator.gameManager) {
-                stateData = window.EJS_emulator.gameManager.saveState();
-            }
-            await dbPut(STORE_META, {
-                key: 'quicksave',
-                romName: currentRomName,
-                stateData,
-                ts: Date.now()
-            });
-            toast('Saved to browser cache ✓', 'success');
-        } catch(e) { toast('Cache save failed', 'error') }
-    });
-
-    document.getElementById('sb-cache-load').addEventListener('click', async () => {
-        try {
-            const qs = await dbGet(STORE_META, 'quicksave');
-            if (!qs) { toast('No quick save found', 'error'); return; }
-            if (qs.romName !== currentRomName) {
-                toast(`Quick save is for "${qs.romName}"`, 'info'); return;
-            }
-            if (qs.stateData && window.EJS_emulator && window.EJS_emulator.gameManager) {
-                window.EJS_emulator.gameManager.loadState(qs.stateData);
-                toast(`Loaded cache save from ${timeAgo(qs.ts)}`, 'success');
-            } else {
-                toast('Save data found but emulator not ready', 'info');
-            }
-        } catch(e) { toast('Cache load failed', 'error') }
-    });
-
-    /* Export ROM */
-    document.getElementById('sb-export-rom').addEventListener('click', () => {
-        if (!currentRomData) { toast('No ROM loaded', 'error'); return; }
-        const blob = new Blob([currentRomData], { type: 'application/octet-stream' });
-        triggerDownload(blob, currentRomName || 'game.gba');
-        toast('ROM exported', 'success');
-    });
-
-    /* Export Save File */
-    document.getElementById('sb-export-save').addEventListener('click', async () => {
-        // Try EmulatorJS save data
-        try {
-            if (window.EJS_emulator && window.EJS_emulator.gameManager) {
-                const sav = window.EJS_emulator.gameManager.getSaveFile?.();
-                if (sav) {
-                    const blob = new Blob([sav], { type: 'application/octet-stream' });
-                    const savName = currentRomName.replace(/\.[^.]+$/, '.sav');
-                    triggerDownload(blob, savName);
-                    toast('Save file exported', 'success');
-                    return;
-                }
-            }
-        } catch(e) {}
-        // Fallback: check local cache state
-        const slotId = `${currentRomName}::slot1`;
-        try {
-            const meta = await dbGet(STORE_STATES, slotId);
-            if (meta && meta.data) {
-                const blob = new Blob([meta.data], { type: 'application/octet-stream' });
-                triggerDownload(blob, currentRomName.replace(/\.[^.]+$/, '.sav'));
-                toast('Exported slot 1 state as save file', 'success');
+            if (sav && sav.byteLength > 0) {
+                download(new Blob([sav], {type:'application/octet-stream'}), savName(currentRomName));
+                toast('Save file exported ✓', 'success');
                 return;
             }
-        } catch(e) {}
-        toast('No save data available to export', 'error');
-    });
-
-    function triggerDownload(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = filename;
-        document.body.appendChild(a); a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch(err) { console.warn('getSaveFile:', err) }
     }
 
-    /* Load New ROM */
-    document.getElementById('sb-load-new').addEventListener('click', () => {
-        document.getElementById('rom-input').click();
-    });
+    // Method 2: check FS via Module
+    if (emu && emu.Module && emu.Module.FS) {
+        try {
+            const fs = emu.Module.FS;
+            // GBA save is usually in /home/web_user/retroarch/userdata/saves/
+            const dirs = ['/home/web_user/retroarch/userdata/saves/', '/home/web_user/retroarch/userdata/'];
+            for (const dir of dirs) {
+                try {
+                    const entries = fs.readdir(dir);
+                    const savFile = entries.find(f => f.endsWith('.srm') || f.endsWith('.sav'));
+                    if (savFile) {
+                        const data = fs.readFile(dir + savFile);
+                        download(new Blob([data], {type:'application/octet-stream'}), savName(currentRomName));
+                        toast('Save file exported ✓', 'success');
+                        return;
+                    }
+                } catch(e) {}
+            }
+        } catch(err) { console.warn('FS export:', err) }
+    }
 
-    /* Toolbar */
-    document.getElementById('btn-back').addEventListener('click', () => location.reload());
-    document.getElementById('btn-fullscreen').addEventListener('click', () => {
-        const wrap = document.getElementById('emu-wrap');
-        if (document.fullscreenElement) document.exitFullscreen();
-        else wrap.requestFullscreen();
-    });
+    toast('No save data found — play and save in-game first', 'warn');
+});
 
-    /* Keyboard shortcut: M = mute */
-    document.addEventListener('keydown', e => {
-        if (e.key === 'm' || e.key === 'M') {
-            document.getElementById('sb-mute').click();
-        }
-    });
+/* ════════════════════════════════════════════
+   EXPORT ROM
+   ════════════════════════════════════════════ */
+document.getElementById('sb-export-rom').addEventListener('click', () => {
+    if (!currentRomData) { toast('No ROM loaded', 'error'); return; }
+    download(new Blob([currentRomData], {type:'application/octet-stream'}), currentRomName);
+    toast('ROM downloaded ✓', 'success');
+});
 
-    /* ─────────── Init ─────────── */
-    openDB().then(d => {
-        db = d;
-        buildContinueBar();
-    }).catch(e => console.warn('IndexedDB unavailable:', e));
+/* ════════════════════════════════════════════
+   LOAD NEW ROM (from sidebar)
+   ════════════════════════════════════════════ */
+document.getElementById('sb-load-new').addEventListener('click', () => document.getElementById('rom-input').click());
+
+/* ════════════════════════════════════════════
+   TOOLBAR
+   ════════════════════════════════════════════ */
+document.getElementById('btn-back').addEventListener('click', () => location.reload());
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+    const wrap = document.getElementById('emu-wrap');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else wrap.requestFullscreen().catch(()=>{});
+});
+
+/* ════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+    if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+    switch(e.key) {
+        case 'm': case 'M': document.getElementById('sb-mute').click(); break;
+        case 'p': case 'P': document.getElementById('sb-pause').click(); break;
+        case ' ':
+            // Only intercept if not focused on a game element
+            if (!document.getElementById('emu-screen').classList.contains('active')) break;
+            e.preventDefault();
+            document.getElementById('sb-pause').click();
+            break;
+        case 'f': case 'F': document.getElementById('btn-fullscreen').click(); break;
+        case 's': case 'S':
+            if (document.getElementById('emu-screen').classList.contains('active')) {
+                e.preventDefault();
+                setSidebar(!sidebarOpen);
+            }
+            break;
+    }
+});
+
+/* ════════════════════════════════════════════
+   INIT
+   ════════════════════════════════════════════ */
+openDB().then(d => {
+    db = d;
+    buildContinueBar();
+}).catch(e => console.warn('IndexedDB unavailable:', e));
 
 })();
 </script>
