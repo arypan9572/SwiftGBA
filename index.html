@@ -1,583 +1,1067 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Free GBA emulator running entirely in your browser">
-        <meta name="theme-color" content="#0F1114">
-        <title>SwiftGBA</title>
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
-        <style>
-            @font-face {
-                font-family: Clash Display;
-                src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2");
-                font-weight: 600; font-style: normal; font-display: swap
-            }
-            @font-face {
-                font-family: Satoshi;
-                src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2");
-                font-weight: 400 700; font-style: normal; font-display: swap
-            }
-            @font-face {
-                font-family: Departure Mono;
-                src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2");
-                font-weight: 400; font-style: normal; font-display: swap
-            }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Free GBA emulator running entirely in your browser">
+    <meta name="theme-color" content="#0F1114">
+    <title>SwiftGBA</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        @font-face {
+            font-family: 'Clash Display';
+            src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2");
+            font-weight: 600; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Satoshi';
+            src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2");
+            font-weight: 400 700; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Departure Mono';
+            src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2");
+            font-weight: 400; font-style: normal; font-display: swap;
+        }
 
-            :root {
-                --bg-deep: #0F1114;
-                --bg-base: #14161B;
-                --bg-panel: #1C1F24;
-                --bg-elevated: #252830;
-                --bg-input: #292C31;
-                --border-subtle: #2E3238;
-                --text-primary: #E6E8EC;
-                --text-secondary: #8B8F96;
-                --text-tertiary: #585C64;
-                --text-ghost: #3A3E46;
-                --accent: #00bcf0;
-                --led-green: #00E85A;
-                --led-green-glow: rgba(0, 232, 90, .3);
-                --error: #E84057;
-                --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-                --space-5: 24px; --space-6: 32px; --space-7: 48px;
-                --font-display: "Clash Display", system-ui, sans-serif;
-                --font-ui: "Satoshi", system-ui, sans-serif;
-                --font-mono: "Departure Mono", ui-monospace, monospace;
-                --text-xs: 11px; --text-sm: 13px; --text-base: 15px;
-                --text-lg: 18px; --text-xl: 24px; --text-2xl: 32px;
-                --ease-spring: cubic-bezier(.22, 1, .36, 1);
-                --duration-fast: .15s; --duration-normal: .28s;
-            }
+        :root {
+            --bg-deep: #0F1114;
+            --bg-base: #14161B;
+            --bg-panel: #1C1F24;
+            --bg-elevated: #252830;
+            --bg-input: #292C31;
+            --border-subtle: #2E3238;
+            --border-focus: #3E4248;
+            --text-primary: #E6E8EC;
+            --text-secondary: #8B8F96;
+            --text-tertiary: #585C64;
+            --text-ghost: #3A3E46;
+            --accent: #00bcf0;
+            --accent-glow: rgba(0,188,240,0.35);
+            --accent-subtle: rgba(0,188,240,0.12);
+            --led-green: #00E85A;
+            --led-green-glow: rgba(0,232,90,0.3);
+            --error: #E84057;
+            --speed-color: #f0a500;
+            --font-display: 'Clash Display', system-ui, sans-serif;
+            --font-ui: 'Satoshi', system-ui, sans-serif;
+            --font-mono: 'Departure Mono', ui-monospace, monospace;
+            --ease-spring: cubic-bezier(.22,1,.36,1);
+            --ease-out: cubic-bezier(0,0,.2,1);
+        }
 
-            *, *:before, *:after { box-sizing: border-box; margin: 0; padding: 0 }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            html, body {
-                height: 100dvh; width: 100vw; overflow: hidden;
-                background: var(--bg-deep); color: var(--text-primary);
-                font-family: var(--font-ui); font-size: var(--text-base);
-                line-height: 1.5; -webkit-font-smoothing: antialiased;
-            }
+        html, body {
+            height: 100dvh; width: 100vw; overflow: hidden;
+            background: var(--bg-deep); color: var(--text-primary);
+            font-family: var(--font-ui); font-size: 15px;
+            line-height: 1.5; -webkit-font-smoothing: antialiased;
+        }
 
-            .font-display { font-family: var(--font-display) }
-            .font-mono { font-family: var(--font-mono) }
+        /* ═══════════════════════════════════════════
+           LANDING / IDLE SCREEN
+        ═══════════════════════════════════════════ */
+        #idle-screen {
+            position: relative; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100dvh; width: 100vw; overflow: hidden;
+            cursor: pointer; gap: 16px;
+            transition: opacity .5s ease;
+        }
+        #idle-screen.fade-out { opacity: 0; pointer-events: none; }
+        #idle-screen.drag-over .gba-image {
+            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px var(--accent-glow));
+        }
 
-            /* ── IDLE / LANDING ── */
-            #idle-screen {
-                display: flex; flex-direction: column;
-                align-items: center; justify-content: center;
-                height: 100dvh; width: 100vw;
-                position: relative; overflow: hidden;
-                cursor: pointer;
-                transition: opacity .5s ease;
-            }
-            #idle-screen.fade-out { opacity: 0; pointer-events: none }
+        /* showcase bg / animations */
+        .showcase {
+            position: absolute; inset: 0; z-index: 0;
+            overflow: hidden; pointer-events: none;
+        }
+        .showcase-bg { position: absolute; inset: 0; transition: background 0.6s ease; }
+        .showcase-flash {
+            position: absolute; inset: 0; z-index: 4;
+            opacity: .15; pointer-events: none;
+            animation: flash-pop .3s ease-out forwards;
+        }
+        @keyframes flash-pop { 0%{opacity:.2} to{opacity:0} }
+        .showcase-wipe {
+            position: absolute; inset: -50%; z-index: 5;
+            animation: wipe-sweep .4s ease-out forwards; pointer-events: none;
+        }
+        @keyframes wipe-sweep { 0%{transform:translate(-100%) rotate(15deg)} to{transform:translate(100%) rotate(15deg)} }
+        .showcase-slash {
+            position: absolute; top: -20%; right: 18%; width: 1px; height: 140%;
+            border-right: 2px solid rgba(255,255,255,.04);
+            transform: rotate(15deg); pointer-events: none; transition: border-color .6s ease;
+        }
+        .showcase-title {
+            position: absolute; top: 6%; left: 4%;
+            display: flex; flex-direction: column; gap: 6px; z-index: 2;
+        }
+        .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards; }
+        .showcase-title.out  { animation: title-exit .25s ease-in forwards; }
+        @keyframes title-slam {
+            0%{opacity:0;transform:translate(-80px) scale(1.1)}
+            60%{opacity:1;transform:translate(8px) scale(1)}
+            to{opacity:1;transform:translate(0) scale(1)}
+        }
+        @keyframes title-exit {
+            0%{opacity:1;transform:translate(0)}
+            to{opacity:0;transform:translate(-40px)}
+        }
+        .showcase-label {
+            font-family: var(--font-mono); font-size: 10px;
+            letter-spacing: .2em; color: var(--text-ghost); text-transform: uppercase;
+        }
+        .showcase-name {
+            font-family: var(--font-display); font-size: clamp(18px,2.5vw,32px);
+            font-weight: 600; color: #ffffffe6; line-height: 1.1;
+            text-shadow: 0 2px 20px rgba(0,0,0,.6); max-width: 320px; white-space: nowrap;
+        }
+        .showcase-underline {
+            width: 0; height: 3px; border-radius: 2px; margin-top: 4px;
+            animation: underline-grow .4s ease-out .2s forwards;
+        }
+        @keyframes underline-grow { 0%{width:0} to{width:50px} }
+        .showcase-art { position: absolute; right: 8vw; top: 28%; z-index: 2; }
+        .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards; }
+        .showcase-art.out  { animation: art-exit .25s ease-in forwards; }
+        @keyframes art-slam {
+            0%{opacity:0;transform:translate(120px) scale(.8) rotate(3deg)}
+            50%{opacity:1;transform:translate(-10px) scale(1.03) rotate(-1deg)}
+            to{opacity:1;transform:translate(0) scale(1) rotate(0)}
+        }
+        @keyframes art-exit {
+            0%{opacity:1;transform:translate(0) scale(1)}
+            to{opacity:0;transform:translate(80px) scale(.9)}
+        }
+        .showcase-art-img {
+            width: clamp(160px,20vw,280px); height: auto; border-radius: 8px;
+            box-shadow: 0 12px 48px #000000b3, 0 4px 12px #00000080;
+            user-select: none; pointer-events: none;
+        }
 
-            .showcase {
-                position: absolute; inset: 0; z-index: 0;
-                overflow: hidden; pointer-events: none;
-            }
-            .showcase-bg { position: absolute; inset: 0; transition: background 0.6s ease }
-            .showcase-flash {
-                position: absolute; inset: 0; z-index: 4;
-                opacity: .15; pointer-events: none;
-                animation: flash-pop .3s ease-out forwards;
-            }
-            @keyframes flash-pop { 0% { opacity: .2 } to { opacity: 0 } }
+        /* GBA shell */
+        .gba-shell {
+            --sl: 29.4%; --st: 22.2%; --sw: 40.6%; --sh: 45.1%;
+            position: relative; display: flex;
+            align-items: center; justify-content: center;
+            transform: translate(-6vw); z-index: 1;
+        }
+        .gba-image {
+            width: min(65vw,640px); height: auto; user-select: none; pointer-events: none;
+            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
+        }
+        .gba-screen-overlay {
+            position: absolute; left: var(--sl); top: var(--st);
+            width: var(--sw); height: var(--sh); z-index: 1; overflow: hidden; border-radius: 2px;
+        }
+        .gba-screen-content {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px; padding: 0 6%; text-align: center;
+            animation: screen-fade-in 1s ease forwards;
+        }
+        @keyframes screen-fade-in { 0%{opacity:0} to{opacity:1} }
+        .gba-screen-text {
+            font-family: var(--font-display); display: block; width: 100%;
+            font-size: clamp(14px,2vw,20px); font-weight: 600;
+            color: #c8ccd2; text-shadow: 0 0 12px rgba(200,204,210,.5);
+        }
+        .gba-screen-hint {
+            display: block; width: 100%; font-family: var(--font-mono);
+            font-size: clamp(9px,1.1vw,12px); color: #8b8f96;
+        }
+        .gba-power-led {
+            position: absolute; left: 30.5%; top: 22%;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-ghost); transition: all .4s ease;
+        }
+        .gba-power-led.on {
+            background: var(--led-green);
+            box-shadow: 0 0 6px var(--led-green-glow), 0 0 16px var(--led-green-glow);
+        }
 
-            .showcase-wipe {
-                position: absolute; inset: -50%; z-index: 5;
-                animation: wipe-sweep .4s ease-out forwards; pointer-events: none;
-            }
-            @keyframes wipe-sweep {
-                0% { transform: translate(-100%) rotate(15deg) }
-                to { transform: translate(100%) rotate(15deg) }
-            }
+        /* Brand */
+        .landing-brand {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 8px; z-index: 1; transform: translate(-6vw);
+        }
+        .landing-title {
+            font-family: var(--font-display); font-size: 32px;
+            font-weight: 600; letter-spacing: -.02em; line-height: 1;
+        }
+        .landing-title .accent { color: var(--accent); letter-spacing: .06em; }
+        .landing-title .dot { color: var(--text-tertiary); }
 
-            .showcase-slash {
-                position: absolute; top: -20%; right: 18%;
-                width: 1px; height: 140%;
-                border-right: 2px solid rgba(255,255,255,.04);
-                transform: rotate(15deg); pointer-events: none;
-                transition: border-color 0.6s ease;
-            }
+        .landing-controls {
+            display: flex; align-items: center; gap: 12px;
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-ghost);
+            z-index: 1; transform: translate(-6vw);
+        }
+        .landing-key {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 2px 6px; border: 1px solid var(--border-subtle);
+            border-radius: 4px; background: var(--bg-elevated);
+            color: var(--text-tertiary); font-size: 10px; line-height: 1.4; min-width: 20px;
+        }
+        .landing-disclaimer {
+            max-width: 420px; text-align: center; font-size: 11px;
+            line-height: 1.6; color: var(--text-ghost); z-index: 1; transform: translate(-6vw);
+        }
 
-            .showcase-title {
-                position: absolute; top: 6%; left: 4%;
-                display: flex; flex-direction: column; gap: 6px; z-index: 2;
-            }
-            .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-            .showcase-title.out  { animation: title-exit .25s ease-in forwards }
+        /* ─── CONTINUE PLAYING SHELF ─── */
+        #continue-shelf {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            z-index: 10; padding: 0 32px 20px;
+            background: linear-gradient(to top, rgba(15,17,20,0.98) 60%, transparent);
+            display: none; /* shown via JS when saves exist */
+        }
+        #continue-shelf.visible { display: block; }
+        .shelf-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 12px;
+        }
+        .shelf-label {
+            font-family: var(--font-mono); font-size: 10px;
+            letter-spacing: .18em; color: var(--text-ghost); text-transform: uppercase;
+        }
+        .shelf-line { flex: 1; height: 1px; background: var(--border-subtle); }
+        .shelf-add-btn {
+            font-family: var(--font-mono); font-size: 10px;
+            color: var(--accent); background: none; border: 1px solid var(--accent-subtle);
+            border-radius: 4px; padding: 3px 8px; cursor: pointer;
+            transition: background .15s ease; letter-spacing: .05em;
+        }
+        .shelf-add-btn:hover { background: var(--accent-subtle); }
 
-            @keyframes title-slam {
-                0%  { opacity: 0; transform: translate(-80px) scale(1.1) }
-                60% { opacity: 1; transform: translate(8px) scale(1) }
-                to  { opacity: 1; transform: translate(0) scale(1) }
-            }
-            @keyframes title-exit {
-                0%  { opacity: 1; transform: translate(0) }
-                to  { opacity: 0; transform: translate(-40px) }
-            }
+        .shelf-games {
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;
+            scrollbar-width: thin; scrollbar-color: var(--border-subtle) transparent;
+        }
+        .shelf-games::-webkit-scrollbar { height: 4px; }
+        .shelf-games::-webkit-scrollbar-track { background: transparent; }
+        .shelf-games::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
 
-            .showcase-label {
-                font-size: 10px; letter-spacing: .2em;
-                color: var(--text-ghost); text-transform: uppercase;
-            }
-            .showcase-name {
-                font-size: clamp(18px,2.5vw,32px); font-weight: 600;
-                color: #ffffffe6; line-height: 1.1;
-                text-shadow: 0 2px 20px rgba(0,0,0,.6);
-                max-width: 320px; white-space: nowrap;
-            }
-            .showcase-underline {
-                width: 0; height: 3px; border-radius: 2px; margin-top: 4px;
-                animation: underline-grow .4s ease-out .2s forwards;
-            }
-            @keyframes underline-grow { 0% { width: 0 } to { width: 50px } }
+        .save-card {
+            flex-shrink: 0; width: 120px; cursor: pointer;
+            border: 1px solid var(--border-subtle); border-radius: 10px;
+            background: var(--bg-panel); overflow: hidden;
+            transition: border-color .2s ease, transform .2s var(--ease-spring), box-shadow .2s ease;
+            position: relative;
+        }
+        .save-card:hover {
+            border-color: var(--accent); transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,188,240,0.15);
+        }
+        .save-card-thumb {
+            width: 100%; height: 68px; object-fit: cover;
+            background: var(--bg-elevated); display: block;
+        }
+        .save-card-thumb.placeholder {
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+        }
+        .save-card-info { padding: 8px 8px 6px; }
+        .save-card-name {
+            font-family: var(--font-display); font-size: 11px; font-weight: 600;
+            color: var(--text-primary); white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+        }
+        .save-card-meta {
+            font-family: var(--font-mono); font-size: 9px;
+            color: var(--text-ghost); margin-top: 3px;
+        }
+        .save-card-play {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center;
+            background: rgba(0,188,240,0.85); opacity: 0;
+            transition: opacity .2s ease; font-size: 24px; border-radius: 10px;
+        }
+        .save-card:hover .save-card-play { opacity: 1; }
+        .save-card-delete {
+            position: absolute; top: 4px; right: 4px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); border: none; color: #fff;
+            font-size: 10px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; opacity: 0;
+            transition: opacity .15s ease; z-index: 5;
+        }
+        .save-card:hover .save-card-delete { opacity: 1; }
 
-            .showcase-art {
-                position: absolute; right: 8vw; top: 28%; z-index: 2;
-            }
-            .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-            .showcase-art.out  { animation: art-exit .25s ease-in forwards }
+        /* ═══════════════════════════════════════════
+           EMULATOR SCREEN
+        ═══════════════════════════════════════════ */
+        #emu-screen {
+            display: none; position: fixed; inset: 0; z-index: 100;
+            background: #000; flex-direction: column; align-items: stretch;
+        }
+        #emu-screen.active { display: flex; }
 
-            @keyframes art-slam {
-                0%  { opacity: 0; transform: translate(120px) scale(.8) rotate(3deg) }
-                50% { opacity: 1; transform: translate(-10px) scale(1.03) rotate(-1deg) }
-                to  { opacity: 1; transform: translate(0) scale(1) rotate(0) }
-            }
-            @keyframes art-exit {
-                0%  { opacity: 1; transform: translate(0) scale(1) }
-                to  { opacity: 0; transform: translate(80px) scale(.9) }
-            }
+        /* Custom toolbar */
+        #emu-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 48px; padding: 0 20px; flex-shrink: 0;
+            background: rgba(28,31,36,0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle); z-index: 10;
+        }
+        .tb-logo {
+            font-family: var(--font-display); font-size: 18px;
+            font-weight: 600; letter-spacing: .02em; user-select: none;
+        }
+        .tb-logo .accent { color: var(--accent); }
+        .tb-logo .dot { color: var(--text-tertiary); }
 
-            .showcase-art-img {
-                width: clamp(160px,20vw,280px); height: auto;
-                border-radius: 8px;
-                box-shadow: 0 12px 48px #000000b3, 0 4px 12px #00000080;
-                user-select: none; pointer-events: none;
-            }
+        .tb-game-name {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-secondary); letter-spacing: .06em;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 260px;
+        }
 
-            /* GBA shell */
-            .gba-shell {
-                --gba-screen-left: 29.4%; --gba-screen-top: 22.2%;
-                --gba-screen-width: 40.6%; --gba-screen-height: 45.1%;
-                position: relative; display: flex;
-                align-items: center; justify-content: center;
-                transform: translate(-6vw); z-index: 1;
-            }
-            .gba-image {
-                width: min(65vw,640px); height: auto;
-                user-select: none; pointer-events: none;
-                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
-            }
-            .gba-screen-overlay {
-                position: absolute;
-                left: var(--gba-screen-left); top: var(--gba-screen-top);
-                width: var(--gba-screen-width); height: var(--gba-screen-height);
-                z-index: 1; overflow: hidden; border-radius: 2px;
-            }
-            .gba-screen-content {
-                position: absolute; inset: 0;
-                display: flex; flex-direction: column;
-                align-items: center; justify-content: center;
-                gap: var(--space-2); padding: 0 6%; text-align: center;
-                animation: screen-fade-in 1s ease forwards;
-            }
-            @keyframes screen-fade-in { 0% { opacity: 0 } to { opacity: 1 } }
-            .gba-screen-text {
-                display: block; width: 100%;
-                font-size: clamp(14px,2vw,20px); font-weight: 600;
-                color: #c8ccd2; text-shadow: 0 0 12px rgba(200,204,210,.5);
-            }
-            .gba-screen-hint {
-                display: block; width: 100%;
-                font-size: clamp(10px,1.2vw,13px); color: #8b8f96;
-                text-shadow: 0 0 8px rgba(139,143,150,.4);
-            }
-            .gba-power-led {
-                position: absolute; left: 30.5%; top: 22%;
-                width: 6px; height: 6px; border-radius: 50%;
-                background: var(--text-ghost); transition: all .4s ease;
-            }
-            .gba-power-led.on {
-                background: var(--led-green);
-                box-shadow: 0 0 6px var(--led-green-glow), 0 0 16px var(--led-green-glow);
-            }
+        .tb-actions { display: flex; align-items: center; gap: 4px; }
 
-            /* Brand / controls */
-            .landing-brand {
-                display: flex; flex-direction: column; align-items: center;
-                gap: var(--space-2); z-index: 1; transform: translate(-6vw);
-            }
-            .landing-title {
-                font-size: var(--text-2xl); font-weight: 600;
-                letter-spacing: -.02em; line-height: 1;
-            }
-            .landing-title .accent { color: var(--accent); letter-spacing: .06em }
-            .landing-title .dot { color: var(--text-tertiary) }
+        /* Speed button — cycles 1x → 2x → 4x → 1x */
+        #btn-speed {
+            font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+            color: var(--text-secondary); padding: 4px 10px; border-radius: 6px;
+            cursor: pointer; transition: all .15s ease; letter-spacing: .04em;
+            min-width: 44px; text-align: center;
+        }
+        #btn-speed:hover { border-color: var(--speed-color); color: var(--speed-color); }
+        #btn-speed.fast {
+            background: rgba(240,165,0,0.12); border-color: var(--speed-color);
+            color: var(--speed-color);
+            box-shadow: 0 0 8px rgba(240,165,0,0.2);
+        }
 
-            .landing-controls {
-                display: flex; align-items: center; gap: var(--space-3);
-                font-size: var(--text-xs); color: var(--text-ghost);
-                z-index: 1; transform: translate(-6vw);
-            }
-            .landing-key {
-                display: inline-flex; align-items: center; justify-content: center;
-                padding: 2px 6px; border: 1px solid var(--border-subtle);
-                border-radius: 4px; background: var(--bg-elevated);
-                color: var(--text-tertiary); font-size: 10px; line-height: 1.4; min-width: 20px;
-            }
-            .landing-disclaimer {
-                max-width: 480px; text-align: center;
-                font-size: var(--text-xs); line-height: 1.6;
-                color: var(--text-ghost); z-index: 1; transform: translate(-6vw);
-            }
+        .tb-sep { width: 1px; height: 20px; background: var(--border-subtle); margin: 0 4px; }
 
-            /* drop-zone highlight */
-            #idle-screen.drag-over .gba-image {
-                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px rgba(0,188,240,.4));
-            }
+        .tb-btn {
+            background: none; border: none; color: var(--text-secondary);
+            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: color .15s ease, background .15s ease;
+        }
+        .tb-btn:hover { color: var(--text-primary); background: var(--bg-elevated); }
+        .tb-btn.active { color: var(--accent); background: var(--accent-subtle); }
 
-            /* ── EMULATOR SCREEN ── */
-            #emu-screen {
-                display: none;
-                position: fixed; inset: 0; z-index: 100;
-                background: #000;
-                flex-direction: column; align-items: stretch;
-            }
-            #emu-screen.active { display: flex }
+        /* Save indicator */
+        #save-indicator {
+            font-family: var(--font-mono); font-size: 10px;
+            color: var(--led-green); opacity: 0;
+            transition: opacity .3s ease; letter-spacing: .08em;
+            white-space: nowrap;
+        }
+        #save-indicator.show { opacity: 1; }
 
-            #emu-toolbar {
-                display: flex; align-items: center; justify-content: space-between;
-                height: 48px; padding: 0 var(--space-5);
-                background: #1c1f24eb; backdrop-filter: blur(8px);
-                border-bottom: 1px solid var(--border-subtle);
-                flex-shrink: 0;
-            }
-            .toolbar-logo { font-size: var(--text-lg); font-weight: 600; letter-spacing: .02em }
-            .toolbar-logo .accent { color: var(--accent) }
-            .toolbar-logo .dot { color: var(--text-tertiary) }
+        /* Game viewport */
+        #emu-wrap {
+            flex: 1; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; background: #000;
+        }
 
-            .toolbar-actions { display: flex; align-items: center; gap: var(--space-2) }
-            .toolbar-btn {
-                background: none; border: none; color: var(--text-secondary);
-                font-size: var(--text-lg); padding: var(--space-2);
-                cursor: pointer; border-radius: 6px;
-                transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
-                line-height: 1;
-            }
-            .toolbar-btn:hover { color: var(--text-primary); background: var(--bg-elevated) }
+        /* EmulatorJS container — we hide its native UI completely */
+        #game {
+            width: 100%; height: 100%;
+        }
 
-            #emu-wrap {
-                flex: 1; display: flex;
-                align-items: center; justify-content: center;
-                overflow: hidden; position: relative;
-            }
+        /* ─── HIDE ALL EmulatorJS native UI chrome ─── */
+        /* These target EJS's injected elements */
+        #game .ejs_menu_bar,
+        #game .ejs_menu,
+        #game .ejs_controls,
+        #game .ejs_pause_menu,
+        #game .ejs_context_menu,
+        #game [class*="ejs_menu"],
+        #game [class*="ejs_control"],
+        #game [class*="ejs_button"],
+        #game .ejs_netplay,
+        #game .ejs_cheat,
+        .ejs_menu_bar, .ejs_menu, .ejs_controls,
+        .ejs_pause_menu, .ejs_context_menu,
+        [class*="ejs_menu"], [class*="ejs_control"],
+        [class*="ejs_button"] { display: none !important; }
 
-            /* EmulatorJS mounts into #game — let it fill the wrap */
-            #game {
-                width: 100%; height: 100%;
-            }
+        /* Keep only the canvas */
+        #game canvas {
+            display: block !important;
+            max-width: 100% !important; max-height: 100% !important;
+            width: auto !important; height: auto !important;
+            image-rendering: pixelated;
+        }
 
-            /* upload prompt overlay */
-            #upload-prompt {
-                position: absolute; inset: 0;
-                display: flex; flex-direction: column;
-                align-items: center; justify-content: center;
-                gap: var(--space-4); pointer-events: none;
-            }
-            #upload-prompt.hidden { display: none }
+        /* Loading overlay */
+        #emu-loading {
+            position: absolute; inset: 0; z-index: 5;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px;
+            background: #000; transition: opacity .4s ease;
+        }
+        #emu-loading.hidden { opacity: 0; pointer-events: none; }
+        .loading-logo {
+            font-family: var(--font-display); font-size: 28px;
+            color: var(--text-primary);
+        }
+        .loading-logo .accent { color: var(--accent); }
+        .loading-bar-wrap {
+            width: 200px; height: 3px; background: var(--bg-elevated);
+            border-radius: 2px; overflow: hidden;
+        }
+        .loading-bar {
+            height: 100%; background: var(--accent);
+            border-radius: 2px; width: 0%;
+            transition: width .3s ease;
+            animation: loading-pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes loading-pulse {
+            0%,100%{opacity:1} 50%{opacity:0.5}
+        }
+        .loading-status {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-ghost); letter-spacing: .1em;
+        }
 
-            /* ── FILE INPUT ── */
-            #rom-input { display: none }
+        /* Error toast */
+        #error-toast {
+            display: none; position: fixed; bottom: 48px; left: 50%;
+            transform: translate(-50%); z-index: 999;
+            padding: 10px 20px; background: var(--bg-panel);
+            border: 1px solid var(--error); border-radius: 8px;
+            font-size: 13px; color: var(--error);
+        }
 
-            /* ── ERROR TOAST ── */
-            #error-toast {
-                display: none;
-                position: fixed; bottom: var(--space-7); left: 50%;
-                transform: translate(-50%);
-                padding: var(--space-2) var(--space-4);
-                background: var(--bg-panel); border: 1px solid var(--error);
-                border-radius: 8px; font-size: var(--text-sm);
-                color: var(--error); z-index: 200;
-            }
+        /* File input hidden */
+        #rom-input { display: none; }
 
-            @media(prefers-reduced-motion:reduce) {
-                .showcase-wipe, .showcase-flash { display: none }
-                .showcase-title.slam, .showcase-art.slam { animation: none; opacity: 1; transform: none }
-                .showcase-title.out, .showcase-art.out { animation: none; opacity: 0 }
-            }
-        </style>
-    </head>
-    <body>
+        /* Fullscreen canvas fix */
+        #emu-wrap:fullscreen,
+        #emu-wrap:-webkit-full-screen { background: #000; }
+        #emu-wrap:fullscreen #game,
+        #emu-wrap:-webkit-full-screen #game { width: 100dvw; height: 100dvh; }
 
-        <!-- ══════════════ IDLE / LANDING ══════════════ -->
-        <div id="idle-screen">
-            <input type="file" id="rom-input" accept=".gba,.zip">
+        @media(prefers-reduced-motion:reduce) {
+            .showcase-wipe,.showcase-flash{display:none}
+            .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
+            .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
+        }
+    </style>
+</head>
+<body>
 
-            <div class="showcase">
-                <div class="showcase-bg" id="showcase-bg"></div>
-                <div class="showcase-flash" id="showcase-flash"></div>
-                <div class="showcase-slash" id="showcase-slash"></div>
-                <div class="showcase-title slam" id="showcase-title">
-                    <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
-                    <h2 class="showcase-name font-display" id="showcase-name"></h2>
-                    <div class="showcase-underline" id="showcase-underline"></div>
-                </div>
-                <div class="showcase-art slam" id="showcase-art">
-                    <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
-                </div>
-            </div>
+<!-- ══════════════════════════════════════════
+     LANDING / IDLE SCREEN
+══════════════════════════════════════════ -->
+<div id="idle-screen">
+    <input type="file" id="rom-input" accept=".gba,.zip">
 
-            <div class="gba-shell">
-                <div class="gba-screen-overlay">
-                    <div class="gba-screen-content">
-                        <span class="gba-screen-text font-display">Drop ROM here</span>
-                        <span class="gba-screen-hint">or click anywhere to browse</span>
-                    </div>
-                </div>
-                <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
-                <div class="gba-power-led" id="power-led"></div>
-            </div>
+    <!-- Animated showcase backdrop -->
+    <div class="showcase">
+        <div class="showcase-bg" id="showcase-bg"></div>
+        <div class="showcase-flash" id="showcase-flash"></div>
+        <div class="showcase-slash" id="showcase-slash"></div>
+        <div class="showcase-title slam" id="showcase-title">
+            <span class="showcase-label">GAME BOY ADVANCE EMULATOR</span>
+            <h2 class="showcase-name" id="showcase-name"></h2>
+            <div class="showcase-underline" id="showcase-underline"></div>
+        </div>
+        <div class="showcase-art slam" id="showcase-art">
+            <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
+        </div>
+    </div>
 
-            <div class="landing-brand">
-                <h1 class="landing-title font-display">
-                    <span>Swift</span><span class="accent">GBA</span><span class="dot">.</span>
-                </h1>
-            </div>
-            <div class="landing-controls font-mono">
-                <span class="landing-key">Z</span> A
-                <span class="landing-key">X</span> B
-                <span class="landing-key">←↑↓→</span> D-Pad
-                <span class="landing-key">Enter</span> Start
-                <span class="landing-key">M</span> Mute
-            </div>
-            <div class="landing-disclaimer">
-                Your ROM never leaves your device. Everything runs locally in your browser.
-                You are responsible for owning any ROMs you load.
+    <!-- GBA device render -->
+    <div class="gba-shell">
+        <div class="gba-screen-overlay">
+            <div class="gba-screen-content">
+                <span class="gba-screen-text">Drop ROM here</span>
+                <span class="gba-screen-hint">or click anywhere to browse</span>
             </div>
         </div>
+        <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
+        <div class="gba-power-led" id="power-led"></div>
+    </div>
 
-        <!-- ══════════════ EMULATOR ══════════════ -->
-        <div id="emu-screen">
-            <div id="emu-toolbar">
-                <span class="toolbar-logo font-display">
-                    Swift<span class="accent">GBA</span><span class="dot">.</span>
-                </span>
-                <div class="toolbar-actions">
-                    <button class="toolbar-btn" id="btn-load-new" title="Load new ROM">📂</button>
-                    <button class="toolbar-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
-                    <button class="toolbar-btn" id="btn-back" title="Back to menu">✕</button>
-                </div>
-            </div>
-            <div id="emu-wrap">
-                <div id="game"></div>
-            </div>
+    <!-- Brand -->
+    <div class="landing-brand">
+        <h1 class="landing-title">
+            Swift<span class="accent">GBA</span><span class="dot">.</span>
+        </h1>
+    </div>
+    <div class="landing-controls">
+        <span class="landing-key">Z</span> A
+        <span class="landing-key">X</span> B
+        <span class="landing-key">←↑↓→</span> D-Pad
+        <span class="landing-key">Enter</span> Start
+        <span class="landing-key">M</span> Mute
+    </div>
+    <div class="landing-disclaimer">
+        Your ROM never leaves your device. Everything runs locally in your browser.
+        You are responsible for owning any ROMs you load.
+    </div>
+
+    <!-- Continue Playing shelf (shown when saves exist) -->
+    <div id="continue-shelf">
+        <div class="shelf-header">
+            <span class="shelf-label">Continue Playing</span>
+            <div class="shelf-line"></div>
+            <button class="shelf-add-btn" id="shelf-add-btn">+ Load ROM</button>
         </div>
+        <div class="shelf-games" id="shelf-games"></div>
+    </div>
+</div>
 
-        <div id="error-toast"></div>
+<!-- ══════════════════════════════════════════
+     EMULATOR SCREEN
+══════════════════════════════════════════ -->
+<div id="emu-screen">
+    <!-- Custom toolbar -->
+    <div id="emu-toolbar">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <span class="tb-logo">Swift<span class="accent">GBA</span><span class="dot">.</span></span>
+            <span class="tb-game-name" id="tb-game-name">—</span>
+        </div>
+        <div class="tb-actions">
+            <span id="save-indicator">● SAVED</span>
+            <div class="tb-sep"></div>
+            <!-- Speed toggle -->
+            <button id="btn-speed" title="Game speed">1×</button>
+            <div class="tb-sep"></div>
+            <!-- Save state -->
+            <button class="tb-btn" id="btn-save-state" title="Save state">💾</button>
+            <!-- Load state -->
+            <button class="tb-btn" id="btn-load-state" title="Load state">📂</button>
+            <div class="tb-sep"></div>
+            <!-- Mute -->
+            <button class="tb-btn" id="btn-mute" title="Mute / Unmute">🔊</button>
+            <!-- Fullscreen -->
+            <button class="tb-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
+            <!-- Load new ROM -->
+            <button class="tb-btn" id="btn-load-new" title="Load new ROM">📁</button>
+            <!-- Back to menu -->
+            <button class="tb-btn" id="btn-back" title="Back to menu">✕</button>
+        </div>
+    </div>
 
-        <!-- ══════════════ EmulatorJS ══════════════ -->
-        <!--
-            EmulatorJS is loaded from the CDN only when a ROM is launched.
-            It uses its own built-in GBA BIOS — no bios.bin needed.
-        -->
+    <!-- Game canvas area -->
+    <div id="emu-wrap">
+        <div id="game"></div>
+        <!-- Loading overlay -->
+        <div id="emu-loading">
+            <div class="loading-logo">Swift<span class="accent">GBA</span></div>
+            <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+            <div class="loading-status" id="loading-status">Initializing…</div>
+        </div>
+    </div>
+</div>
 
-        <script>
-        (() => {
-            /* ── Game showcase cycling ── */
-            const GAMES = [
-                { name: "Pokemon Emerald",              img: "https://rustygba.com/games/pokemon-emerald.webp",            color: "#2E7D32" },
-                { name: "Pokemon FireRed",               img: "https://rustygba.com/games/pokemon-firered.webp",            color: "#C62828" },
-                { name: "Pokemon Ruby",                  img: "https://rustygba.com/games/pokemon-ruby.webp",               color: "#AD1457" },
-                { name: "Pokemon Sapphire",              img: "https://rustygba.com/games/pokemon-sapphire.webp",           color: "#1565C0" },
-                { name: "Mario Kart: Super Circuit",     img: "https://rustygba.com/games/mario-kart-super-circuit.webp",   color: "#E53935" },
-                { name: "The Legend of Zelda: Minish Cap", img: "https://rustygba.com/games/zelda-minish-cap.webp",         color: "#2E7D32" },
-                { name: "Metroid Fusion",                img: "https://rustygba.com/games/metroid-fusion.webp",             color: "#E65100" },
-                { name: "Golden Sun",                    img: "https://rustygba.com/games/golden-sun.webp",                 color: "#F9A825" },
-                { name: "Castlevania: Aria of Sorrow",  img: "https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color: "#4A148C" },
-                { name: "Fire Emblem",                   img: "https://rustygba.com/games/fire-emblem.webp",                color: "#B71C1C" },
-            ];
+<div id="error-toast"></div>
 
-            const INTERVAL_MS = 3500;
-            const EXIT_MS = 250;
+<script>
+/* ══════════════════════════════════════════════════════════
+   SwiftGBA — Main Application Script
+══════════════════════════════════════════════════════════ */
+(() => {
+'use strict';
 
-            let currentIndex = 0;
-            let cycleTimer = null;
+/* ─── IndexedDB setup ─── */
+const DB_NAME    = 'SwiftGBA';
+const DB_VERSION = 1;
+const STORE_ROMS  = 'roms';   // { id, name, data (ArrayBuffer), savedAt }
+const STORE_SAVES = 'saves';  // { id (same as rom id), state (base64), savedAt }
 
-            const bgEl        = document.getElementById('showcase-bg');
-            const flashEl     = document.getElementById('showcase-flash');
-            const slashEl     = document.getElementById('showcase-slash');
-            const titleEl     = document.getElementById('showcase-title');
-            const nameEl      = document.getElementById('showcase-name');
-            const underlineEl = document.getElementById('showcase-underline');
-            const artEl       = document.getElementById('showcase-art');
-            const imgEl       = document.getElementById('showcase-img');
+let db = null;
 
-            function applyGame(game, animate) {
-                nameEl.textContent = game.name;
-                imgEl.src = game.img;
-                imgEl.alt = game.name;
-                bgEl.style.background = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
-                flashEl.style.background = game.color;
-                slashEl.style.borderColor = `${game.color}25`;
-                underlineEl.style.background = game.color;
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = e => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains(STORE_ROMS))
+                d.createObjectStore(STORE_ROMS, { keyPath: 'id' });
+            if (!d.objectStoreNames.contains(STORE_SAVES))
+                d.createObjectStore(STORE_SAVES, { keyPath: 'id' });
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror   = e => reject(e.target.error);
+    });
+}
 
-                if (animate) {
-                    const oldWipe = document.querySelector('.showcase-wipe');
-                    if (oldWipe) oldWipe.remove();
-                    const wipe = document.createElement('div');
-                    wipe.className = 'showcase-wipe';
-                    wipe.style.background = `linear-gradient(to right, transparent, ${game.color}18, transparent)`;
-                    bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
-                    wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
+function dbPut(store, value) {
+    return new Promise((resolve, reject) => {
+        const tx  = db.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).put(value);
+        req.onsuccess = () => resolve();
+        req.onerror   = e => reject(e.target.error);
+    });
+}
 
-                    flashEl.style.animation = 'none';
-                    flashEl.offsetHeight;
-                    flashEl.style.animation = '';
+function dbGet(store, key) {
+    return new Promise((resolve, reject) => {
+        const tx  = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).get(key);
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror   = e => reject(e.target.error);
+    });
+}
 
-                    titleEl.classList.remove('slam', 'out');
-                    titleEl.offsetHeight;
-                    titleEl.classList.add('slam');
+function dbGetAll(store) {
+    return new Promise((resolve, reject) => {
+        const tx  = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).getAll();
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror   = e => reject(e.target.error);
+    });
+}
 
-                    artEl.classList.remove('slam', 'out');
-                    artEl.offsetHeight;
-                    artEl.classList.add('slam');
+function dbDelete(store, key) {
+    return new Promise((resolve, reject) => {
+        const tx  = db.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).delete(key);
+        req.onsuccess = () => resolve();
+        req.onerror   = e => reject(e.target.error);
+    });
+}
 
-                    underlineEl.style.animation = 'none';
-                    underlineEl.offsetHeight;
-                    underlineEl.style.animation = '';
-                }
-            }
+/* ─── Helpers ─── */
+function slugify(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
 
-            function showNext() {
-                titleEl.classList.remove('slam'); titleEl.classList.add('out');
-                artEl.classList.remove('slam');   artEl.classList.add('out');
-                setTimeout(() => {
-                    currentIndex = (currentIndex + 1) % GAMES.length;
-                    applyGame(GAMES[currentIndex], true);
-                }, EXIT_MS);
-            }
+function formatDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+}
 
-            applyGame(GAMES[0], false);
-            setTimeout(() => applyGame(GAMES[0], true), 200);
-            cycleTimer = setInterval(showNext, INTERVAL_MS);
+function showError(msg) {
+    const t = document.getElementById('error-toast');
+    t.textContent = msg; t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 5000);
+}
 
-            /* ── Drag & Drop onto idle screen ── */
-            const idleScreen = document.getElementById('idle-screen');
-            idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over') });
-            idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
-            idleScreen.addEventListener('drop', e => {
-                e.preventDefault();
-                idleScreen.classList.remove('drag-over');
-                const file = e.dataTransfer.files[0];
-                if (file) launchROM(file);
-            });
+/* ─── Showcase cycling ─── */
+const GAMES = [
+    { name: 'Pokemon Emerald',               img: 'https://rustygba.com/games/pokemon-emerald.webp',            color: '#2E7D32' },
+    { name: 'Pokemon FireRed',               img: 'https://rustygba.com/games/pokemon-firered.webp',            color: '#C62828' },
+    { name: 'Pokemon Ruby',                  img: 'https://rustygba.com/games/pokemon-ruby.webp',               color: '#AD1457' },
+    { name: 'Pokemon Sapphire',              img: 'https://rustygba.com/games/pokemon-sapphire.webp',           color: '#1565C0' },
+    { name: 'Mario Kart: Super Circuit',     img: 'https://rustygba.com/games/mario-kart-super-circuit.webp',   color: '#E53935' },
+    { name: 'Zelda: The Minish Cap',         img: 'https://rustygba.com/games/zelda-minish-cap.webp',           color: '#2E7D32' },
+    { name: 'Metroid Fusion',                img: 'https://rustygba.com/games/metroid-fusion.webp',             color: '#E65100' },
+    { name: 'Golden Sun',                    img: 'https://rustygba.com/games/golden-sun.webp',                 color: '#F9A825' },
+    { name: 'Castlevania: Aria of Sorrow',   img: 'https://rustygba.com/games/castlevania-aria-of-sorrow.webp', color: '#4A148C' },
+    { name: 'Fire Emblem',                   img: 'https://rustygba.com/games/fire-emblem.webp',                color: '#B71C1C' },
+];
 
-            /* ── Click anywhere on idle screen to open file picker ── */
-            idleScreen.addEventListener('click', () => document.getElementById('rom-input').click());
-            document.getElementById('rom-input').addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (file) launchROM(file);
-            });
+let showcaseIndex = 0;
+let showcaseTimer = null;
 
-            /* ── Toolbar buttons ── */
-            document.getElementById('btn-back').addEventListener('click', returnToMenu);
-            document.getElementById('btn-load-new').addEventListener('click', () => document.getElementById('rom-input').click());
-            document.getElementById('btn-fullscreen').addEventListener('click', () => {
-                const wrap = document.getElementById('emu-wrap');
-                if (document.fullscreenElement) document.exitFullscreen();
-                else wrap.requestFullscreen();
-            });
+const bgEl        = document.getElementById('showcase-bg');
+const flashEl     = document.getElementById('showcase-flash');
+const slashEl     = document.getElementById('showcase-slash');
+const titleEl     = document.getElementById('showcase-title');
+const nameEl      = document.getElementById('showcase-name');
+const underlineEl = document.getElementById('showcase-underline');
+const artEl       = document.getElementById('showcase-art');
+const imgEl       = document.getElementById('showcase-img');
 
-            /* ── EmulatorJS launcher ── */
-            let emuLoaded = false;
+function applyShowcase(game, animate) {
+    nameEl.textContent = game.name;
+    imgEl.src          = game.img;
+    imgEl.alt          = game.name;
+    bgEl.style.background    = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
+    flashEl.style.background = game.color;
+    slashEl.style.borderColor= `${game.color}25`;
+    underlineEl.style.background = game.color;
+    if (!animate) return;
 
-            function launchROM(file) {
-                // Stop cycling
-                clearInterval(cycleTimer);
+    const oldWipe = document.querySelector('.showcase-wipe');
+    if (oldWipe) oldWipe.remove();
+    const wipe = document.createElement('div');
+    wipe.className = 'showcase-wipe';
+    wipe.style.background = `linear-gradient(to right, transparent, ${game.color}18, transparent)`;
+    bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
+    wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
 
-                // Fade out idle screen
-                idleScreen.classList.add('fade-out');
-                setTimeout(() => { idleScreen.style.display = 'none' }, 500);
+    flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = '';
+    titleEl.classList.remove('slam','out'); titleEl.offsetHeight; titleEl.classList.add('slam');
+    artEl.classList.remove('slam','out');   artEl.offsetHeight;   artEl.classList.add('slam');
+    underlineEl.style.animation = 'none'; underlineEl.offsetHeight; underlineEl.style.animation = '';
+}
 
-                // Show emulator screen
-                const emuScreen = document.getElementById('emu-screen');
-                emuScreen.classList.add('active');
+function showcaseNext() {
+    titleEl.classList.remove('slam'); titleEl.classList.add('out');
+    artEl.classList.remove('slam');   artEl.classList.add('out');
+    setTimeout(() => {
+        showcaseIndex = (showcaseIndex + 1) % GAMES.length;
+        applyShowcase(GAMES[showcaseIndex], true);
+    }, 250);
+}
 
-                // Turn on power LED
-                document.getElementById('power-led').classList.add('on');
+function startShowcase() {
+    applyShowcase(GAMES[0], false);
+    setTimeout(() => applyShowcase(GAMES[0], true), 200);
+    showcaseTimer = setInterval(showcaseNext, 3500);
+}
 
-                // Convert file to object URL for EmulatorJS
-                const romURL = URL.createObjectURL(file);
+function stopShowcase() { clearInterval(showcaseTimer); }
 
-                // Load EmulatorJS once
-                if (!emuLoaded) {
-                    emuLoaded = true;
-                    loadEmulatorJS(romURL);
-                } else {
-                    // If already loaded, restart with new ROM
-                    // EmulatorJS doesn't support hot-swap easily; reload the page state
-                    restartWithROM(romURL);
-                }
-            }
+/* ─── Continue Playing shelf ─── */
+async function renderShelf() {
+    const roms  = await dbGetAll(STORE_ROMS);
+    const saves = await dbGetAll(STORE_SAVES);
+    const saveMap = {};
+    saves.forEach(s => saveMap[s.id] = s);
 
-            function loadEmulatorJS(romURL) {
-                // EmulatorJS config — must be set BEFORE the script loads
-                window.EJS_player = '#game';
-                window.EJS_core = 'gba';          // Game Boy Advance core
-                window.EJS_gameUrl = romURL;
-                window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+    const shelf  = document.getElementById('continue-shelf');
+    const games  = document.getElementById('shelf-games');
+    games.innerHTML = '';
 
-                // No bios needed — EmulatorJS bundles its own GBA BIOS
-                // If you DO have a bios.bin and want to use it, uncomment:
-                // window.EJS_biosUrl = 'bios.bin';
+    if (roms.length === 0) { shelf.classList.remove('visible'); return; }
+    shelf.classList.add('visible');
 
-                window.EJS_color = '#00bcf0';     // SwiftGBA accent color
-                window.EJS_startOnLoaded = true;
-                window.EJS_fullscreenOnLoaded = false;
-                window.EJS_language = 'en-US';
-                window.EJS_Buttons = {
-                    playPause: true, restart: true, mute: true,
-                    settings: true, fullscreen: true,
-                    saveState: true, loadState: true,
-                    screenRecord: false, gamepad: true,
-                };
+    roms.sort((a,b) => (saveMap[b.id]?.savedAt || b.savedAt) - (saveMap[a.id]?.savedAt || a.savedAt));
 
-                const script = document.createElement('script');
-                script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-                script.onerror = () => showError('Failed to load EmulatorJS. Check your internet connection.');
-                document.body.appendChild(script);
-            }
+    roms.forEach(rom => {
+        const save = saveMap[rom.id];
+        const card = document.createElement('div');
+        card.className = 'save-card';
+        card.title = `Play ${rom.name}`;
 
-            function restartWithROM(romURL) {
-                // Simplest reliable approach: reload the page and re-init
-                // Store the file via sessionStorage isn't viable for binary data,
-                // so we just clear the game div and re-init EmulatorJS
-                const gameDiv = document.getElementById('game');
-                gameDiv.innerHTML = '';
+        const thumb = document.createElement('div');
+        thumb.className = 'save-card-thumb placeholder';
+        thumb.textContent = '🎮';
+        thumb.style.height = '68px';
+        thumb.style.display = 'flex';
+        thumb.style.alignItems = 'center';
+        thumb.style.justifyContent = 'center';
+        thumb.style.background = 'var(--bg-elevated)';
 
-                window.EJS_gameUrl = romURL;
-                window.EJS_startOnLoaded = true;
+        const info = document.createElement('div');
+        info.className = 'save-card-info';
+        info.innerHTML = `
+            <div class="save-card-name">${rom.name}</div>
+            <div class="save-card-meta">${save ? '● ' + formatDate(save.savedAt) : 'No save yet'}</div>
+        `;
 
-                const script = document.createElement('script');
-                script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-                document.body.appendChild(script);
-            }
+        const play = document.createElement('div');
+        play.className = 'save-card-play';
+        play.textContent = '▶';
 
-            function returnToMenu() {
-                // Reload page — cleanest way to reset EmulatorJS state
-                location.reload();
-            }
+        const del = document.createElement('button');
+        del.className = 'save-card-delete';
+        del.textContent = '✕';
+        del.title = 'Delete save';
+        del.addEventListener('click', async e => {
+            e.stopPropagation();
+            if (!confirm(`Delete "${rom.name}" and its save data?`)) return;
+            await dbDelete(STORE_ROMS, rom.id);
+            await dbDelete(STORE_SAVES, rom.id);
+            renderShelf();
+        });
 
-            function showError(msg) {
-                const toast = document.getElementById('error-toast');
-                toast.textContent = msg;
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none' }, 5000);
-            }
-        })();
-        </script>
-    </body>
+        card.appendChild(thumb);
+        card.appendChild(info);
+        card.appendChild(play);
+        card.appendChild(del);
+
+        card.addEventListener('click', () => launchFromDB(rom.id));
+        games.appendChild(card);
+    });
+}
+
+/* ─── Emulator state ─── */
+let currentRomId   = null;
+let currentRomName = '';
+let currentRomURL  = null;
+let emuReady       = false;
+let muted          = false;
+let autoSaveTimer  = null;
+const SPEEDS       = [1, 2, 4];
+let speedIdx       = 0;
+let emuScriptLoaded = false;
+
+/* ─── Launch from file picker ─── */
+async function launchFromFile(file) {
+    const name = file.name.replace(/\.(gba|zip)$/i, '');
+    const id   = slugify(name) + '-' + file.size;
+
+    // Read and store ROM in IndexedDB
+    const buf = await file.arrayBuffer();
+    await dbPut(STORE_ROMS, { id, name, data: buf, savedAt: Date.now() });
+
+    // Create object URL for EmulatorJS
+    const blob = new Blob([buf], { type: 'application/octet-stream' });
+    const url  = URL.createObjectURL(blob);
+
+    launchEmulator(id, name, url);
+}
+
+/* ─── Launch from saved DB entry ─── */
+async function launchFromDB(id) {
+    const rom = await dbGet(STORE_ROMS, id);
+    if (!rom) { showError('ROM not found in storage.'); return; }
+    const blob = new Blob([rom.data], { type: 'application/octet-stream' });
+    const url  = URL.createObjectURL(blob);
+    launchEmulator(id, rom.name, url);
+}
+
+/* ─── Core launcher ─── */
+function launchEmulator(id, name, romURL) {
+    stopShowcase();
+    currentRomId   = id;
+    currentRomName = name;
+    currentRomURL  = romURL;
+    emuReady       = false;
+    speedIdx       = 0;
+
+    // Update toolbar name
+    document.getElementById('tb-game-name').textContent = name.toUpperCase();
+    document.getElementById('btn-speed').textContent = '1×';
+    document.getElementById('btn-speed').classList.remove('fast');
+
+    // Transition UI
+    const idleScreen = document.getElementById('idle-screen');
+    idleScreen.classList.add('fade-out');
+    setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
+
+    const emuScreen = document.getElementById('emu-screen');
+    emuScreen.classList.add('active');
+    document.getElementById('power-led').classList.add('on');
+
+    // Show loading
+    setLoadingStatus('Loading ROM…', 10);
+
+    // Configure EmulatorJS BEFORE loading the script
+    window.EJS_player        = '#game';
+    window.EJS_core          = 'gba';
+    window.EJS_gameUrl       = romURL;
+    window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_color         = '#00bcf0';
+    window.EJS_startOnLoaded = true;
+    window.EJS_language      = 'en-US';
+
+    // Disable ALL EJS UI — we handle everything ourselves
+    window.EJS_Buttons = {
+        playPause:    false,
+        restart:      false,
+        mute:         false,
+        settings:     false,
+        fullscreen:   false,
+        saveState:    false,
+        loadState:    false,
+        screenRecord: false,
+        gamepad:      false,
+        cheat:        false,
+        volume:       false,
+        netplay:      false,
+    };
+
+    // Callbacks
+    window.EJS_onGameStart = () => {
+        emuReady = true;
+        setLoadingStatus('Running!', 100);
+        setTimeout(() => {
+            document.getElementById('emu-loading').classList.add('hidden');
+        }, 600);
+
+        // Load save state if one exists
+        loadSaveState();
+
+        // Auto-save every 30 seconds
+        clearInterval(autoSaveTimer);
+        autoSaveTimer = setInterval(() => {
+            if (emuReady) triggerAutoSave();
+        }, 30000);
+    };
+
+    window.EJS_onLoadState = () => { /* state loaded from our system */ };
+    window.EJS_onSaveState = () => { /* we handle save manually */ };
+
+    setLoadingStatus('Fetching emulator engine…', 30);
+
+    if (!emuScriptLoaded) {
+        emuScriptLoaded = true;
+        const s = document.createElement('script');
+        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+        s.onload = () => setLoadingStatus('Booting GBA…', 65);
+        s.onerror = () => showError('Failed to load EmulatorJS. Check your connection.');
+        document.body.appendChild(s);
+    } else {
+        // Re-init for subsequent ROMs
+        const gameDiv = document.getElementById('game');
+        gameDiv.innerHTML = '';
+        document.getElementById('emu-loading').classList.remove('hidden');
+        setLoadingStatus('Reloading engine…', 30);
+        const s = document.createElement('script');
+        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js?' + Date.now();
+        s.onload = () => setLoadingStatus('Booting GBA…', 65);
+        document.body.appendChild(s);
+    }
+}
+
+function setLoadingStatus(msg, pct) {
+    document.getElementById('loading-status').textContent = msg;
+    document.getElementById('loading-bar').style.width = pct + '%';
+}
+
+/* ─── Save / Load state ─── */
+async function triggerAutoSave() {
+    if (!emuReady || !window.EJS_emulator) return;
+    try {
+        // EJS exposes saveState() which returns a promise resolving to base64 data
+        const state = await window.EJS_emulator.saveState();
+        if (!state) return;
+        await dbPut(STORE_SAVES, {
+            id: currentRomId,
+            state: typeof state === 'string' ? state : JSON.stringify(state),
+            savedAt: Date.now()
+        });
+        flashSaveIndicator();
+    } catch(e) { /* silent — auto-save failures shouldn't interrupt gameplay */ }
+}
+
+async function manualSave() {
+    await triggerAutoSave();
+    flashSaveIndicator();
+}
+
+async function loadSaveState() {
+    if (!window.EJS_emulator) return;
+    try {
+        const saved = await dbGet(STORE_SAVES, currentRomId);
+        if (!saved?.state) return;
+        const state = typeof saved.state === 'string' ? saved.state : JSON.parse(saved.state);
+        await window.EJS_emulator.loadState(state);
+    } catch(e) { /* no save or incompatible — start fresh */ }
+}
+
+function flashSaveIndicator() {
+    const ind = document.getElementById('save-indicator');
+    ind.classList.add('show');
+    setTimeout(() => ind.classList.remove('show'), 2000);
+}
+
+/* ─── Speed control ─── */
+function cycleSpeed() {
+    speedIdx = (speedIdx + 1) % SPEEDS.length;
+    const spd = SPEEDS[speedIdx];
+    const btn = document.getElementById('btn-speed');
+    btn.textContent = spd + '×';
+    btn.classList.toggle('fast', spd > 1);
+    if (window.EJS_emulator?.setSpeed) {
+        window.EJS_emulator.setSpeed(spd);
+    } else if (window.EJS_emulator?.gameManager?.setSpeed) {
+        window.EJS_emulator.gameManager.setSpeed(spd);
+    }
+}
+
+/* ─── Mute ─── */
+function toggleMute() {
+    muted = !muted;
+    const btn = document.getElementById('btn-mute');
+    btn.textContent = muted ? '🔇' : '🔊';
+    if (window.EJS_emulator?.setVolume) {
+        window.EJS_emulator.setVolume(muted ? 0 : 1);
+    }
+}
+
+/* ─── Return to menu ─── */
+async function returnToMenu() {
+    // Save before leaving
+    if (emuReady) await triggerAutoSave();
+    clearInterval(autoSaveTimer);
+    emuReady = false;
+
+    if (currentRomURL) URL.revokeObjectURL(currentRomURL);
+
+    // Reset emulator div
+    const gameDiv = document.getElementById('game');
+    gameDiv.innerHTML = '';
+    emuScriptLoaded = false;
+
+    // Reset loading overlay
+    document.getElementById('emu-loading').classList.remove('hidden');
+    document.getElementById('loading-bar').style.width = '0%';
+    document.getElementById('loading-status').textContent = 'Initializing…';
+
+    // Show idle, hide emu
+    document.getElementById('emu-screen').classList.remove('active');
+    const idle = document.getElementById('idle-screen');
+    idle.style.display = '';
+    idle.classList.remove('fade-out');
+
+    // Refresh shelf
+    await renderShelf();
+    startShowcase();
+}
+
+/* ─── Event wiring ─── */
+// Idle screen — click to open file
+const idleScreen = document.getElementById('idle-screen');
+idleScreen.addEventListener('click', e => {
+    // Don't trigger if clicking shelf buttons/cards
+    if (e.target.closest('#continue-shelf')) return;
+    document.getElementById('rom-input').click();
+});
+idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over'); });
+idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
+idleScreen.addEventListener('drop', e => {
+    e.preventDefault(); idleScreen.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) launchFromFile(f);
+});
+
+document.getElementById('rom-input').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) launchFromFile(f);
+    e.target.value = '';
+});
+
+document.getElementById('shelf-add-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('rom-input').click();
+});
+
+// Toolbar buttons
+document.getElementById('btn-speed').addEventListener('click', cycleSpeed);
+document.getElementById('btn-mute').addEventListener('click', toggleMute);
+document.getElementById('btn-back').addEventListener('click', returnToMenu);
+document.getElementById('btn-save-state').addEventListener('click', manualSave);
+document.getElementById('btn-load-state').addEventListener('click', loadSaveState);
+document.getElementById('btn-load-new').addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('rom-input').click();
+});
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+    const wrap = document.getElementById('emu-wrap');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else wrap.requestFullscreen().catch(() => {});
+});
+
+// Auto-save on visibility change (tab switch / minimize)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && emuReady) triggerAutoSave();
+});
+
+// Auto-save before unload
+window.addEventListener('beforeunload', () => {
+    if (emuReady) triggerAutoSave();
+});
+
+/* ─── Boot ─── */
+async function boot() {
+    db = await openDB();
+    startShowcase();
+    await renderShelf();
+}
+
+boot().catch(console.error);
+
+})();
+</script>
+</body>
 </html>
