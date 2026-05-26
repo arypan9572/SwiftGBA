@@ -532,12 +532,12 @@ const GAMES = [
     { name:"Castlevania: Aria of Sorrow",  img:"https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color:"#4A148C" },
     { name:"Fire Emblem",                  img:"https://rustygba.com/games/fire-emblem.webp",                color:"#B71C1C" },
 ];
-let idx=0, cycleTimer=null;
-const $bg=$('#showcase-bg'), $flash=$('#showcase-flash'), $slash=$('#showcase-slash'),
-      $title=$('#showcase-title'), $name=$('#showcase-name'), $ul=$('#showcase-underline'),
-      $art=$('#showcase-art'), $img=$('#showcase-img');
-
 function $(id) { return document.getElementById(id) }
+
+let idx=0, cycleTimer=null;
+const $bg=$('showcase-bg'), $flash=$('showcase-flash'), $slash=$('showcase-slash'),
+      $title=$('showcase-title'), $name=$('showcase-name'), $ul=$('showcase-underline'),
+      $art=$('showcase-art'), $img=$('showcase-img');
 
 function applyGame(g, anim) {
     $name.textContent = g.name; $img.src = g.img; $img.alt = g.name;
