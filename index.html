@@ -702,7 +702,11 @@ async function launchFromDB(id){
 /* ─── CORE LAUNCH ─── */
 function launchEmulator(id,name,romData){
     stopShowcase();
-    romId=id; romName=name; romURL=url; emuReady=false; speedIdx=0;
+    romId = id;
+romName = name;
+romURL = null;
+emuReady = false;
+speedIdx = 0;
 
     document.getElementById('tb-game-name').textContent=name.toUpperCase();
     document.getElementById('btn-speed').textContent='1×';
@@ -743,7 +747,11 @@ function launchEmulator(id,name,romData){
     /* ── EmulatorJS config ── */
     window.EJS_player        = '#game';
     window.EJS_core          = 'gba';
-    window.EJS_gameUrl       = romData;
+    const blob = new Blob([romData]);
+
+romURL = URL.createObjectURL(blob);
+
+window.EJS_gameUrl = romURL;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color         = '#00bcf0';
     window.EJS_startOnLoaded = true;
@@ -757,7 +765,7 @@ function launchEmulator(id,name,romData){
         volume:false, netplay:false,
     };
 
-    window.EJS_onGameLoaded = onEmuReady;
+    window.EJS_ready = onEmuReady;
     window.EJS_onLoadState = ()=>{};
     window.EJS_onSaveState = ()=>{};
 
@@ -995,11 +1003,7 @@ emulatorScript.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
 
 emulatorScript.onload = () => {
     console.log("EmulatorJS loaded");
-
     ejsLoaded = true;
-
-    // START EMULATORJS
-    window.EJS_emulator = new EJS();
 };
 
 emulatorScript.onerror = () => {
