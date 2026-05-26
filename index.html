@@ -124,28 +124,41 @@
 
         #emu-body { flex:1; display:flex; overflow:hidden; position:relative }
 
-        #emu-wrap { flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; background:#000; transition:margin-right var(--normal) var(--ease-spring) }
+        /* FIX: emu-wrap must be position:relative with explicit sizing so EJS canvas fills it */
+        #emu-wrap {
+            flex:1; display:flex; align-items:center; justify-content:center;
+            overflow:hidden; position:relative; background:#000;
+            min-width:0; min-height:0;
+        }
 
-        #game { width:100%; height:100% }
+        /* FIX: #game must be position:relative with 100% width/height so EJS mounts correctly */
+        #game {
+            position:relative;
+            width:100%;
+            height:100%;
+        }
 
         /* Aggressively hide EmulatorJS chrome */
         .ejs_menu_bar, .ejs_buttons_container, .ejs_bottom_bar,
         .ejs-bar-menu, .ejs-top-bar, .ejs_control_bar,
-        #ejs_controls_bar, .ejs-bar { display:none !important; height:0 !important; overflow:hidden !important }
+        #ejs_controls_bar, .ejs-bar,
+        /* Also target the new EJS UI container names */
+        .ejs_ui_container > .ejs_menu,
+        .ejs_volume_slider,
+        .ejs_netplay { display:none !important; height:0 !important; overflow:hidden !important }
 
         /* ── SIDEBAR TOGGLE TAB ── */
+        /* FIX: sidebar-tab moved OUT of emu-wrap to avoid intercepting game input */
         #sidebar-tab {
-            position:absolute; right:0; top:50%; transform:translateY(-50%);
-            width:20px; height:64px; background:var(--bg-panel);
+            position:relative;
+            width:20px; flex-shrink:0;
+            background:var(--bg-panel);
             border-left:1px solid var(--border-subtle);
-            border-top:1px solid var(--border-subtle);
-            border-bottom:1px solid var(--border-subtle);
-            border-radius:8px 0 0 8px;
             display:flex; align-items:center; justify-content:center;
-            cursor:pointer; z-index:20;
-            transition:right var(--normal) var(--ease-spring), background var(--fast), color var(--fast);
+            cursor:pointer; z-index:5;
             color:var(--text-tertiary); font-size:11px;
             user-select:none;
+            transition:background var(--fast), color var(--fast);
         }
         #sidebar-tab:hover { background:var(--bg-elevated); color:var(--text-primary) }
         #sidebar-tab .tab-arrow { transition:transform var(--normal) var(--ease-spring); line-height:1 }
@@ -158,14 +171,12 @@
             overflow-y:auto; overflow-x:hidden;
             scrollbar-width:thin; scrollbar-color:var(--border-subtle) transparent;
             transition:width var(--normal) var(--ease-spring), opacity var(--normal) ease;
-            position:relative;
         }
         #sidebar::-webkit-scrollbar { width:4px }
         #sidebar::-webkit-scrollbar-thumb { background:var(--border-subtle); border-radius:2px }
 
         /* Collapsed state */
         #emu-body.sidebar-collapsed #sidebar { width:0; opacity:0; pointer-events:none; border-left:none }
-        #emu-body.sidebar-collapsed #sidebar-tab { right:0 }
         #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow { transform:rotate(180deg) }
 
         /* Sidebar sections */
@@ -200,7 +211,7 @@
         .speed-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp2) }
         .speed-label { font-size:var(--sm); color:var(--text-secondary) }
         .speed-val { font-family:var(--font-mono); font-size:var(--sm); color:var(--accent); min-width:36px; text-align:right }
-        .speed-slider { width:100%; height:4px; border-radius:2px; background:var(--bg-elevated); outline:none; border:none; appearance:none; cursor:pointer; margin-bottom:var(--sp3);
+        .speed-slider { width:100%; height:4px; border-radius:2px; outline:none; border:none; appearance:none; cursor:pointer; margin-bottom:var(--sp3);
             background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--pct,33%),var(--bg-elevated) var(--pct,33%)) }
         .speed-slider::-webkit-slider-thumb { appearance:none; width:14px; height:14px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px var(--accent-glow); cursor:pointer }
         .speed-presets { display:flex; gap:var(--sp2) }
@@ -312,16 +323,17 @@
             <div id="game"></div>
         </div>
 
-        <!-- Sidebar collapse tab (sits on edge of emu-wrap) -->
+        <!-- FIX: sidebar-tab is now a sibling of emu-wrap, not a child,
+             so it never sits over the game canvas -->
         <div id="sidebar-tab" title="Toggle sidebar">
-            <span class="tab-arrow">‹</span>
+            <span class="tab-arrow">›</span>
         </div>
 
         <!-- ── SIDEBAR ── -->
         <div id="sidebar">
             <div class="sidebar-game-header">
                 <div class="sidebar-game-title" id="sb-game-title">No game loaded</div>
-                <div class="sidebar-game-size" id="sb-game-size font-mono">—</div>
+                <div class="sidebar-game-size" id="sb-game-size">—</div>
             </div>
 
             <!-- Status -->
@@ -425,27 +437,28 @@
 /* ════════════════════════════════════════════
    CONFIG & STATE
    ════════════════════════════════════════════ */
-const DB_NAME    = 'SwiftGBA_v2';
-const DB_VER     = 1;
-const S_ROMS     = 'roms';
-const S_META     = 'meta';
-const S_STATES   = 'states';
-const NUM_SLOTS  = 5;
+const DB_NAME   = 'SwiftGBA_v2';
+const DB_VER    = 1;
+const S_ROMS    = 'roms';
+const S_META    = 'meta';
+const S_STATES  = 'states';
+const NUM_SLOTS = 5;
 
-let db           = null;
-let ejsReady     = false;        // true once EJS fires onGameStart
-let ejsEmu       = null;         // reference to window.EJS_emulator
+let db             = null;
+let ejsReady       = false;
+let ejsEmu         = null;
 let currentRomName = '';
-let currentRomData = null;       // ArrayBuffer of the loaded ROM
+let currentRomData = null;
 let currentRomUrl  = null;
-let isPaused     = false;
-let isMuted      = false;
-let currentSpeed = 1;
+let isPaused       = false;
+let isMuted        = false;
+let currentSpeed   = 1;
 let emuScriptLoaded = false;
-let sidebarOpen  = true;
+let sidebarOpen    = true;
 
 /* ════════════════════════════════════════════
    INDEXEDDB
+   FIX: use keyPath:'id' consistently for all stores
    ════════════════════════════════════════════ */
 function openDB() {
     return new Promise((res, rej) => {
@@ -460,10 +473,10 @@ function openDB() {
         req.onerror   = e => rej(e.target.error);
     });
 }
-function dbPut(store, val)    { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).put(val); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
-function dbGet(store, key)    { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).get(key); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
-function dbDel(store, key)    { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).delete(key); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
-function dbAll(store)         { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).getAll(); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
+function dbPut(store, val) { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).put(val); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
+function dbGet(store, key) { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).get(key); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
+function dbDel(store, key) { return new Promise((res,rej) => { const r = db.transaction(store,'readwrite').objectStore(store).delete(key); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error) }); }
+function dbAll(store)      { return new Promise((res,rej) => { const r = db.transaction(store,'readonly').objectStore(store).getAll(); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error) }); }
 
 /* ════════════════════════════════════════════
    TOAST
@@ -474,10 +487,7 @@ function toast(msg, type='info', dur=2800) {
     el.className = `toast ${type}`;
     el.textContent = msg;
     stack.appendChild(el);
-    setTimeout(() => {
-        el.classList.add('out');
-        setTimeout(() => el.remove(), 250);
-    }, dur);
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 250) }, dur);
 }
 
 /* ════════════════════════════════════════════
@@ -500,37 +510,12 @@ function fmtSize(b) {
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function download(blob, name) {
     const url = URL.createObjectURL(blob);
-    const a   = Object.assign(document.createElement('a'), { href:url, download:name });
+    const a = Object.assign(document.createElement('a'), { href:url, download:name });
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 function savName(romName) { return romName.replace(/\.[^.]+$/, '.sav') }
-function getEmu() {
-    // Try multiple access patterns EmulatorJS exposes
-    return window.EJS_emulator || null;
-}
-
-/* ════════════════════════════════════════════
-   EMULATORJS — READY HOOK
-   We poll because EJS_onGameStart fires internally,
-   but we can also watch for window.EJS_emulator to appear.
-   ════════════════════════════════════════════ */
-function waitForEmu() {
-    return new Promise(resolve => {
-        if (ejsReady && ejsEmu) { resolve(ejsEmu); return; }
-        const iv = setInterval(() => {
-            const e = getEmu();
-            if (e && e.gameManager) {
-                clearInterval(iv);
-                ejsEmu   = e;
-                ejsReady = true;
-                resolve(e);
-            }
-        }, 300);
-        // give up after 30s
-        setTimeout(() => clearInterval(iv), 30000);
-    });
-}
+function getEmu() { return window.EJS_emulator || null; }
 
 /* ════════════════════════════════════════════
    SHOWCASE CYCLING
@@ -548,10 +533,11 @@ const GAMES = [
     { name:"Fire Emblem",                  img:"https://rustygba.com/games/fire-emblem.webp",                color:"#B71C1C" },
 ];
 let idx=0, cycleTimer=null;
-const $bg=document.getElementById('showcase-bg'), $flash=document.getElementById('showcase-flash'),
-      $slash=document.getElementById('showcase-slash'), $title=document.getElementById('showcase-title'),
-      $name=document.getElementById('showcase-name'), $ul=document.getElementById('showcase-underline'),
-      $art=document.getElementById('showcase-art'), $img=document.getElementById('showcase-img');
+const $bg=$('#showcase-bg'), $flash=$('#showcase-flash'), $slash=$('#showcase-slash'),
+      $title=$('#showcase-title'), $name=$('#showcase-name'), $ul=$('#showcase-underline'),
+      $art=$('#showcase-art'), $img=$('#showcase-img');
+
+function $(id) { return document.getElementById(id) }
 
 function applyGame(g, anim) {
     $name.textContent = g.name; $img.src = g.img; $img.alt = g.name;
@@ -582,8 +568,8 @@ cycleTimer = setInterval(showNext, 3500);
    ════════════════════════════════════════════ */
 async function buildContinueBar() {
     if (!db) return;
-    const list = document.getElementById('continue-list');
-    const bar  = document.getElementById('continue-bar');
+    const list = $('continue-list');
+    const bar  = $('continue-bar');
     list.innerHTML = '';
     let roms = [];
     try { roms = await dbAll(S_ROMS) } catch(e) {}
@@ -621,7 +607,7 @@ async function loadRomFromCache(id) {
 /* ════════════════════════════════════════════
    ROM LAUNCH
    ════════════════════════════════════════════ */
-const idleScreen = document.getElementById('idle-screen');
+const idleScreen = $('idle-screen');
 idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over') });
 idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
 idleScreen.addEventListener('drop', e => {
@@ -630,9 +616,9 @@ idleScreen.addEventListener('drop', e => {
 });
 idleScreen.addEventListener('click', e => {
     if (e.target.closest('#continue-bar')) return;
-    document.getElementById('rom-input').click();
+    $('rom-input').click();
 });
-document.getElementById('rom-input').addEventListener('change', e => {
+$('rom-input').addEventListener('change', e => {
     const f = e.target.files[0]; if (f) { launchROM(f); e.target.value='' }
 });
 
@@ -641,49 +627,46 @@ async function launchROM(file) {
     idleScreen.classList.add('fade-out');
     setTimeout(() => { idleScreen.style.display = 'none' }, 500);
 
-    document.getElementById('emu-screen').classList.add('active');
-    document.getElementById('power-led').classList.add('on');
+    $('emu-screen').classList.add('active');
+    $('power-led').classList.add('on');
 
-    // Read to ArrayBuffer
     const buf = await file.arrayBuffer();
     currentRomData = buf;
     currentRomName = file.name;
     if (currentRomUrl) URL.revokeObjectURL(currentRomUrl);
-    currentRomUrl  = URL.createObjectURL(new Blob([buf], { type:'application/octet-stream' }));
+    currentRomUrl = URL.createObjectURL(new Blob([buf], { type:'application/octet-stream' }));
 
-    // Update UI labels
-    document.getElementById('toolbar-game-name').textContent = file.name;
-    document.getElementById('sb-game-title').textContent     = file.name;
-    document.getElementById('sb-game-size').textContent      = fmtSize(file.size);
+    $('toolbar-game-name').textContent = file.name;
+    $('sb-game-title').textContent     = file.name;
+    $('sb-game-size').textContent      = fmtSize(file.size);
 
-    // Persist in IDB
     try {
         await dbPut(S_ROMS, { id: file.name, name: file.name, data: buf, size: file.size, lastPlayed: Date.now() });
     } catch(e) { console.warn('IDB ROM cache:', e) }
 
-    // Reset emu state
     isPaused = false; isMuted = false; ejsReady = false; ejsEmu = null;
     updatePauseUI(false);
     updateMuteUI(false);
     buildSaveSlots();
     refreshCacheLoadSub();
 
-    // Load or reinit EmulatorJS
     if (!emuScriptLoaded) {
         emuScriptLoaded = true;
         initEmulatorJS(currentRomUrl);
     } else {
         reinitEmulatorJS(currentRomUrl);
     }
-
-    // Once ready, restore speed
-    waitForEmu().then(emu => {
-        toast(`${file.name} loaded`, 'success');
-        applySpeed(currentSpeed);
-    });
 }
 
-function initEmulatorJS(romURL) {
+/* ════════════════════════════════════════════
+   EMULATORJS INIT
+   FIX: Match the working v1 setup exactly:
+   - Set all globals BEFORE appending the script
+   - EJS_player must point to the element selector
+   - EJS_Buttons disables built-in UI
+   - EJS_onGameStart hook captures the emulator ref
+   ════════════════════════════════════════════ */
+function setEJSGlobals(romURL) {
     window.EJS_player             = '#game';
     window.EJS_core               = 'gba';
     window.EJS_gameUrl            = romURL;
@@ -692,20 +675,23 @@ function initEmulatorJS(romURL) {
     window.EJS_startOnLoaded      = true;
     window.EJS_fullscreenOnLoaded = false;
     window.EJS_language           = 'en-US';
-    // Disable all built-in UI buttons
     window.EJS_Buttons = {
         playPause:false, restart:false, mute:false,
         settings:false, fullscreen:false,
         saveState:false, loadState:false,
         screenRecord:false, gamepad:false,
     };
-    // Hook into ready event
     window.EJS_onGameStart = () => {
-        ejsEmu   = getEmu();
+        ejsEmu   = window.EJS_emulator;
         ejsReady = true;
         applySpeed(currentSpeed);
-        if (isMuted && ejsEmu) { try { ejsEmu.setVolume(0) } catch(e){} }
+        if (isMuted) applyMuteToEmu(true);
+        toast(`${currentRomName} loaded`, 'success');
     };
+}
+
+function initEmulatorJS(romURL) {
+    setEJSGlobals(romURL);
     const s = document.createElement('script');
     s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
     s.onerror = () => toast('Failed to load EmulatorJS. Check your connection.', 'error');
@@ -713,20 +699,25 @@ function initEmulatorJS(romURL) {
 }
 
 function reinitEmulatorJS(romURL) {
-    // Cleanest method: replace game div contents and re-run loader
-    const gameDiv = document.getElementById('game');
+    // FIX: Fully reset the game container and all EJS globals before re-running loader
+    const gameDiv = $('game');
     gameDiv.innerHTML = '';
+
+    // Remove any lingering EJS canvas/style elements EJS may have inserted outside #game
+    document.querySelectorAll('script[src*="emulatorjs"]').forEach(s => s.remove());
+
+    // Clear EJS state
     ejsEmu = null; ejsReady = false;
-    window.EJS_gameUrl       = romURL;
-    window.EJS_startOnLoaded = true;
-    window.EJS_onGameStart   = () => {
-        ejsEmu   = getEmu();
-        ejsReady = true;
-        applySpeed(currentSpeed);
-    };
-    const s = document.createElement('script');
-    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-    document.body.appendChild(s);
+    delete window.EJS_emulator;
+
+    // Brief delay lets the DOM settle before EJS re-mounts
+    setTimeout(() => {
+        setEJSGlobals(romURL);
+        const s = document.createElement('script');
+        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js?' + Date.now(); // cache-bust
+        s.onerror = () => toast('Failed to reload EmulatorJS.', 'error');
+        document.body.appendChild(s);
+    }, 100);
 }
 
 /* ════════════════════════════════════════════
@@ -734,36 +725,35 @@ function reinitEmulatorJS(romURL) {
    ════════════════════════════════════════════ */
 function setSidebar(open) {
     sidebarOpen = open;
-    document.getElementById('emu-body').classList.toggle('sidebar-collapsed', !open);
-    document.getElementById('sidebar-tab').querySelector('.tab-arrow').textContent = open ? '›' : '‹';
-    document.getElementById('btn-sidebar-toggle').classList.toggle('active', !open);
+    $('emu-body').classList.toggle('sidebar-collapsed', !open);
+    $('sidebar-tab').querySelector('.tab-arrow').textContent = open ? '›' : '‹';
+    $('btn-sidebar-toggle').classList.toggle('active', !open);
 }
-document.getElementById('sidebar-tab').addEventListener('click', () => setSidebar(!sidebarOpen));
-document.getElementById('btn-sidebar-toggle').addEventListener('click', () => setSidebar(!sidebarOpen));
-setSidebar(true); // start open, arrow points right (close)
+$('sidebar-tab').addEventListener('click', () => setSidebar(!sidebarOpen));
+$('btn-sidebar-toggle').addEventListener('click', () => setSidebar(!sidebarOpen));
+setSidebar(true);
 
 /* ════════════════════════════════════════════
    PAUSE / RESUME
    ════════════════════════════════════════════ */
 function updatePauseUI(paused) {
     isPaused = paused;
-    const dot  = document.getElementById('emu-status-dot');
-    const text = document.getElementById('emu-status-text');
-    const btn  = document.getElementById('sb-pause');
+    const dot  = $('emu-status-dot');
+    const text = $('emu-status-text');
+    const btn  = $('sb-pause');
     dot.className  = 'status-dot ' + (paused ? 'paused' : 'on');
     text.textContent = paused ? 'Paused' : 'Running';
     btn.querySelector('.sb-btn-icon').textContent = paused ? '▶' : '⏸';
     btn.classList.toggle('active-state', paused);
 }
 
-document.getElementById('sb-pause').addEventListener('click', async () => {
-    const emu = getEmu();
+$('sb-pause').addEventListener('click', () => {
+    const emu  = getEmu();
     const next = !isPaused;
     try {
         if (emu) {
-            // EmulatorJS exposes pause() / resume() or play()
             if (next) {
-                if (typeof emu.pause  === 'function') emu.pause();
+                if (typeof emu.pause === 'function') emu.pause();
                 else if (typeof emu.togglePause === 'function') emu.togglePause();
             } else {
                 if (typeof emu.resume === 'function') emu.resume();
@@ -779,7 +769,7 @@ document.getElementById('sb-pause').addEventListener('click', async () => {
 /* ════════════════════════════════════════════
    RESTART
    ════════════════════════════════════════════ */
-document.getElementById('sb-restart').addEventListener('click', () => {
+$('sb-restart').addEventListener('click', () => {
     const emu = getEmu();
     try {
         if (emu && typeof emu.restart === 'function') emu.restart();
@@ -795,23 +785,22 @@ document.getElementById('sb-restart').addEventListener('click', () => {
    ════════════════════════════════════════════ */
 function updateMuteUI(muted) {
     isMuted = muted;
-    document.getElementById('sb-mute').querySelector('.sb-btn-icon').textContent = muted ? '🔇' : '🔊';
-    document.getElementById('sb-mute').classList.toggle('active-state', muted);
+    $('sb-mute').querySelector('.sb-btn-icon').textContent = muted ? '🔇' : '🔊';
+    $('sb-mute').classList.toggle('active-state', muted);
 }
 
-function applyMute(muted) {
+function applyMuteToEmu(muted) {
     const emu = getEmu();
     try {
-        if (emu) {
-            if (typeof emu.setVolume === 'function') emu.setVolume(muted ? 0 : 1);
-            else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(muted ? 0 : 1);
-        }
+        if (!emu) return;
+        if (typeof emu.setVolume === 'function') emu.setVolume(muted ? 0 : 1);
+        else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(muted ? 0 : 1);
     } catch(e) {}
 }
 
-document.getElementById('sb-mute').addEventListener('click', () => {
+$('sb-mute').addEventListener('click', () => {
     const next = !isMuted;
-    applyMute(next);
+    applyMuteToEmu(next);
     updateMuteUI(next);
     toast(next ? 'Muted' : 'Unmuted', 'info', 1500);
 });
@@ -822,32 +811,30 @@ document.getElementById('sb-mute').addEventListener('click', () => {
 function applySpeed(val) {
     currentSpeed = val;
     const pct = ((val - 0.5) / (4 - 0.5) * 100).toFixed(1);
-    const slider = document.getElementById('speed-slider');
+    const slider = $('speed-slider');
     slider.value = val;
     slider.style.setProperty('--pct', pct + '%');
-    document.getElementById('speed-val').textContent = `${val}×`;
+    $('speed-val').textContent = `${val}×`;
     document.querySelectorAll('.speed-preset').forEach(p => p.classList.toggle('active', +p.dataset.speed === val));
     const emu = getEmu();
     try {
         if (emu) {
             if (typeof emu.setSpeed === 'function') emu.setSpeed(val);
             else if (emu.gameManager && typeof emu.gameManager.setSpeed === 'function') emu.gameManager.setSpeed(val);
-            // EmulatorJS also uses emu.Module?.setSpeed or emu.emulator?.setSpeed
-            else if (emu.Module && typeof emu.Module.setSpeed === 'function') emu.Module.setSpeed(val);
         }
     } catch(e) {}
 }
 
-document.getElementById('speed-slider').addEventListener('input', e => applySpeed(+e.target.value));
+$('speed-slider').addEventListener('input', e => applySpeed(+e.target.value));
 document.querySelectorAll('.speed-preset').forEach(p => p.addEventListener('click', () => applySpeed(+p.dataset.speed)));
 applySpeed(1);
 
 /* ════════════════════════════════════════════
-   SAVE STATES (IndexedDB)
+   SAVE STATES
    ════════════════════════════════════════════ */
 async function buildSaveSlots() {
     if (!db || !currentRomName) return;
-    const container = document.getElementById('save-slots');
+    const container = $('save-slots');
     container.innerHTML = '';
     for (let i = 1; i <= NUM_SLOTS; i++) {
         const key  = `${currentRomName}::slot${i}`;
@@ -870,7 +857,7 @@ async function buildSaveSlots() {
         el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
         if (meta) {
             el.querySelector('.slot-btn.load').addEventListener('click', () => loadFromSlot(i));
-            el.querySelector('.slot-btn.del').addEventListener('click', () => deleteSlot(i));
+            el.querySelector('.slot-btn.del').addEventListener('click',  () => deleteSlot(i));
         }
         container.appendChild(el);
     }
@@ -880,15 +867,10 @@ async function saveToSlot(i) {
     if (!currentRomName) { toast('No game loaded', 'error'); return; }
     const emu = getEmu();
     let stateData = null;
-
     if (emu && emu.gameManager) {
-        try {
-            // saveState returns Uint8Array or similar
-            stateData = emu.gameManager.saveState();
-        } catch(e) { console.warn('saveState:', e) }
+        try { stateData = emu.gameManager.saveState() } catch(e) { console.warn('saveState:', e) }
     }
     if (!stateData) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
-
     const key = `${currentRomName}::slot${i}`;
     try {
         await dbPut(S_STATES, { id: key, data: stateData, ts: Date.now() });
@@ -923,12 +905,11 @@ async function refreshCacheLoadSub() {
     if (!db) return;
     try {
         const qs = await dbGet(S_META, 'quicksave_' + currentRomName);
-        document.getElementById('cache-load-sub').textContent =
-            qs ? `Last saved ${timeAgo(qs.ts)}` : 'No quick save yet';
+        $('cache-load-sub').textContent = qs ? `Last saved ${timeAgo(qs.ts)}` : 'No quick save yet';
     } catch(e) {}
 }
 
-document.getElementById('sb-cache-save').addEventListener('click', async () => {
+$('sb-cache-save').addEventListener('click', async () => {
     if (!currentRomName) { toast('No game loaded', 'error'); return; }
     const emu = getEmu();
     let stateData = null;
@@ -943,7 +924,7 @@ document.getElementById('sb-cache-save').addEventListener('click', async () => {
     } catch(e) { toast('Cache save failed', 'error') }
 });
 
-document.getElementById('sb-cache-load').addEventListener('click', async () => {
+$('sb-cache-load').addEventListener('click', async () => {
     if (!currentRomName) { toast('No game loaded', 'error'); return; }
     try {
         const qs = await dbGet(S_META, 'quicksave_' + currentRomName);
@@ -959,69 +940,52 @@ document.getElementById('sb-cache-load').addEventListener('click', async () => {
 /* ════════════════════════════════════════════
    IMPORT .SAV FILE
    ════════════════════════════════════════════ */
-document.getElementById('sb-import-sav').addEventListener('click', () => {
+$('sb-import-sav').addEventListener('click', () => {
     if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
-    document.getElementById('sav-input').click();
+    $('sav-input').click();
 });
 
-document.getElementById('sav-input').addEventListener('change', async e => {
-    const file = e.target.files[0];
-    if (!file) return;
+$('sav-input').addEventListener('change', async e => {
+    const file = e.target.files[0]; if (!file) return;
     e.target.value = '';
-
     const emu = getEmu();
     if (!emu || !emu.gameManager) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
-
     try {
         const buf = await file.arrayBuffer();
         const u8  = new Uint8Array(buf);
-        // EmulatorJS exposes uploadSaveFiles or setSaveFile
         if (typeof emu.gameManager.uploadSaveFiles === 'function') {
-            // Takes {filename: Uint8Array}
-            const name = savName(currentRomName);
-            emu.gameManager.uploadSaveFiles({ [name]: u8 });
-            toast(`.sav imported: ${file.name} ✓`, 'success');
+            emu.gameManager.uploadSaveFiles({ [savName(currentRomName)]: u8 });
+            toast(`.sav imported ✓`, 'success');
         } else if (typeof emu.gameManager.setSaveFile === 'function') {
             emu.gameManager.setSaveFile(u8);
             toast(`.sav imported ✓`, 'success');
         } else {
-            // Fallback: store in IDB and inform user
             await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
             toast('Save stored — will apply on next game load', 'warn');
         }
-    } catch(err) {
-        console.error('import sav:', err);
-        toast('Failed to import .sav file', 'error');
-    }
+    } catch(err) { toast('Failed to import .sav file', 'error') }
 });
 
 /* ════════════════════════════════════════════
    EXPORT .SAV FILE
    ════════════════════════════════════════════ */
-document.getElementById('sb-export-save').addEventListener('click', async () => {
+$('sb-export-save').addEventListener('click', async () => {
     if (!currentRomName) { toast('No game loaded', 'error'); return; }
     const emu = getEmu();
-
-    // Method 1: getSaveFile (returns Uint8Array)
     if (emu && emu.gameManager) {
         try {
             let sav = null;
             if (typeof emu.gameManager.getSaveFile === 'function') sav = emu.gameManager.getSaveFile();
-            else if (typeof emu.gameManager.getState  === 'function') sav = emu.gameManager.getState();
-
+            else if (typeof emu.gameManager.getState === 'function') sav = emu.gameManager.getState();
             if (sav && sav.byteLength > 0) {
                 download(new Blob([sav], {type:'application/octet-stream'}), savName(currentRomName));
-                toast('Save file exported ✓', 'success');
-                return;
+                toast('Save file exported ✓', 'success'); return;
             }
         } catch(err) { console.warn('getSaveFile:', err) }
     }
-
-    // Method 2: check FS via Module
     if (emu && emu.Module && emu.Module.FS) {
         try {
             const fs = emu.Module.FS;
-            // GBA save is usually in /home/web_user/retroarch/userdata/saves/
             const dirs = ['/home/web_user/retroarch/userdata/saves/', '/home/web_user/retroarch/userdata/'];
             for (const dir of dirs) {
                 try {
@@ -1030,37 +994,35 @@ document.getElementById('sb-export-save').addEventListener('click', async () => 
                     if (savFile) {
                         const data = fs.readFile(dir + savFile);
                         download(new Blob([data], {type:'application/octet-stream'}), savName(currentRomName));
-                        toast('Save file exported ✓', 'success');
-                        return;
+                        toast('Save file exported ✓', 'success'); return;
                     }
                 } catch(e) {}
             }
         } catch(err) { console.warn('FS export:', err) }
     }
-
     toast('No save data found — play and save in-game first', 'warn');
 });
 
 /* ════════════════════════════════════════════
    EXPORT ROM
    ════════════════════════════════════════════ */
-document.getElementById('sb-export-rom').addEventListener('click', () => {
+$('sb-export-rom').addEventListener('click', () => {
     if (!currentRomData) { toast('No ROM loaded', 'error'); return; }
     download(new Blob([currentRomData], {type:'application/octet-stream'}), currentRomName);
     toast('ROM downloaded ✓', 'success');
 });
 
 /* ════════════════════════════════════════════
-   LOAD NEW ROM (from sidebar)
+   LOAD NEW ROM
    ════════════════════════════════════════════ */
-document.getElementById('sb-load-new').addEventListener('click', () => document.getElementById('rom-input').click());
+$('sb-load-new').addEventListener('click', () => $('rom-input').click());
 
 /* ════════════════════════════════════════════
    TOOLBAR
    ════════════════════════════════════════════ */
-document.getElementById('btn-back').addEventListener('click', () => location.reload());
-document.getElementById('btn-fullscreen').addEventListener('click', () => {
-    const wrap = document.getElementById('emu-wrap');
+$('btn-back').addEventListener('click', () => location.reload());
+$('btn-fullscreen').addEventListener('click', () => {
+    const wrap = $('emu-wrap');
     if (document.fullscreenElement) document.exitFullscreen();
     else wrap.requestFullscreen().catch(()=>{});
 });
@@ -1070,21 +1032,16 @@ document.getElementById('btn-fullscreen').addEventListener('click', () => {
    ════════════════════════════════════════════ */
 document.addEventListener('keydown', e => {
     if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+    const inEmu = $('emu-screen').classList.contains('active');
     switch(e.key) {
-        case 'm': case 'M': document.getElementById('sb-mute').click(); break;
-        case 'p': case 'P': document.getElementById('sb-pause').click(); break;
+        case 'm': case 'M': if (inEmu) $('sb-mute').click(); break;
+        case 'p': case 'P': if (inEmu) $('sb-pause').click(); break;
         case ' ':
-            // Only intercept if not focused on a game element
-            if (!document.getElementById('emu-screen').classList.contains('active')) break;
-            e.preventDefault();
-            document.getElementById('sb-pause').click();
+            if (inEmu) { e.preventDefault(); $('sb-pause').click(); }
             break;
-        case 'f': case 'F': document.getElementById('btn-fullscreen').click(); break;
+        case 'f': case 'F': if (inEmu) $('btn-fullscreen').click(); break;
         case 's': case 'S':
-            if (document.getElementById('emu-screen').classList.contains('active')) {
-                e.preventDefault();
-                setSidebar(!sidebarOpen);
-            }
+            if (inEmu) { e.preventDefault(); setSidebar(!sidebarOpen); }
             break;
     }
 });
@@ -1092,10 +1049,7 @@ document.addEventListener('keydown', e => {
 /* ════════════════════════════════════════════
    INIT
    ════════════════════════════════════════════ */
-openDB().then(d => {
-    db = d;
-    buildContinueBar();
-}).catch(e => console.warn('IndexedDB unavailable:', e));
+openDB().then(d => { db = d; buildContinueBar() }).catch(e => console.warn('IndexedDB unavailable:', e));
 
 })();
 </script>
