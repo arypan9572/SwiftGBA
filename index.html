@@ -691,18 +691,16 @@ async function launchFromFile(file){
     const id=slugify(name)+'-'+file.size;
     const buf=await file.arrayBuffer();
     await dbPut(S_ROMS,{id,name,data:buf,savedAt:Date.now()});
-    const url=URL.createObjectURL(new Blob([buf],{type:'application/octet-stream'}));
-    launchEmulator(id,name,url);
+   launchEmulator(id, name, new Uint8Array(buf));
 }
 async function launchFromDB(id){
     const rom=await dbGet(S_ROMS,id);
     if(!rom){ showError('ROM not found.'); return }
-    const url=URL.createObjectURL(new Blob([rom.data],{type:'application/octet-stream'}));
-    launchEmulator(id,rom.name,url);
+    launchEmulator(id, rom.name, new Uint8Array(rom.data));
 }
 
 /* ─── CORE LAUNCH ─── */
-function launchEmulator(id,name,url){
+function launchEmulator(id,name,romData){
     stopShowcase();
     romId=id; romName=name; romURL=url; emuReady=false; speedIdx=0;
 
@@ -745,7 +743,7 @@ function launchEmulator(id,name,url){
     /* ── EmulatorJS config ── */
     window.EJS_player        = '#game';
     window.EJS_core          = 'gba';
-    window.EJS_gameUrl       = url;
+    window.EJS_gameUrl       = romData;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color         = '#00bcf0';
     window.EJS_startOnLoaded = true;
@@ -856,17 +854,29 @@ function triggerZoom(){
 }
 
 /* ─── Save / Load ─── */
-async function triggerAutoSave(){
+async function triggerAutoSave() {
     const emu = window.EJS_emulator;
 
-    if(!emuReady || !emu) return;
-    try{
-        const state = emu.saveState ? emu.saveState() : null;
-        if(!state) return;
-        const data=typeof state==='string'?state:JSON.stringify(state);
-        await dbPut(S_SAVES,{id:romId,state:data,savedAt:Date.now()});
-        flashSave();
-    }catch(e){}
+    if (!emuReady || !emu) return;
+
+    try {
+
+        emu.saveState((state) => {
+
+            if (!state) return;
+
+            dbPut(S_SAVES, {
+                id: romId,
+                state: JSON.stringify(state),
+                savedAt: Date.now()
+            });
+
+            flashSave();
+        });
+
+    } catch (e) {
+        console.error(e);
+    }
 }
 async function loadSaveState(){
     if(!window.EJS_emulator) return;
@@ -985,7 +995,11 @@ emulatorScript.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
 
 emulatorScript.onload = () => {
     console.log("EmulatorJS loaded");
+
     ejsLoaded = true;
+
+    // START EMULATORJS
+    window.EJS_emulator = new EJS();
 };
 
 emulatorScript.onerror = () => {
