@@ -8,442 +8,447 @@
     <title>SwiftGBA</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        @font-face {
-            font-family: 'Clash Display';
-            src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2");
-            font-weight: 600; font-style: normal; font-display: swap;
-        }
-        @font-face {
-            font-family: 'Satoshi';
-            src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2");
-            font-weight: 400 700; font-style: normal; font-display: swap;
-        }
-        @font-face {
-            font-family: 'Departure Mono';
-            src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2");
-            font-weight: 400; font-style: normal; font-display: swap;
-        }
+        @font-face { font-family:'Clash Display'; src:url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2"); font-weight:600; font-style:normal; font-display:swap }
+        @font-face { font-family:'Satoshi'; src:url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2"); font-weight:400 700; font-style:normal; font-display:swap }
+        @font-face { font-family:'Departure Mono'; src:url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2"); font-weight:400; font-style:normal; font-display:swap }
 
         :root {
-            --bg-deep: #0F1114;
-            --bg-base: #14161B;
-            --bg-panel: #1C1F24;
-            --bg-elevated: #252830;
-            --bg-input: #292C31;
-            --border-subtle: #2E3238;
-            --border-focus: #3E4248;
-            --text-primary: #E6E8EC;
-            --text-secondary: #8B8F96;
-            --text-tertiary: #585C64;
-            --text-ghost: #3A3E46;
-            --accent: #00bcf0;
-            --accent-glow: rgba(0,188,240,0.35);
-            --accent-subtle: rgba(0,188,240,0.12);
-            --led-green: #00E85A;
-            --led-green-glow: rgba(0,232,90,0.3);
-            --error: #E84057;
-            --speed-color: #f0a500;
-            --font-display: 'Clash Display', system-ui, sans-serif;
-            --font-ui: 'Satoshi', system-ui, sans-serif;
-            --font-mono: 'Departure Mono', ui-monospace, monospace;
-            --ease-spring: cubic-bezier(.22,1,.36,1);
-            --ease-out: cubic-bezier(0,0,.2,1);
+            --bg-deep:#0F1114; --bg-base:#14161B; --bg-panel:#1C1F24;
+            --bg-elevated:#252830; --bg-input:#292C31;
+            --border-subtle:#2E3238; --border-focus:#3E4248;
+            --text-primary:#E6E8EC; --text-secondary:#8B8F96;
+            --text-tertiary:#585C64; --text-ghost:#3A3E46;
+            --accent:#00bcf0; --accent-glow:rgba(0,188,240,.35); --accent-subtle:rgba(0,188,240,.12);
+            --led-green:#00E85A; --led-green-glow:rgba(0,232,90,.3);
+            --error:#E84057; --speed-color:#f0a500;
+            --font-display:'Clash Display',system-ui,sans-serif;
+            --font-ui:'Satoshi',system-ui,sans-serif;
+            --font-mono:'Departure Mono',ui-monospace,monospace;
+            --ease-spring:cubic-bezier(.22,1,.36,1);
+            --ease-out:cubic-bezier(0,0,.2,1);
         }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        html, body {
-            height: 100dvh; width: 100vw; overflow: hidden;
-            background: var(--bg-deep); color: var(--text-primary);
-            font-family: var(--font-ui); font-size: 15px;
-            line-height: 1.5; -webkit-font-smoothing: antialiased;
+        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+        html,body {
+            height:100dvh; width:100vw; overflow:hidden;
+            background:var(--bg-deep); color:var(--text-primary);
+            font-family:var(--font-ui); font-size:15px;
+            line-height:1.5; -webkit-font-smoothing:antialiased;
         }
+        .font-display { font-family:var(--font-display) }
+        .font-mono    { font-family:var(--font-mono) }
 
-        /* ═══════════════════════════════════════════
-           LANDING / IDLE SCREEN
-        ═══════════════════════════════════════════ */
+        /* ════════════════════════════════
+           IDLE / LANDING SCREEN
+        ════════════════════════════════ */
         #idle-screen {
-            position: relative; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100dvh; width: 100vw; overflow: hidden;
-            cursor: pointer; gap: 16px;
-            transition: opacity .5s ease;
+            position:relative; display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            height:100dvh; width:100vw; overflow:hidden;
+            cursor:pointer; gap:16px;
+            transition:opacity .6s ease;
         }
-        #idle-screen.fade-out { opacity: 0; pointer-events: none; }
+        #idle-screen.fade-out { opacity:0; pointer-events:none }
         #idle-screen.drag-over .gba-image {
-            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px var(--accent-glow));
+            filter:drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px var(--accent-glow));
         }
 
-        /* showcase bg / animations */
-        .showcase {
-            position: absolute; inset: 0; z-index: 0;
-            overflow: hidden; pointer-events: none;
-        }
-        .showcase-bg { position: absolute; inset: 0; transition: background 0.6s ease; }
+        /* showcase */
+        .showcase { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none }
+        .showcase-bg { position:absolute; inset:0; transition:background .6s ease }
         .showcase-flash {
-            position: absolute; inset: 0; z-index: 4;
-            opacity: .15; pointer-events: none;
-            animation: flash-pop .3s ease-out forwards;
+            position:absolute; inset:0; z-index:4; opacity:.15; pointer-events:none;
+            animation:flash-pop .3s ease-out forwards;
         }
         @keyframes flash-pop { 0%{opacity:.2} to{opacity:0} }
         .showcase-wipe {
-            position: absolute; inset: -50%; z-index: 5;
-            animation: wipe-sweep .4s ease-out forwards; pointer-events: none;
+            position:absolute; inset:-50%; z-index:5;
+            animation:wipe-sweep .4s ease-out forwards; pointer-events:none;
         }
         @keyframes wipe-sweep { 0%{transform:translate(-100%) rotate(15deg)} to{transform:translate(100%) rotate(15deg)} }
         .showcase-slash {
-            position: absolute; top: -20%; right: 18%; width: 1px; height: 140%;
-            border-right: 2px solid rgba(255,255,255,.04);
-            transform: rotate(15deg); pointer-events: none; transition: border-color .6s ease;
+            position:absolute; top:-20%; right:18%; width:1px; height:140%;
+            border-right:2px solid rgba(255,255,255,.04);
+            transform:rotate(15deg); pointer-events:none; transition:border-color .6s ease;
         }
         .showcase-title {
-            position: absolute; top: 6%; left: 4%;
-            display: flex; flex-direction: column; gap: 6px; z-index: 2;
+            position:absolute; top:6%; left:4%;
+            display:flex; flex-direction:column; gap:6px; z-index:2;
         }
-        .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards; }
-        .showcase-title.out  { animation: title-exit .25s ease-in forwards; }
+        .showcase-title.slam { animation:title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+        .showcase-title.out  { animation:title-exit .25s ease-in forwards }
         @keyframes title-slam {
-            0%{opacity:0;transform:translate(-80px) scale(1.1)}
-            60%{opacity:1;transform:translate(8px) scale(1)}
-            to{opacity:1;transform:translate(0) scale(1)}
+            0%  {opacity:0;transform:translate(-80px) scale(1.1)}
+            60% {opacity:1;transform:translate(8px) scale(1)}
+            to  {opacity:1;transform:translate(0) scale(1)}
         }
         @keyframes title-exit {
-            0%{opacity:1;transform:translate(0)}
-            to{opacity:0;transform:translate(-40px)}
+            0% {opacity:1;transform:translate(0)}
+            to {opacity:0;transform:translate(-40px)}
         }
         .showcase-label {
-            font-family: var(--font-mono); font-size: 10px;
-            letter-spacing: .2em; color: var(--text-ghost); text-transform: uppercase;
+            font-family:var(--font-mono); font-size:10px;
+            letter-spacing:.2em; color:var(--text-ghost); text-transform:uppercase;
         }
         .showcase-name {
-            font-family: var(--font-display); font-size: clamp(18px,2.5vw,32px);
-            font-weight: 600; color: #ffffffe6; line-height: 1.1;
-            text-shadow: 0 2px 20px rgba(0,0,0,.6); max-width: 320px; white-space: nowrap;
+            font-family:var(--font-display); font-size:clamp(18px,2.5vw,32px);
+            font-weight:600; color:#ffffffe6; line-height:1.1;
+            text-shadow:0 2px 20px rgba(0,0,0,.6); max-width:320px; white-space:nowrap;
         }
         .showcase-underline {
-            width: 0; height: 3px; border-radius: 2px; margin-top: 4px;
-            animation: underline-grow .4s ease-out .2s forwards;
+            width:0; height:3px; border-radius:2px; margin-top:4px;
+            animation:underline-grow .4s ease-out .2s forwards;
         }
         @keyframes underline-grow { 0%{width:0} to{width:50px} }
-        .showcase-art { position: absolute; right: 8vw; top: 28%; z-index: 2; }
-        .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards; }
-        .showcase-art.out  { animation: art-exit .25s ease-in forwards; }
+        .showcase-art { position:absolute; right:8vw; top:28%; z-index:2 }
+        .showcase-art.slam { animation:art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
+        .showcase-art.out  { animation:art-exit .25s ease-in forwards }
         @keyframes art-slam {
-            0%{opacity:0;transform:translate(120px) scale(.8) rotate(3deg)}
-            50%{opacity:1;transform:translate(-10px) scale(1.03) rotate(-1deg)}
-            to{opacity:1;transform:translate(0) scale(1) rotate(0)}
+            0%  {opacity:0;transform:translate(120px) scale(.8) rotate(3deg)}
+            50% {opacity:1;transform:translate(-10px) scale(1.03) rotate(-1deg)}
+            to  {opacity:1;transform:translate(0) scale(1) rotate(0)}
         }
         @keyframes art-exit {
-            0%{opacity:1;transform:translate(0) scale(1)}
-            to{opacity:0;transform:translate(80px) scale(.9)}
+            0% {opacity:1;transform:translate(0) scale(1)}
+            to {opacity:0;transform:translate(80px) scale(.9)}
         }
         .showcase-art-img {
-            width: clamp(160px,20vw,280px); height: auto; border-radius: 8px;
-            box-shadow: 0 12px 48px #000000b3, 0 4px 12px #00000080;
-            user-select: none; pointer-events: none;
+            width:clamp(160px,20vw,280px); height:auto; border-radius:8px;
+            box-shadow:0 12px 48px #000000b3,0 4px 12px #00000080;
+            user-select:none; pointer-events:none;
         }
 
-        /* GBA shell */
+        /* GBA shell on idle screen */
         .gba-shell {
-            --sl: 29.4%; --st: 22.2%; --sw: 40.6%; --sh: 45.1%;
-            position: relative; display: flex;
-            align-items: center; justify-content: center;
-            transform: translate(-6vw); z-index: 1;
+            --gba-screen-left:29.4%; --gba-screen-top:22.2%;
+            --gba-screen-width:40.6%; --gba-screen-height:45.1%;
+            --gba-screen-center-x:calc(var(--gba-screen-left) + var(--gba-screen-width)/2);
+            --gba-screen-center-y:calc(var(--gba-screen-top)  + var(--gba-screen-height)/2);
+            position:relative; display:flex; align-items:center; justify-content:center;
+            transform:translate(-6vw); z-index:1;
         }
         .gba-image {
-            width: min(65vw,640px); height: auto; user-select: none; pointer-events: none;
-            filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
+            width:min(65vw,640px); height:auto; user-select:none; pointer-events:none;
+            filter:drop-shadow(0 8px 40px rgba(0,0,0,.5));
         }
         .gba-screen-overlay {
-            position: absolute; left: var(--sl); top: var(--st);
-            width: var(--sw); height: var(--sh); z-index: 1; overflow: hidden; border-radius: 2px;
+            position:absolute;
+            left:var(--gba-screen-left); top:var(--gba-screen-top);
+            width:var(--gba-screen-width); height:var(--gba-screen-height);
+            z-index:1; overflow:hidden; border-radius:2px;
         }
         .gba-screen-content {
-            position: absolute; inset: 0; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 8px; padding: 0 6%; text-align: center;
-            animation: screen-fade-in 1s ease forwards;
+            position:absolute; inset:0; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:8px; padding:0 6%;
+            text-align:center; animation:screen-fade-in 1s ease forwards;
         }
         @keyframes screen-fade-in { 0%{opacity:0} to{opacity:1} }
         .gba-screen-text {
-            font-family: var(--font-display); display: block; width: 100%;
-            font-size: clamp(14px,2vw,20px); font-weight: 600;
-            color: #c8ccd2; text-shadow: 0 0 12px rgba(200,204,210,.5);
+            font-family:var(--font-display); display:block; width:100%;
+            font-size:clamp(14px,2vw,20px); font-weight:600;
+            color:#c8ccd2; text-shadow:0 0 12px rgba(200,204,210,.5);
         }
         .gba-screen-hint {
-            display: block; width: 100%; font-family: var(--font-mono);
-            font-size: clamp(9px,1.1vw,12px); color: #8b8f96;
+            display:block; width:100%; font-family:var(--font-mono);
+            font-size:clamp(9px,1.1vw,12px); color:#8b8f96;
         }
         .gba-power-led {
-            position: absolute; left: 30.5%; top: 22%;
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--text-ghost); transition: all .4s ease;
+            position:absolute; left:30.5%; top:22%;
+            width:6px; height:6px; border-radius:50%;
+            background:var(--text-ghost); transition:all .4s ease;
         }
         .gba-power-led.on {
-            background: var(--led-green);
-            box-shadow: 0 0 6px var(--led-green-glow), 0 0 16px var(--led-green-glow);
+            background:var(--led-green);
+            box-shadow:0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow);
         }
 
-        /* Brand */
+        /* brand / controls */
         .landing-brand {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 8px; z-index: 1; transform: translate(-6vw);
+            display:flex; flex-direction:column; align-items:center;
+            gap:8px; z-index:1; transform:translate(-6vw);
         }
         .landing-title {
-            font-family: var(--font-display); font-size: 32px;
-            font-weight: 600; letter-spacing: -.02em; line-height: 1;
+            font-family:var(--font-display); font-size:32px;
+            font-weight:600; letter-spacing:-.02em; line-height:1;
         }
-        .landing-title .accent { color: var(--accent); letter-spacing: .06em; }
-        .landing-title .dot { color: var(--text-tertiary); }
-
+        .landing-title .accent { color:var(--accent); letter-spacing:.06em }
+        .landing-title .dot    { color:var(--text-tertiary) }
         .landing-controls {
-            display: flex; align-items: center; gap: 12px;
-            font-family: var(--font-mono); font-size: 11px; color: var(--text-ghost);
-            z-index: 1; transform: translate(-6vw);
+            display:flex; align-items:center; gap:12px;
+            font-family:var(--font-mono); font-size:11px;
+            color:var(--text-ghost); z-index:1; transform:translate(-6vw);
         }
         .landing-key {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 2px 6px; border: 1px solid var(--border-subtle);
-            border-radius: 4px; background: var(--bg-elevated);
-            color: var(--text-tertiary); font-size: 10px; line-height: 1.4; min-width: 20px;
+            display:inline-flex; align-items:center; justify-content:center;
+            padding:2px 6px; border:1px solid var(--border-subtle);
+            border-radius:4px; background:var(--bg-elevated);
+            color:var(--text-tertiary); font-size:10px; line-height:1.4; min-width:20px;
         }
         .landing-disclaimer {
-            max-width: 420px; text-align: center; font-size: 11px;
-            line-height: 1.6; color: var(--text-ghost); z-index: 1; transform: translate(-6vw);
+            max-width:420px; text-align:center; font-size:11px;
+            line-height:1.6; color:var(--text-ghost); z-index:1; transform:translate(-6vw);
         }
 
-        /* ─── CONTINUE PLAYING SHELF ─── */
-        #continue-shelf {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            z-index: 10; padding: 0 32px 20px;
-            background: linear-gradient(to top, rgba(15,17,20,0.98) 60%, transparent);
-            display: none; /* shown via JS when saves exist */
+        /* ─── BOTTOM LOADING BAR (thin line, like RustyGBA) ─── */
+        #page-loader {
+            position:fixed; bottom:0; left:0; right:0; height:3px;
+            z-index:9999; pointer-events:none;
+            background:var(--bg-elevated);
         }
-        #continue-shelf.visible { display: block; }
+        #page-loader-bar {
+            height:100%; width:0%; background:var(--accent);
+            transition:width .35s var(--ease-out);
+            box-shadow:0 0 8px var(--accent-glow);
+        }
+        #page-loader.done { opacity:0; transition:opacity .4s ease .2s }
+
+        /* ─── CONTINUE SHELF ─── */
+        #continue-shelf {
+            position:absolute; bottom:0; left:0; right:0;
+            z-index:10; padding:0 32px 20px;
+            background:linear-gradient(to top,rgba(15,17,20,.98) 60%,transparent);
+            display:none;
+        }
+        #continue-shelf.visible { display:block }
         .shelf-header {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 12px;
+            display:flex; align-items:center; gap:10px; margin-bottom:12px;
         }
         .shelf-label {
-            font-family: var(--font-mono); font-size: 10px;
-            letter-spacing: .18em; color: var(--text-ghost); text-transform: uppercase;
+            font-family:var(--font-mono); font-size:10px;
+            letter-spacing:.18em; color:var(--text-ghost); text-transform:uppercase;
         }
-        .shelf-line { flex: 1; height: 1px; background: var(--border-subtle); }
+        .shelf-line { flex:1; height:1px; background:var(--border-subtle) }
         .shelf-add-btn {
-            font-family: var(--font-mono); font-size: 10px;
-            color: var(--accent); background: none; border: 1px solid var(--accent-subtle);
-            border-radius: 4px; padding: 3px 8px; cursor: pointer;
-            transition: background .15s ease; letter-spacing: .05em;
+            font-family:var(--font-mono); font-size:10px;
+            color:var(--accent); background:none; border:1px solid var(--accent-subtle);
+            border-radius:4px; padding:3px 8px; cursor:pointer;
+            transition:background .15s ease; letter-spacing:.05em;
         }
-        .shelf-add-btn:hover { background: var(--accent-subtle); }
-
+        .shelf-add-btn:hover { background:var(--accent-subtle) }
         .shelf-games {
-            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px;
-            scrollbar-width: thin; scrollbar-color: var(--border-subtle) transparent;
+            display:flex; gap:12px; overflow-x:auto; padding-bottom:4px;
+            scrollbar-width:thin; scrollbar-color:var(--border-subtle) transparent;
         }
-        .shelf-games::-webkit-scrollbar { height: 4px; }
-        .shelf-games::-webkit-scrollbar-track { background: transparent; }
-        .shelf-games::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
-
+        .shelf-games::-webkit-scrollbar { height:4px }
+        .shelf-games::-webkit-scrollbar-thumb { background:var(--border-subtle); border-radius:2px }
         .save-card {
-            flex-shrink: 0; width: 120px; cursor: pointer;
-            border: 1px solid var(--border-subtle); border-radius: 10px;
-            background: var(--bg-panel); overflow: hidden;
-            transition: border-color .2s ease, transform .2s var(--ease-spring), box-shadow .2s ease;
-            position: relative;
+            flex-shrink:0; width:120px; cursor:pointer;
+            border:1px solid var(--border-subtle); border-radius:10px;
+            background:var(--bg-panel); overflow:hidden; position:relative;
+            transition:border-color .2s ease,transform .2s var(--ease-spring),box-shadow .2s ease;
         }
         .save-card:hover {
-            border-color: var(--accent); transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(0,188,240,0.15);
+            border-color:var(--accent); transform:translateY(-3px);
+            box-shadow:0 8px 24px rgba(0,188,240,.15);
         }
         .save-card-thumb {
-            width: 100%; height: 68px; object-fit: cover;
-            background: var(--bg-elevated); display: block;
+            width:100%; height:68px; display:flex; align-items:center; justify-content:center;
+            background:var(--bg-elevated); font-size:28px;
         }
-        .save-card-thumb.placeholder {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-        }
-        .save-card-info { padding: 8px 8px 6px; }
+        .save-card-info { padding:8px 8px 6px }
         .save-card-name {
-            font-family: var(--font-display); font-size: 11px; font-weight: 600;
-            color: var(--text-primary); white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+            font-family:var(--font-display); font-size:11px; font-weight:600;
+            color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
         .save-card-meta {
-            font-family: var(--font-mono); font-size: 9px;
-            color: var(--text-ghost); margin-top: 3px;
+            font-family:var(--font-mono); font-size:9px; color:var(--text-ghost); margin-top:3px;
         }
         .save-card-play {
-            position: absolute; inset: 0; display: flex;
-            align-items: center; justify-content: center;
-            background: rgba(0,188,240,0.85); opacity: 0;
-            transition: opacity .2s ease; font-size: 24px; border-radius: 10px;
+            position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+            background:rgba(0,188,240,.85); opacity:0;
+            transition:opacity .2s ease; font-size:24px; border-radius:10px;
         }
-        .save-card:hover .save-card-play { opacity: 1; }
+        .save-card:hover .save-card-play { opacity:1 }
         .save-card-delete {
-            position: absolute; top: 4px; right: 4px;
-            width: 20px; height: 20px; border-radius: 50%;
-            background: rgba(0,0,0,0.6); border: none; color: #fff;
-            font-size: 10px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; opacity: 0;
-            transition: opacity .15s ease; z-index: 5;
+            position:absolute; top:4px; right:4px; width:20px; height:20px;
+            border-radius:50%; background:rgba(0,0,0,.6); border:none; color:#fff;
+            font-size:10px; cursor:pointer; display:flex; align-items:center;
+            justify-content:center; opacity:0; transition:opacity .15s ease; z-index:5;
         }
-        .save-card:hover .save-card-delete { opacity: 1; }
+        .save-card:hover .save-card-delete { opacity:1 }
 
-        /* ═══════════════════════════════════════════
-           EMULATOR SCREEN
-        ═══════════════════════════════════════════ */
+        /* ════════════════════════════════
+           EMULATOR / PLAYING SCREEN
+           — mirrors RustyGBA's layout exactly —
+        ════════════════════════════════ */
         #emu-screen {
-            display: none; position: fixed; inset: 0; z-index: 100;
-            background: #000; flex-direction: column; align-items: stretch;
+            display:none; position:fixed; inset:0; z-index:100;
+            background:var(--bg-deep); flex-direction:column;
         }
-        #emu-screen.active { display: flex; }
+        #emu-screen.active { display:flex }
 
         /* Custom toolbar */
         #emu-toolbar {
-            display: flex; align-items: center; justify-content: space-between;
-            height: 48px; padding: 0 20px; flex-shrink: 0;
-            background: rgba(28,31,36,0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-subtle); z-index: 10;
+            position:absolute; top:0; left:0; right:0; height:48px;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 20px; z-index:20; flex-shrink:0;
+            background:rgba(28,31,36,.95); backdrop-filter:blur(12px);
+            border-bottom:1px solid var(--border-subtle);
+            transition:opacity .3s ease;
         }
+        #emu-toolbar.hidden { opacity:0; pointer-events:none }
+        .tb-left  { display:flex; align-items:center; gap:16px }
+        .tb-right { display:flex; align-items:center; gap:4px }
         .tb-logo {
-            font-family: var(--font-display); font-size: 18px;
-            font-weight: 600; letter-spacing: .02em; user-select: none;
+            font-family:var(--font-display); font-size:18px;
+            font-weight:600; user-select:none;
         }
-        .tb-logo .accent { color: var(--accent); }
-        .tb-logo .dot { color: var(--text-tertiary); }
-
+        .tb-logo .accent { color:var(--accent) }
+        .tb-logo .dot    { color:var(--text-tertiary) }
         .tb-game-name {
-            font-family: var(--font-mono); font-size: 11px;
-            color: var(--text-secondary); letter-spacing: .06em;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 260px;
+            font-family:var(--font-mono); font-size:11px;
+            color:var(--text-secondary); letter-spacing:.06em;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px;
         }
-
-        .tb-actions { display: flex; align-items: center; gap: 4px; }
-
-        /* Speed button — cycles 1x → 2x → 4x → 1x */
-        #btn-speed {
-            font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-            background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-            color: var(--text-secondary); padding: 4px 10px; border-radius: 6px;
-            cursor: pointer; transition: all .15s ease; letter-spacing: .04em;
-            min-width: 44px; text-align: center;
-        }
-        #btn-speed:hover { border-color: var(--speed-color); color: var(--speed-color); }
-        #btn-speed.fast {
-            background: rgba(240,165,0,0.12); border-color: var(--speed-color);
-            color: var(--speed-color);
-            box-shadow: 0 0 8px rgba(240,165,0,0.2);
-        }
-
-        .tb-sep { width: 1px; height: 20px; background: var(--border-subtle); margin: 0 4px; }
-
-        .tb-btn {
-            background: none; border: none; color: var(--text-secondary);
-            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; transition: color .15s ease, background .15s ease;
-        }
-        .tb-btn:hover { color: var(--text-primary); background: var(--bg-elevated); }
-        .tb-btn.active { color: var(--accent); background: var(--accent-subtle); }
-
-        /* Save indicator */
         #save-indicator {
-            font-family: var(--font-mono); font-size: 10px;
-            color: var(--led-green); opacity: 0;
-            transition: opacity .3s ease; letter-spacing: .08em;
-            white-space: nowrap;
+            font-family:var(--font-mono); font-size:10px;
+            color:var(--led-green); opacity:0; transition:opacity .3s ease;
+            letter-spacing:.08em; white-space:nowrap; margin-right:4px;
         }
-        #save-indicator.show { opacity: 1; }
+        #save-indicator.show { opacity:1 }
+        #btn-speed {
+            font-family:var(--font-mono); font-size:11px; font-weight:600;
+            background:var(--bg-elevated); border:1px solid var(--border-subtle);
+            color:var(--text-secondary); padding:4px 10px; border-radius:6px;
+            cursor:pointer; transition:all .15s ease; letter-spacing:.04em; min-width:40px;
+        }
+        #btn-speed:hover { border-color:var(--speed-color); color:var(--speed-color) }
+        #btn-speed.fast {
+            background:rgba(240,165,0,.12); border-color:var(--speed-color);
+            color:var(--speed-color); box-shadow:0 0 8px rgba(240,165,0,.2);
+        }
+        .tb-sep { width:1px; height:20px; background:var(--border-subtle); margin:0 4px }
+        .tb-btn {
+            background:none; border:none; color:var(--text-secondary);
+            width:36px; height:36px; border-radius:8px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; font-size:16px;
+            transition:color .15s ease,background .15s ease;
+        }
+        .tb-btn:hover { color:var(--text-primary); background:var(--bg-elevated) }
 
-        /* Game viewport */
-        #emu-wrap {
-            flex: 1; position: relative;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; background: #000;
+        /* ─── GBA shell + zoom animation (RustyGBA style) ─── */
+        /*
+          The GBA PNG sits in .gba-play-shell > .gba-shell-frame
+          When emulator is ready:
+            1) We calculate how much to scale/translate the shell-frame so
+               the screen-overlay exactly fills the viewport.
+            2) We apply --expand-scale, --expand-translate-x/y as CSS vars.
+            3) The spring transition does the zoom.
+            4) After zoom, we fade out the GBA image to reveal just the canvas.
+        */
+        .emulator-playing {
+            position:relative; display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            flex:1; overflow:hidden;
         }
 
-        /* EmulatorJS container — we hide its native UI completely */
+        .gba-play-shell {
+            --gba-screen-left:29.4%; --gba-screen-top:22.2%;
+            --gba-screen-width:40.6%; --gba-screen-height:45.1%;
+            --gba-screen-center-x:calc(var(--gba-screen-left) + var(--gba-screen-width)/2);
+            --gba-screen-center-y:calc(var(--gba-screen-top)  + var(--gba-screen-height)/2);
+            position:relative; display:flex; align-items:center; justify-content:center; z-index:2;
+        }
+
+        .gba-shell-frame {
+            position:relative; width:min(65vw,640px);
+            transform:translate(var(--expand-translate-x,0px),var(--expand-translate-y,0px)) scale(var(--expand-scale,1));
+            transform-origin:var(--gba-screen-center-x) var(--gba-screen-center-y);
+            transition:transform 1s var(--ease-spring);
+        }
+        /* When playing: GBA image fades out */
+        .gba-shell-frame .gba-image {
+            width:100%; height:auto; display:block; user-select:none; pointer-events:none;
+            filter:drop-shadow(0 8px 40px rgba(0,0,0,.5));
+            transition:opacity .6s ease .8s, filter .6s ease .8s;
+        }
+        .gba-shell-frame .gba-power-led {
+            position:absolute; left:30.5%; top:22%;
+            width:6px; height:6px; border-radius:50%;
+            background:var(--led-green);
+            box-shadow:0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow);
+            transition:opacity .4s ease .6s;
+        }
+        /* Screen overlay that holds the canvas */
+        .gba-screen-overlay-live {
+            position:absolute;
+            left:var(--gba-screen-left); top:var(--gba-screen-top);
+            width:var(--gba-screen-width); height:var(--gba-screen-height);
+            z-index:3; overflow:hidden; border-radius:2px;
+            transition:border-radius 1s var(--ease-spring), box-shadow 1s var(--ease-spring);
+        }
+        /* expanded = after zoom, canvas fills screen */
+        .emulator-playing.expanded .gba-shell-frame .gba-image { opacity:0 }
+        .emulator-playing.expanded .gba-shell-frame .gba-power-led { opacity:0 }
+        .emulator-playing.expanded .gba-screen-overlay-live {
+            border-radius:0; box-shadow:none;
+        }
+        /* scanline sweep on boot */
+        .scanline-sweep {
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background:var(--led-green);
+            box-shadow:0 0 8px var(--led-green-glow),0 0 24px var(--led-green-glow);
+            animation:scanline-down .4s linear forwards; pointer-events:none; z-index:20;
+        }
+        @keyframes scanline-down { 0%{top:0;opacity:1} to{top:100%;opacity:0} }
+
+        /* canvas inside overlay */
+        .gba-screen-overlay-live canvas,
+        .gba-screen-overlay-live #game {
+            width:100% !important; height:100% !important;
+            display:block !important; image-rendering:pixelated;
+        }
+
+        /* EmulatorJS full-area container (hidden behind overlay) */
         #game {
-            width: 100%; height: 100%;
+            position:absolute; inset:0; z-index:1;
+            width:100% !important; height:100% !important;
         }
 
-        /* ─── HIDE ALL EmulatorJS native UI chrome ─── */
-        /* These target EJS's injected elements */
-        #game .ejs_menu_bar,
-        #game .ejs_menu,
-        #game .ejs_controls,
-        #game .ejs_pause_menu,
-        #game .ejs_context_menu,
-        #game [class*="ejs_menu"],
-        #game [class*="ejs_control"],
-        #game [class*="ejs_button"],
-        #game .ejs_netplay,
-        #game .ejs_cheat,
-        .ejs_menu_bar, .ejs_menu, .ejs_controls,
-        .ejs_pause_menu, .ejs_context_menu,
-        [class*="ejs_menu"], [class*="ejs_control"],
-        [class*="ejs_button"] { display: none !important; }
-
-        /* Keep only the canvas */
+        /* ── HIDE every native EmulatorJS UI element ── */
+        #game .ejs_menu_bar, #game .ejs_menu, #game .ejs_pause_menu,
+        #game .ejs_controls, #game .ejs_context_menu, #game .ejs_cheat,
+        #game .ejs_netplay, #game [class*="ejs_menu"],
+        #game [class*="ejs_control"], #game [class*="ejs_button"],
+        .ejs_menu_bar, .ejs_menu, .ejs_pause_menu, .ejs_controls,
+        .ejs_context_menu, [class*="ejs_menu"],
+        [class*="ejs_control"], [class*="ejs_button"] {
+            display:none !important; visibility:hidden !important;
+        }
+        /* Only the canvas shows */
         #game canvas {
-            display: block !important;
-            max-width: 100% !important; max-height: 100% !important;
-            width: auto !important; height: auto !important;
-            image-rendering: pixelated;
+            display:block !important;
+            width:100% !important; height:100% !important;
+            object-fit:contain; image-rendering:pixelated;
         }
 
-        /* Loading overlay */
+        /* Loading overlay (inside .emulator-playing, behind GBA shell) */
         #emu-loading {
-            position: absolute; inset: 0; z-index: 5;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 16px;
-            background: #000; transition: opacity .4s ease;
+            position:absolute; inset:0; z-index:1;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center; gap:16px;
+            background:var(--bg-deep); transition:opacity .5s ease;
         }
-        #emu-loading.hidden { opacity: 0; pointer-events: none; }
+        #emu-loading.hidden { opacity:0; pointer-events:none }
         .loading-logo {
-            font-family: var(--font-display); font-size: 28px;
-            color: var(--text-primary);
+            font-family:var(--font-display); font-size:28px; color:var(--text-primary);
         }
-        .loading-logo .accent { color: var(--accent); }
-        .loading-bar-wrap {
-            width: 200px; height: 3px; background: var(--bg-elevated);
-            border-radius: 2px; overflow: hidden;
-        }
-        .loading-bar {
-            height: 100%; background: var(--accent);
-            border-radius: 2px; width: 0%;
-            transition: width .3s ease;
-            animation: loading-pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes loading-pulse {
-            0%,100%{opacity:1} 50%{opacity:0.5}
-        }
+        .loading-logo .accent { color:var(--accent) }
         .loading-status {
-            font-family: var(--font-mono); font-size: 11px;
-            color: var(--text-ghost); letter-spacing: .1em;
+            font-family:var(--font-mono); font-size:11px;
+            color:var(--text-ghost); letter-spacing:.1em;
         }
 
-        /* Error toast */
+        /* error toast */
         #error-toast {
-            display: none; position: fixed; bottom: 48px; left: 50%;
-            transform: translate(-50%); z-index: 999;
-            padding: 10px 20px; background: var(--bg-panel);
-            border: 1px solid var(--error); border-radius: 8px;
-            font-size: 13px; color: var(--error);
+            display:none; position:fixed; bottom:48px; left:50%;
+            transform:translate(-50%); z-index:9999;
+            padding:10px 20px; background:var(--bg-panel);
+            border:1px solid var(--error); border-radius:8px;
+            font-size:13px; color:var(--error);
         }
+        #rom-input { display:none }
 
-        /* File input hidden */
-        #rom-input { display: none; }
-
-        /* Fullscreen canvas fix */
-        #emu-wrap:fullscreen,
-        #emu-wrap:-webkit-full-screen { background: #000; }
-        #emu-wrap:fullscreen #game,
-        #emu-wrap:-webkit-full-screen #game { width: 100dvw; height: 100dvh; }
-
-        @media(prefers-reduced-motion:reduce) {
+        @media(prefers-reduced-motion:reduce){
             .showcase-wipe,.showcase-flash{display:none}
             .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
             .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
@@ -452,13 +457,17 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
+<!-- ════════════════════════════════
+     BOTTOM LOADING BAR
+════════════════════════════════ -->
+<div id="page-loader"><div id="page-loader-bar"></div></div>
+
+<!-- ════════════════════════════════
      LANDING / IDLE SCREEN
-══════════════════════════════════════════ -->
+════════════════════════════════ -->
 <div id="idle-screen">
     <input type="file" id="rom-input" accept=".gba,.zip">
 
-    <!-- Animated showcase backdrop -->
     <div class="showcase">
         <div class="showcase-bg" id="showcase-bg"></div>
         <div class="showcase-flash" id="showcase-flash"></div>
@@ -473,25 +482,21 @@
         </div>
     </div>
 
-    <!-- GBA device render -->
     <div class="gba-shell">
         <div class="gba-screen-overlay">
             <div class="gba-screen-content">
-                <span class="gba-screen-text">Drop ROM here</span>
-                <span class="gba-screen-hint">or click anywhere to browse</span>
+                <span class="gba-screen-text font-display">Drop ROM here</span>
+                <span class="gba-screen-hint font-mono">or click anywhere to browse</span>
             </div>
         </div>
         <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
-        <div class="gba-power-led" id="power-led"></div>
+        <div class="gba-power-led" id="idle-power-led"></div>
     </div>
 
-    <!-- Brand -->
     <div class="landing-brand">
-        <h1 class="landing-title">
-            Swift<span class="accent">GBA</span><span class="dot">.</span>
-        </h1>
+        <h1 class="landing-title">Swift<span class="accent">GBA</span><span class="dot">.</span></h1>
     </div>
-    <div class="landing-controls">
+    <div class="landing-controls font-mono">
         <span class="landing-key">Z</span> A
         <span class="landing-key">X</span> B
         <span class="landing-key">←↑↓→</span> D-Pad
@@ -503,7 +508,7 @@
         You are responsible for owning any ROMs you load.
     </div>
 
-    <!-- Continue Playing shelf (shown when saves exist) -->
+    <!-- Continue Playing shelf -->
     <div id="continue-shelf">
         <div class="shelf-header">
             <span class="shelf-label">Continue Playing</span>
@@ -514,551 +519,470 @@
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════
+<!-- ════════════════════════════════
      EMULATOR SCREEN
-══════════════════════════════════════════ -->
+════════════════════════════════ -->
 <div id="emu-screen">
+
     <!-- Custom toolbar -->
     <div id="emu-toolbar">
-        <div style="display:flex;align-items:center;gap:16px;">
+        <div class="tb-left">
             <span class="tb-logo">Swift<span class="accent">GBA</span><span class="dot">.</span></span>
-            <span class="tb-game-name" id="tb-game-name">—</span>
+            <span class="tb-game-name font-mono" id="tb-game-name">—</span>
         </div>
-        <div class="tb-actions">
-            <span id="save-indicator">● SAVED</span>
+        <div class="tb-right">
+            <span id="save-indicator" class="font-mono">● SAVED</span>
             <div class="tb-sep"></div>
-            <!-- Speed toggle -->
-            <button id="btn-speed" title="Game speed">1×</button>
+            <button id="btn-speed" title="Cycle speed">1×</button>
             <div class="tb-sep"></div>
-            <!-- Save state -->
             <button class="tb-btn" id="btn-save-state" title="Save state">💾</button>
-            <!-- Load state -->
             <button class="tb-btn" id="btn-load-state" title="Load state">📂</button>
             <div class="tb-sep"></div>
-            <!-- Mute -->
             <button class="tb-btn" id="btn-mute" title="Mute / Unmute">🔊</button>
-            <!-- Fullscreen -->
             <button class="tb-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
-            <!-- Load new ROM -->
             <button class="tb-btn" id="btn-load-new" title="Load new ROM">📁</button>
-            <!-- Back to menu -->
             <button class="tb-btn" id="btn-back" title="Back to menu">✕</button>
         </div>
     </div>
 
-    <!-- Game canvas area -->
-    <div id="emu-wrap">
-        <div id="game"></div>
-        <!-- Loading overlay -->
+    <!-- Playing area: GBA shell + canvas overlay -->
+    <div class="emulator-playing" id="emu-playing">
+
+        <!-- Loading screen (sits below the GBA shell z-wise) -->
         <div id="emu-loading">
-            <div class="loading-logo">Swift<span class="accent">GBA</span></div>
-            <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
-            <div class="loading-status" id="loading-status">Initializing…</div>
+            <div class="loading-logo font-display">Swift<span class="accent">GBA</span></div>
+            <div class="loading-status font-mono" id="loading-status">Initializing…</div>
         </div>
+
+        <!-- The GBA shell that zooms in -->
+        <div class="gba-play-shell" id="gba-play-shell">
+            <div class="gba-shell-frame" id="gba-shell-frame">
+                <!-- The canvas lives here — inside the screen cutout -->
+                <div class="gba-screen-overlay-live" id="gba-screen-overlay-live">
+                    <div id="game"></div>
+                </div>
+                <img src="https://rustygba.com/gba.webp" alt="" class="gba-image" draggable="false" id="gba-play-img"/>
+                <div class="gba-power-led" id="play-power-led"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <div id="error-toast"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════════
-   SwiftGBA — Main Application Script
-══════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
 
-/* ─── IndexedDB setup ─── */
-const DB_NAME    = 'SwiftGBA';
-const DB_VERSION = 1;
-const STORE_ROMS  = 'roms';   // { id, name, data (ArrayBuffer), savedAt }
-const STORE_SAVES = 'saves';  // { id (same as rom id), state (base64), savedAt }
-
-let db = null;
-
-function openDB() {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = e => {
-            const d = e.target.result;
-            if (!d.objectStoreNames.contains(STORE_ROMS))
-                d.createObjectStore(STORE_ROMS, { keyPath: 'id' });
-            if (!d.objectStoreNames.contains(STORE_SAVES))
-                d.createObjectStore(STORE_SAVES, { keyPath: 'id' });
+/* ─── IndexedDB ─── */
+const DB_NAME='SwiftGBA', DB_VER=1, S_ROMS='roms', S_SAVES='saves';
+let db=null;
+function openDB(){
+    return new Promise((res,rej)=>{
+        const r=indexedDB.open(DB_NAME,DB_VER);
+        r.onupgradeneeded=e=>{
+            const d=e.target.result;
+            if(!d.objectStoreNames.contains(S_ROMS))  d.createObjectStore(S_ROMS,{keyPath:'id'});
+            if(!d.objectStoreNames.contains(S_SAVES)) d.createObjectStore(S_SAVES,{keyPath:'id'});
         };
-        req.onsuccess = e => resolve(e.target.result);
-        req.onerror   = e => reject(e.target.error);
+        r.onsuccess=e=>res(e.target.result);
+        r.onerror=e=>rej(e.target.error);
     });
 }
-
-function dbPut(store, value) {
-    return new Promise((resolve, reject) => {
-        const tx  = db.transaction(store, 'readwrite');
-        const req = tx.objectStore(store).put(value);
-        req.onsuccess = () => resolve();
-        req.onerror   = e => reject(e.target.error);
-    });
-}
-
-function dbGet(store, key) {
-    return new Promise((resolve, reject) => {
-        const tx  = db.transaction(store, 'readonly');
-        const req = tx.objectStore(store).get(key);
-        req.onsuccess = e => resolve(e.target.result);
-        req.onerror   = e => reject(e.target.error);
-    });
-}
-
-function dbGetAll(store) {
-    return new Promise((resolve, reject) => {
-        const tx  = db.transaction(store, 'readonly');
-        const req = tx.objectStore(store).getAll();
-        req.onsuccess = e => resolve(e.target.result);
-        req.onerror   = e => reject(e.target.error);
-    });
-}
-
-function dbDelete(store, key) {
-    return new Promise((resolve, reject) => {
-        const tx  = db.transaction(store, 'readwrite');
-        const req = tx.objectStore(store).delete(key);
-        req.onsuccess = () => resolve();
-        req.onerror   = e => reject(e.target.error);
-    });
-}
+function dbPut(st,val){ return new Promise((res,rej)=>{ const tx=db.transaction(st,'readwrite'),r=tx.objectStore(st).put(val); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error); }); }
+function dbGet(st,key){ return new Promise((res,rej)=>{ const tx=db.transaction(st,'readonly'),r=tx.objectStore(st).get(key); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error); }); }
+function dbGetAll(st){ return new Promise((res,rej)=>{ const tx=db.transaction(st,'readonly'),r=tx.objectStore(st).getAll(); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error); }); }
+function dbDelete(st,key){ return new Promise((res,rej)=>{ const tx=db.transaction(st,'readwrite'),r=tx.objectStore(st).delete(key); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error); }); }
 
 /* ─── Helpers ─── */
-function slugify(name) {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
+function slugify(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) }
+function showError(m){ const t=document.getElementById('error-toast'); t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none',5000) }
 
-function formatDate(ts) {
-    const d = new Date(ts);
-    return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
-}
-
-function showError(msg) {
-    const t = document.getElementById('error-toast');
-    t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => { t.style.display = 'none'; }, 5000);
+/* ─── Bottom loading bar ─── */
+const loaderBar = document.getElementById('page-loader-bar');
+const loaderWrap= document.getElementById('page-loader');
+function setBar(pct){
+    loaderBar.style.width = pct+'%';
+    if(pct>=100){ setTimeout(()=>{ loaderWrap.classList.add('done') },300) }
 }
 
 /* ─── Showcase cycling ─── */
-const GAMES = [
-    { name: 'Pokemon Emerald',               img: 'https://rustygba.com/games/pokemon-emerald.webp',            color: '#2E7D32' },
-    { name: 'Pokemon FireRed',               img: 'https://rustygba.com/games/pokemon-firered.webp',            color: '#C62828' },
-    { name: 'Pokemon Ruby',                  img: 'https://rustygba.com/games/pokemon-ruby.webp',               color: '#AD1457' },
-    { name: 'Pokemon Sapphire',              img: 'https://rustygba.com/games/pokemon-sapphire.webp',           color: '#1565C0' },
-    { name: 'Mario Kart: Super Circuit',     img: 'https://rustygba.com/games/mario-kart-super-circuit.webp',   color: '#E53935' },
-    { name: 'Zelda: The Minish Cap',         img: 'https://rustygba.com/games/zelda-minish-cap.webp',           color: '#2E7D32' },
-    { name: 'Metroid Fusion',                img: 'https://rustygba.com/games/metroid-fusion.webp',             color: '#E65100' },
-    { name: 'Golden Sun',                    img: 'https://rustygba.com/games/golden-sun.webp',                 color: '#F9A825' },
-    { name: 'Castlevania: Aria of Sorrow',   img: 'https://rustygba.com/games/castlevania-aria-of-sorrow.webp', color: '#4A148C' },
-    { name: 'Fire Emblem',                   img: 'https://rustygba.com/games/fire-emblem.webp',                color: '#B71C1C' },
+const GAMES=[
+    {name:'Pokemon Emerald',              img:'https://rustygba.com/games/pokemon-emerald.webp',            color:'#2E7D32'},
+    {name:'Pokemon FireRed',              img:'https://rustygba.com/games/pokemon-firered.webp',            color:'#C62828'},
+    {name:'Pokemon Ruby',                 img:'https://rustygba.com/games/pokemon-ruby.webp',               color:'#AD1457'},
+    {name:'Pokemon Sapphire',             img:'https://rustygba.com/games/pokemon-sapphire.webp',           color:'#1565C0'},
+    {name:'Mario Kart: Super Circuit',    img:'https://rustygba.com/games/mario-kart-super-circuit.webp',   color:'#E53935'},
+    {name:'Zelda: The Minish Cap',        img:'https://rustygba.com/games/zelda-minish-cap.webp',           color:'#2E7D32'},
+    {name:'Metroid Fusion',               img:'https://rustygba.com/games/metroid-fusion.webp',             color:'#E65100'},
+    {name:'Golden Sun',                   img:'https://rustygba.com/games/golden-sun.webp',                 color:'#F9A825'},
+    {name:'Castlevania: Aria of Sorrow',  img:'https://rustygba.com/games/castlevania-aria-of-sorrow.webp', color:'#4A148C'},
+    {name:'Fire Emblem',                  img:'https://rustygba.com/games/fire-emblem.webp',                color:'#B71C1C'},
 ];
+let showcaseIdx=0, showcaseTimer=null;
+const bgEl=document.getElementById('showcase-bg'), flashEl=document.getElementById('showcase-flash'),
+      slashEl=document.getElementById('showcase-slash'), titleEl=document.getElementById('showcase-title'),
+      nameEl=document.getElementById('showcase-name'), underlineEl=document.getElementById('showcase-underline'),
+      artEl=document.getElementById('showcase-art'), imgEl=document.getElementById('showcase-img');
 
-let showcaseIndex = 0;
-let showcaseTimer = null;
-
-const bgEl        = document.getElementById('showcase-bg');
-const flashEl     = document.getElementById('showcase-flash');
-const slashEl     = document.getElementById('showcase-slash');
-const titleEl     = document.getElementById('showcase-title');
-const nameEl      = document.getElementById('showcase-name');
-const underlineEl = document.getElementById('showcase-underline');
-const artEl       = document.getElementById('showcase-art');
-const imgEl       = document.getElementById('showcase-img');
-
-function applyShowcase(game, animate) {
-    nameEl.textContent = game.name;
-    imgEl.src          = game.img;
-    imgEl.alt          = game.name;
-    bgEl.style.background    = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
-    flashEl.style.background = game.color;
-    slashEl.style.borderColor= `${game.color}25`;
-    underlineEl.style.background = game.color;
-    if (!animate) return;
-
-    const oldWipe = document.querySelector('.showcase-wipe');
-    if (oldWipe) oldWipe.remove();
-    const wipe = document.createElement('div');
-    wipe.className = 'showcase-wipe';
-    wipe.style.background = `linear-gradient(to right, transparent, ${game.color}18, transparent)`;
-    bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
-    wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
-
-    flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = '';
+function applyShowcase(g,anim){
+    nameEl.textContent=g.name; imgEl.src=g.img; imgEl.alt=g.name;
+    bgEl.style.background=`radial-gradient(ellipse at 80% 40%,${g.color}30 0%,transparent 50%),var(--bg-deep)`;
+    flashEl.style.background=g.color; slashEl.style.borderColor=`${g.color}25`; underlineEl.style.background=g.color;
+    if(!anim) return;
+    const ow=document.querySelector('.showcase-wipe'); if(ow) ow.remove();
+    const w=document.createElement('div'); w.className='showcase-wipe';
+    w.style.background=`linear-gradient(to right,transparent,${g.color}18,transparent)`;
+    bgEl.parentElement.insertBefore(w,bgEl.nextSibling);
+    w.addEventListener('animationend',()=>w.remove(),{once:true});
+    flashEl.style.animation='none'; flashEl.offsetHeight; flashEl.style.animation='';
     titleEl.classList.remove('slam','out'); titleEl.offsetHeight; titleEl.classList.add('slam');
     artEl.classList.remove('slam','out');   artEl.offsetHeight;   artEl.classList.add('slam');
-    underlineEl.style.animation = 'none'; underlineEl.offsetHeight; underlineEl.style.animation = '';
+    underlineEl.style.animation='none'; underlineEl.offsetHeight; underlineEl.style.animation='';
 }
-
-function showcaseNext() {
+function showcaseNext(){
     titleEl.classList.remove('slam'); titleEl.classList.add('out');
     artEl.classList.remove('slam');   artEl.classList.add('out');
-    setTimeout(() => {
-        showcaseIndex = (showcaseIndex + 1) % GAMES.length;
-        applyShowcase(GAMES[showcaseIndex], true);
-    }, 250);
+    setTimeout(()=>{ showcaseIdx=(showcaseIdx+1)%GAMES.length; applyShowcase(GAMES[showcaseIdx],true) },250);
 }
+function startShowcase(){ applyShowcase(GAMES[0],false); setTimeout(()=>applyShowcase(GAMES[0],true),200); showcaseTimer=setInterval(showcaseNext,3500) }
+function stopShowcase(){ clearInterval(showcaseTimer) }
 
-function startShowcase() {
-    applyShowcase(GAMES[0], false);
-    setTimeout(() => applyShowcase(GAMES[0], true), 200);
-    showcaseTimer = setInterval(showcaseNext, 3500);
-}
-
-function stopShowcase() { clearInterval(showcaseTimer); }
-
-/* ─── Continue Playing shelf ─── */
-async function renderShelf() {
-    const roms  = await dbGetAll(STORE_ROMS);
-    const saves = await dbGetAll(STORE_SAVES);
-    const saveMap = {};
-    saves.forEach(s => saveMap[s.id] = s);
-
-    const shelf  = document.getElementById('continue-shelf');
-    const games  = document.getElementById('shelf-games');
-    games.innerHTML = '';
-
-    if (roms.length === 0) { shelf.classList.remove('visible'); return; }
+/* ─── Continue shelf ─── */
+async function renderShelf(){
+    const roms=await dbGetAll(S_ROMS), saves=await dbGetAll(S_SAVES);
+    const saveMap={}; saves.forEach(s=>saveMap[s.id]=s);
+    const shelf=document.getElementById('continue-shelf'), games=document.getElementById('shelf-games');
+    games.innerHTML='';
+    if(!roms.length){ shelf.classList.remove('visible'); return }
     shelf.classList.add('visible');
-
-    roms.sort((a,b) => (saveMap[b.id]?.savedAt || b.savedAt) - (saveMap[a.id]?.savedAt || a.savedAt));
-
-    roms.forEach(rom => {
-        const save = saveMap[rom.id];
-        const card = document.createElement('div');
-        card.className = 'save-card';
-        card.title = `Play ${rom.name}`;
-
-        const thumb = document.createElement('div');
-        thumb.className = 'save-card-thumb placeholder';
-        thumb.textContent = '🎮';
-        thumb.style.height = '68px';
-        thumb.style.display = 'flex';
-        thumb.style.alignItems = 'center';
-        thumb.style.justifyContent = 'center';
-        thumb.style.background = 'var(--bg-elevated)';
-
-        const info = document.createElement('div');
-        info.className = 'save-card-info';
-        info.innerHTML = `
+    roms.sort((a,b)=>(saveMap[b.id]?.savedAt||b.savedAt)-(saveMap[a.id]?.savedAt||a.savedAt));
+    roms.forEach(rom=>{
+        const save=saveMap[rom.id];
+        const card=document.createElement('div'); card.className='save-card'; card.title=`Play ${rom.name}`;
+        card.innerHTML=`
+          <div class="save-card-thumb">🎮</div>
+          <div class="save-card-info">
             <div class="save-card-name">${rom.name}</div>
-            <div class="save-card-meta">${save ? '● ' + formatDate(save.savedAt) : 'No save yet'}</div>
-        `;
-
-        const play = document.createElement('div');
-        play.className = 'save-card-play';
-        play.textContent = '▶';
-
-        const del = document.createElement('button');
-        del.className = 'save-card-delete';
-        del.textContent = '✕';
-        del.title = 'Delete save';
-        del.addEventListener('click', async e => {
+            <div class="save-card-meta font-mono">${save?'● '+fmtDate(save.savedAt):'No save yet'}</div>
+          </div>
+          <div class="save-card-play">▶</div>
+          <button class="save-card-delete" title="Delete">✕</button>`;
+        card.querySelector('.save-card-delete').addEventListener('click',async e=>{
             e.stopPropagation();
-            if (!confirm(`Delete "${rom.name}" and its save data?`)) return;
-            await dbDelete(STORE_ROMS, rom.id);
-            await dbDelete(STORE_SAVES, rom.id);
-            renderShelf();
+            if(!confirm(`Delete "${rom.name}" and its save?`)) return;
+            await dbDelete(S_ROMS,rom.id); await dbDelete(S_SAVES,rom.id); renderShelf();
         });
-
-        card.appendChild(thumb);
-        card.appendChild(info);
-        card.appendChild(play);
-        card.appendChild(del);
-
-        card.addEventListener('click', () => launchFromDB(rom.id));
+        card.addEventListener('click',()=>launchFromDB(rom.id));
         games.appendChild(card);
     });
 }
 
 /* ─── Emulator state ─── */
-let currentRomId   = null;
-let currentRomName = '';
-let currentRomURL  = null;
-let emuReady       = false;
-let muted          = false;
-let autoSaveTimer  = null;
-const SPEEDS       = [1, 2, 4];
-let speedIdx       = 0;
-let emuScriptLoaded = false;
+let romId=null, romName='', romURL=null, emuReady=false, muted=false, autoSaveTimer=null;
+const SPEEDS=[1,2,4]; let speedIdx=0;
+let ejsLoaded=false;
 
-/* ─── Launch from file picker ─── */
-async function launchFromFile(file) {
-    const name = file.name.replace(/\.(gba|zip)$/i, '');
-    const id   = slugify(name) + '-' + file.size;
-
-    // Read and store ROM in IndexedDB
-    const buf = await file.arrayBuffer();
-    await dbPut(STORE_ROMS, { id, name, data: buf, savedAt: Date.now() });
-
-    // Create object URL for EmulatorJS
-    const blob = new Blob([buf], { type: 'application/octet-stream' });
-    const url  = URL.createObjectURL(blob);
-
-    launchEmulator(id, name, url);
+/* ─── File launch ─── */
+async function launchFromFile(file){
+    const name=file.name.replace(/\.(gba|zip)$/i,'');
+    const id=slugify(name)+'-'+file.size;
+    const buf=await file.arrayBuffer();
+    await dbPut(S_ROMS,{id,name,data:buf,savedAt:Date.now()});
+    const url=URL.createObjectURL(new Blob([buf],{type:'application/octet-stream'}));
+    launchEmulator(id,name,url);
+}
+async function launchFromDB(id){
+    const rom=await dbGet(S_ROMS,id);
+    if(!rom){ showError('ROM not found.'); return }
+    const url=URL.createObjectURL(new Blob([rom.data],{type:'application/octet-stream'}));
+    launchEmulator(id,rom.name,url);
 }
 
-/* ─── Launch from saved DB entry ─── */
-async function launchFromDB(id) {
-    const rom = await dbGet(STORE_ROMS, id);
-    if (!rom) { showError('ROM not found in storage.'); return; }
-    const blob = new Blob([rom.data], { type: 'application/octet-stream' });
-    const url  = URL.createObjectURL(blob);
-    launchEmulator(id, rom.name, url);
-}
-
-/* ─── Core launcher ─── */
-function launchEmulator(id, name, romURL) {
+/* ─── CORE LAUNCH ─── */
+function launchEmulator(id,name,url){
     stopShowcase();
-    currentRomId   = id;
-    currentRomName = name;
-    currentRomURL  = romURL;
-    emuReady       = false;
-    speedIdx       = 0;
+    romId=id; romName=name; romURL=url; emuReady=false; speedIdx=0;
 
-    // Update toolbar name
-    document.getElementById('tb-game-name').textContent = name.toUpperCase();
-    document.getElementById('btn-speed').textContent = '1×';
+    document.getElementById('tb-game-name').textContent=name.toUpperCase();
+    document.getElementById('btn-speed').textContent='1×';
     document.getElementById('btn-speed').classList.remove('fast');
 
-    // Transition UI
-    const idleScreen = document.getElementById('idle-screen');
-    idleScreen.classList.add('fade-out');
-    setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
+    // Reset emulator playing area state
+    const emuPlaying=document.getElementById('emu-playing');
+    emuPlaying.classList.remove('expanded');
+    const frame=document.getElementById('gba-shell-frame');
+    frame.style.setProperty('--expand-scale','1');
+    frame.style.setProperty('--expand-translate-x','0px');
+    frame.style.setProperty('--expand-translate-y','0px');
+    document.getElementById('gba-play-img').style.opacity='';
+    document.getElementById('play-power-led').style.opacity='';
 
-    const emuScreen = document.getElementById('emu-screen');
-    emuScreen.classList.add('active');
-    document.getElementById('power-led').classList.add('on');
+    // Fade idle → show emu
+    const idle=document.getElementById('idle-screen');
+    idle.classList.add('fade-out');
+    setTimeout(()=>idle.style.display='none',600);
 
-    // Show loading
-    setLoadingStatus('Loading ROM…', 10);
+    document.getElementById('emu-screen').classList.add('active');
+    document.getElementById('idle-power-led').classList.add('on');
 
-    // Configure EmulatorJS BEFORE loading the script
+    // Show loading bar animation
+    loaderWrap.classList.remove('done');
+    loaderBar.style.transition='none'; loaderBar.style.width='0%';
+    requestAnimationFrame(()=>{
+        loaderBar.style.transition='width .35s ease-out';
+        setBar(20);
+    });
+    document.getElementById('emu-loading').classList.remove('hidden');
+    document.getElementById('loading-status').textContent='Loading ROM…';
+
+    // Clear previous game div content
+    const gameDiv=document.getElementById('game');
+    gameDiv.innerHTML='';
+
+    /* ── EmulatorJS config ── */
     window.EJS_player        = '#game';
     window.EJS_core          = 'gba';
-    window.EJS_gameUrl       = romURL;
+    window.EJS_gameUrl       = url;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color         = '#00bcf0';
     window.EJS_startOnLoaded = true;
     window.EJS_language      = 'en-US';
+    window.EJS_defaultControls = 1;
 
-    // Disable ALL EJS UI — we handle everything ourselves
+    /* Disable EJS's own UI entirely */
     window.EJS_Buttons = {
-        playPause:    false,
-        restart:      false,
-        mute:         false,
-        settings:     false,
-        fullscreen:   false,
-        saveState:    false,
-        loadState:    false,
-        screenRecord: false,
-        gamepad:      false,
-        cheat:        false,
-        volume:       false,
-        netplay:      false,
+        playPause:false, restart:false, mute:false, settings:false,
+        fullscreen:false, saveState:false, loadState:false,
+        screenRecord:false, gamepad:false, cheat:false,
+        volume:false, netplay:false,
     };
 
-    // Callbacks
-    window.EJS_onGameStart = () => {
-        emuReady = true;
-        setLoadingStatus('Running!', 100);
-        setTimeout(() => {
-            document.getElementById('emu-loading').classList.add('hidden');
-        }, 600);
+    window.EJS_onGameStart = onEmuReady;
+    window.EJS_onLoadState = ()=>{};
+    window.EJS_onSaveState = ()=>{};
 
-        // Load save state if one exists
-        loadSaveState();
+    setBar(40);
+    document.getElementById('loading-status').textContent='Fetching engine…';
 
-        // Auto-save every 30 seconds
-        clearInterval(autoSaveTimer);
-        autoSaveTimer = setInterval(() => {
-            if (emuReady) triggerAutoSave();
-        }, 30000);
-    };
-
-    window.EJS_onLoadState = () => { /* state loaded from our system */ };
-    window.EJS_onSaveState = () => { /* we handle save manually */ };
-
-    setLoadingStatus('Fetching emulator engine…', 30);
-
-    if (!emuScriptLoaded) {
-        emuScriptLoaded = true;
-        const s = document.createElement('script');
-        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-        s.onload = () => setLoadingStatus('Booting GBA…', 65);
-        s.onerror = () => showError('Failed to load EmulatorJS. Check your connection.');
-        document.body.appendChild(s);
-    } else {
-        // Re-init for subsequent ROMs
-        const gameDiv = document.getElementById('game');
-        gameDiv.innerHTML = '';
-        document.getElementById('emu-loading').classList.remove('hidden');
-        setLoadingStatus('Reloading engine…', 30);
-        const s = document.createElement('script');
-        s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js?' + Date.now();
-        s.onload = () => setLoadingStatus('Booting GBA…', 65);
-        document.body.appendChild(s);
+    if(ejsLoaded){
+        /* Re-inject loader for new ROM */
+        const old=document.getElementById('ejs-loader');
+        if(old) old.remove();
     }
+    const s=document.createElement('script');
+    s.id='ejs-loader';
+    s.src='https://cdn.emulatorjs.org/stable/data/loader.js';
+    s.onload=()=>{ setBar(70); document.getElementById('loading-status').textContent='Booting GBA…' };
+    s.onerror=()=>showError('Failed to load EmulatorJS. Check your internet connection.');
+    document.body.appendChild(s);
+    ejsLoaded=true;
 }
 
-function setLoadingStatus(msg, pct) {
-    document.getElementById('loading-status').textContent = msg;
-    document.getElementById('loading-bar').style.width = pct + '%';
+/* ─── Called when EmulatorJS signals game started ─── */
+function onEmuReady(){
+    emuReady=true;
+    setBar(100);
+    document.getElementById('loading-status').textContent='Running!';
+
+    /* Add scanline sweep effect */
+    const overlay=document.getElementById('gba-screen-overlay-live');
+    const scan=document.createElement('div'); scan.className='scanline-sweep';
+    overlay.appendChild(scan);
+    scan.addEventListener('animationend',()=>scan.remove(),{once:true});
+
+    /* Power LED on */
+    document.getElementById('play-power-led').classList.add('on');
+
+    /* Load save state if exists */
+    setTimeout(()=>loadSaveState(), 500);
+
+    /* ── ZOOM ANIMATION ──
+       After a brief pause, calculate the scale needed to make the screen
+       overlay fill the entire viewport, then apply it via CSS vars.
+       The spring transition (1s) does the actual animation.
+       After the transition ends, add .expanded to fade out the GBA shell.
+    */
+    setTimeout(()=>{
+        triggerZoom();
+    }, 800);
+
+    /* Hide loading overlay after zoom starts */
+    setTimeout(()=>{
+        document.getElementById('emu-loading').classList.add('hidden');
+    }, 900);
+
+    /* Auto-save every 30s */
+    clearInterval(autoSaveTimer);
+    autoSaveTimer=setInterval(()=>{ if(emuReady) triggerAutoSave() },30000);
 }
 
-/* ─── Save / Load state ─── */
-async function triggerAutoSave() {
-    if (!emuReady || !window.EJS_emulator) return;
-    try {
-        // EJS exposes saveState() which returns a promise resolving to base64 data
-        const state = await window.EJS_emulator.saveState();
-        if (!state) return;
-        await dbPut(STORE_SAVES, {
-            id: currentRomId,
-            state: typeof state === 'string' ? state : JSON.stringify(state),
-            savedAt: Date.now()
-        });
-        flashSaveIndicator();
-    } catch(e) { /* silent — auto-save failures shouldn't interrupt gameplay */ }
+function triggerZoom(){
+    const frame=document.getElementById('gba-shell-frame');
+    const overlay=document.getElementById('gba-screen-overlay-live');
+    const playing=document.getElementById('emu-playing');
+
+    const frameRect  =frame.getBoundingClientRect();
+    const overlayRect=overlay.getBoundingClientRect();
+    const vw=playing.clientWidth, vh=playing.clientHeight;
+
+    /* Current screen dimensions in page pixels */
+    const scrW=overlayRect.width, scrH=overlayRect.height;
+
+    /* Scale needed so the screen fills the viewport */
+    const scaleX=vw/scrW, scaleY=vh/scrH;
+    const scale=Math.min(scaleX,scaleY);   /* keep aspect ratio */
+
+    /* Center of overlay relative to frame (for transform-origin) */
+    /* transform-origin is already set to the screen center via CSS vars — good.
+       We need to translate so the scaled screen center lines up with the viewport center.
+       Screen center (viewport coords): overlayRect.left + scrW/2, overlayRect.top + scrH/2
+       Viewport center: vw/2 + playing.getBoundingClientRect().left, vh/2 + playing.getBoundingClientRect().top
+    */
+    const playingRect=playing.getBoundingClientRect();
+    const scrCx=overlayRect.left+scrW/2 - playingRect.left;   // relative to playing
+    const scrCy=overlayRect.top +scrH/2 - playingRect.top;
+    const vpCx=vw/2, vpCy=vh/2;
+
+    /* Translation needed (before scaling) */
+    const tx=(vpCx-scrCx)/scale;
+    const ty=(vpCy-scrCy)/scale;
+
+    /* Apply */
+    frame.style.setProperty('--expand-scale', scale);
+    frame.style.setProperty('--expand-translate-x', tx+'px');
+    frame.style.setProperty('--expand-translate-y', ty+'px');
+
+    /* After spring transition completes (~1s), mark as expanded */
+    setTimeout(()=>{
+        playing.classList.add('expanded');
+        /* Now stretch the overlay to fill its zoomed area fully */
+        overlay.style.borderRadius='0';
+    },1050);
 }
 
-async function manualSave() {
-    await triggerAutoSave();
-    flashSaveIndicator();
+/* ─── Save / Load ─── */
+async function triggerAutoSave(){
+    if(!emuReady||!window.EJS_emulator) return;
+    try{
+        const state=window.EJS_emulator.saveState();
+        if(!state) return;
+        const data=typeof state==='string'?state:JSON.stringify(state);
+        await dbPut(S_SAVES,{id:romId,state:data,savedAt:Date.now()});
+        flashSave();
+    }catch(e){}
+}
+async function loadSaveState(){
+    if(!window.EJS_emulator) return;
+    try{
+        const saved=await dbGet(S_SAVES,romId);
+        if(!saved?.state) return;
+        const state=typeof saved.state==='string'?saved.state:JSON.parse(saved.state);
+        window.EJS_emulator.loadState(state);
+    }catch(e){}
+}
+function flashSave(){
+    const ind=document.getElementById('save-indicator');
+    ind.classList.add('show'); setTimeout(()=>ind.classList.remove('show'),2000);
 }
 
-async function loadSaveState() {
-    if (!window.EJS_emulator) return;
-    try {
-        const saved = await dbGet(STORE_SAVES, currentRomId);
-        if (!saved?.state) return;
-        const state = typeof saved.state === 'string' ? saved.state : JSON.parse(saved.state);
-        await window.EJS_emulator.loadState(state);
-    } catch(e) { /* no save or incompatible — start fresh */ }
-}
-
-function flashSaveIndicator() {
-    const ind = document.getElementById('save-indicator');
-    ind.classList.add('show');
-    setTimeout(() => ind.classList.remove('show'), 2000);
-}
-
-/* ─── Speed control ─── */
-function cycleSpeed() {
-    speedIdx = (speedIdx + 1) % SPEEDS.length;
-    const spd = SPEEDS[speedIdx];
-    const btn = document.getElementById('btn-speed');
-    btn.textContent = spd + '×';
-    btn.classList.toggle('fast', spd > 1);
-    if (window.EJS_emulator?.setSpeed) {
-        window.EJS_emulator.setSpeed(spd);
-    } else if (window.EJS_emulator?.gameManager?.setSpeed) {
-        window.EJS_emulator.gameManager.setSpeed(spd);
-    }
+/* ─── Speed ─── */
+function cycleSpeed(){
+    speedIdx=(speedIdx+1)%SPEEDS.length;
+    const spd=SPEEDS[speedIdx];
+    const btn=document.getElementById('btn-speed');
+    btn.textContent=spd+'×'; btn.classList.toggle('fast',spd>1);
+    try{
+        if(window.EJS_emulator?.setSpeed) window.EJS_emulator.setSpeed(spd);
+        else if(window.EJS_emulator?.gameManager?.setSpeed) window.EJS_emulator.gameManager.setSpeed(spd);
+    }catch(e){}
 }
 
 /* ─── Mute ─── */
-function toggleMute() {
-    muted = !muted;
-    const btn = document.getElementById('btn-mute');
-    btn.textContent = muted ? '🔇' : '🔊';
-    if (window.EJS_emulator?.setVolume) {
-        window.EJS_emulator.setVolume(muted ? 0 : 1);
-    }
+function toggleMute(){
+    muted=!muted;
+    document.getElementById('btn-mute').textContent=muted?'🔇':'🔊';
+    try{
+        if(window.EJS_emulator?.setVolume) window.EJS_emulator.setVolume(muted?0:1);
+    }catch(e){}
 }
 
 /* ─── Return to menu ─── */
-async function returnToMenu() {
-    // Save before leaving
-    if (emuReady) await triggerAutoSave();
-    clearInterval(autoSaveTimer);
-    emuReady = false;
+async function returnToMenu(){
+    if(emuReady) await triggerAutoSave();
+    clearInterval(autoSaveTimer); emuReady=false;
+    if(romURL) URL.revokeObjectURL(romURL);
 
-    if (currentRomURL) URL.revokeObjectURL(currentRomURL);
+    /* Tear down EJS */
+    const gameDiv=document.getElementById('game'); gameDiv.innerHTML='';
+    const old=document.getElementById('ejs-loader'); if(old) old.remove();
+    ejsLoaded=false;
+    delete window.EJS_emulator;
 
-    // Reset emulator div
-    const gameDiv = document.getElementById('game');
-    gameDiv.innerHTML = '';
-    emuScriptLoaded = false;
-
-    // Reset loading overlay
+    /* Reset zoom state */
+    const frame=document.getElementById('gba-shell-frame');
+    frame.style.removeProperty('--expand-scale');
+    frame.style.removeProperty('--expand-translate-x');
+    frame.style.removeProperty('--expand-translate-y');
+    document.getElementById('emu-playing').classList.remove('expanded');
+    document.getElementById('gba-screen-overlay-live').style.borderRadius='';
+    document.getElementById('play-power-led').classList.remove('on');
+    document.getElementById('gba-play-img').style.opacity='';
     document.getElementById('emu-loading').classList.remove('hidden');
-    document.getElementById('loading-bar').style.width = '0%';
-    document.getElementById('loading-status').textContent = 'Initializing…';
+    document.getElementById('loading-status').textContent='Initializing…';
+    loaderBar.style.width='0%'; loaderWrap.classList.remove('done');
 
-    // Show idle, hide emu
+    /* Show idle */
     document.getElementById('emu-screen').classList.remove('active');
-    const idle = document.getElementById('idle-screen');
-    idle.style.display = '';
-    idle.classList.remove('fade-out');
+    const idle=document.getElementById('idle-screen');
+    idle.style.display=''; idle.classList.remove('fade-out');
 
-    // Refresh shelf
     await renderShelf();
     startShowcase();
 }
 
-/* ─── Event wiring ─── */
-// Idle screen — click to open file
-const idleScreen = document.getElementById('idle-screen');
-idleScreen.addEventListener('click', e => {
-    // Don't trigger if clicking shelf buttons/cards
-    if (e.target.closest('#continue-shelf')) return;
+/* ─── Wiring ─── */
+const idleScreen=document.getElementById('idle-screen');
+idleScreen.addEventListener('click',e=>{
+    if(e.target.closest('#continue-shelf')) return;
     document.getElementById('rom-input').click();
 });
-idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over'); });
-idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
-idleScreen.addEventListener('drop', e => {
+idleScreen.addEventListener('dragover',e=>{e.preventDefault();idleScreen.classList.add('drag-over')});
+idleScreen.addEventListener('dragleave',()=>idleScreen.classList.remove('drag-over'));
+idleScreen.addEventListener('drop',e=>{
     e.preventDefault(); idleScreen.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f) launchFromFile(f);
+    const f=e.dataTransfer.files[0]; if(f) launchFromFile(f);
 });
-
-document.getElementById('rom-input').addEventListener('change', e => {
-    const f = e.target.files[0];
-    if (f) launchFromFile(f);
-    e.target.value = '';
+document.getElementById('rom-input').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(f) launchFromFile(f); e.target.value='';
 });
-
-document.getElementById('shelf-add-btn').addEventListener('click', e => {
-    e.stopPropagation();
-    document.getElementById('rom-input').click();
+document.getElementById('shelf-add-btn').addEventListener('click',e=>{
+    e.stopPropagation(); document.getElementById('rom-input').click();
 });
-
-// Toolbar buttons
-document.getElementById('btn-speed').addEventListener('click', cycleSpeed);
-document.getElementById('btn-mute').addEventListener('click', toggleMute);
-document.getElementById('btn-back').addEventListener('click', returnToMenu);
-document.getElementById('btn-save-state').addEventListener('click', manualSave);
-document.getElementById('btn-load-state').addEventListener('click', loadSaveState);
-document.getElementById('btn-load-new').addEventListener('click', e => {
-    e.stopPropagation();
-    document.getElementById('rom-input').click();
+document.getElementById('btn-speed').addEventListener('click',cycleSpeed);
+document.getElementById('btn-mute').addEventListener('click',toggleMute);
+document.getElementById('btn-back').addEventListener('click',returnToMenu);
+document.getElementById('btn-save-state').addEventListener('click',()=>triggerAutoSave());
+document.getElementById('btn-load-state').addEventListener('click',loadSaveState);
+document.getElementById('btn-load-new').addEventListener('click',e=>{
+    e.stopPropagation(); document.getElementById('rom-input').click();
 });
-document.getElementById('btn-fullscreen').addEventListener('click', () => {
-    const wrap = document.getElementById('emu-wrap');
-    if (document.fullscreenElement) document.exitFullscreen();
-    else wrap.requestFullscreen().catch(() => {});
+document.getElementById('btn-fullscreen').addEventListener('click',()=>{
+    const wrap=document.getElementById('emu-playing');
+    if(document.fullscreenElement) document.exitFullscreen();
+    else wrap.requestFullscreen().catch(()=>{});
 });
-
-// Auto-save on visibility change (tab switch / minimize)
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden && emuReady) triggerAutoSave();
-});
-
-// Auto-save before unload
-window.addEventListener('beforeunload', () => {
-    if (emuReady) triggerAutoSave();
-});
+document.addEventListener('visibilitychange',()=>{ if(document.hidden&&emuReady) triggerAutoSave() });
+window.addEventListener('beforeunload',()=>{ if(emuReady) triggerAutoSave() });
 
 /* ─── Boot ─── */
-async function boot() {
-    db = await openDB();
+async function boot(){
+    db=await openDB();
     startShowcase();
     await renderShelf();
 }
-
 boot().catch(console.error);
 
 })();
