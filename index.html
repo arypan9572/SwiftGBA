@@ -5,894 +5,406 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Free GBA emulator running entirely in your browser">
         <meta name="theme-color" content="#0F1114">
-        <link rel="canonical" href="https://rustygba.com">
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="https://rustygba.com">
-        <meta property="og:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
-        <meta property="og:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
-        <meta property="og:image" content="https://rustygba.com/og-image.png">
-        <meta property="og:site_name" content="RustyGBA">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
-        <meta name="twitter:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
-        <meta name="twitter:image" content="https://rustygba.com/og-image.png">
-        <link rel="preload" href="https://rustygba.com/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="https://rustygba.com/fonts/ClashDisplay-Semibold.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-        <link rel="icon" href="/favicon.ico" sizes="32x32">
         <title>SwiftGBA</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <style>
             @font-face {
                 font-family: Clash Display;
                 src: url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2) format("woff2");
-                font-weight: 600;
-                font-style: normal;
-                font-display: swap
+                font-weight: 600; font-style: normal; font-display: swap
             }
-
             @font-face {
                 font-family: Satoshi;
                 src: url(https://rustygba.com/fonts/Satoshi-Variable.woff2) format("woff2");
-                font-weight: 400 700;
-                font-style: normal;
-                font-display: swap
+                font-weight: 400 700; font-style: normal; font-display: swap
             }
-
             @font-face {
                 font-family: Departure Mono;
                 src: url(https://rustygba.com/fonts/DepartureMono-Regular.woff2) format("woff2");
-                font-weight: 400;
-                font-style: normal;
-                font-display: swap
+                font-weight: 400; font-style: normal; font-display: swap
             }
 
             :root {
                 --bg-deep: #0F1114;
                 --bg-base: #14161B;
                 --bg-panel: #1C1F24;
-                --bg-window: #181A1F;
                 --bg-elevated: #252830;
                 --bg-input: #292C31;
                 --border-subtle: #2E3238;
-                --border-focus: #3E4248;
                 --text-primary: #E6E8EC;
                 --text-secondary: #8B8F96;
                 --text-tertiary: #585C64;
                 --text-ghost: #3A3E46;
                 --accent: #00bcf0;
-                --accent-hover: #00bcf0;
-                --accent-subtle: rgba(232, 84, 62, .12);
-                --accent-glow: rgba(232, 84, 62, .35);
                 --led-green: #00E85A;
                 --led-green-glow: rgba(0, 232, 90, .3);
                 --error: #E84057;
-                --success: #34D399;
-                --space-1: 4px;
-                --space-2: 8px;
-                --space-3: 12px;
-                --space-4: 16px;
-                --space-5: 24px;
-                --space-6: 32px;
-                --space-7: 48px;
-                --space-8: 64px;
+                --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+                --space-5: 24px; --space-6: 32px; --space-7: 48px;
                 --font-display: "Clash Display", system-ui, sans-serif;
                 --font-ui: "Satoshi", system-ui, sans-serif;
                 --font-mono: "Departure Mono", ui-monospace, monospace;
-                --text-xs: 11px;
-                --text-sm: 13px;
-                --text-base: 15px;
-                --text-lg: 18px;
-                --text-xl: 24px;
-                --text-2xl: 32px;
-                --text-3xl: 48px;
+                --text-xs: 11px; --text-sm: 13px; --text-base: 15px;
+                --text-lg: 18px; --text-xl: 24px; --text-2xl: 32px;
                 --ease-spring: cubic-bezier(.22, 1, .36, 1);
-                --ease-out: cubic-bezier(0, 0, .2, 1);
-                --ease-in: cubic-bezier(.4, 0, 1, 1);
-                --duration-fast: .15s;
-                --duration-normal: .28s;
-                --duration-slow: .5s;
-                --scale: 3
+                --duration-fast: .15s; --duration-normal: .28s;
             }
 
-            *,*:before,*:after {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0
-            }
+            *, *:before, *:after { box-sizing: border-box; margin: 0; padding: 0 }
 
-            html,body {
-                height: 100dvh;
-                width: 100vw;
-                overflow: hidden;
-                background: var(--bg-deep);
-                color: var(--text-primary);
-                font-family: var(--font-ui);
-                font-size: var(--text-base);
-                line-height: 1.5;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale
+            html, body {
+                height: 100dvh; width: 100vw; overflow: hidden;
+                background: var(--bg-deep); color: var(--text-primary);
+                font-family: var(--font-ui); font-size: var(--text-base);
+                line-height: 1.5; -webkit-font-smoothing: antialiased;
             }
 
             .font-display { font-family: var(--font-display) }
             .font-mono { font-family: var(--font-mono) }
 
-            @media(prefers-reduced-motion:reduce) {
-                *,*:before,*:after {
-                    animation-duration: .01ms!important;
-                    transition-duration: var(--duration-fast)!important
-                }
-            }
-
-            .emulator-loading,.emulator-error,.emulator-idle {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100dvh;
-                gap: var(--space-4);
-                transition: opacity .6s ease
-            }
-
-            .emulator-idle.fade-out { opacity: 0 }
-            .emulator-idle.fade-out .showcase-title { animation: title-exit .4s ease-in forwards }
-            .emulator-idle.fade-out .showcase-art { animation: art-exit .4s ease-in .1s forwards }
-            .emulator-idle.fade-out .showcase-slash,
-            .emulator-idle.fade-out .landing-brand,
-            .emulator-idle.fade-out .landing-controls,
-            .emulator-idle.fade-out .landing-disclaimer,
-            .emulator-idle.fade-out .landing-copyright {
-                opacity: 0;
-                transition: opacity .3s ease
-            }
-
-            .emulator-playing {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100dvh;
-                overflow: hidden
-            }
-
-            .gba-shell,.gba-play-shell,.gba-shell-frame {
-                --gba-screen-left: 29.4%;
-                --gba-screen-top: 22.2%;
-                --gba-screen-width: 40.6%;
-                --gba-screen-height: 45.1%;
-                --gba-screen-center-x: calc(var(--gba-screen-left) + (var(--gba-screen-width) / 2));
-                --gba-screen-center-y: calc(var(--gba-screen-top) + (var(--gba-screen-height) / 2));
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center
-            }
-
-            .gba-shell { transform: translate(-6vw) }
-
-            .gba-image {
-                width: min(65vw,640px);
-                height: auto;
-                user-select: none;
-                pointer-events: none;
-                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
-                transition: opacity .45s ease .7s,filter .45s ease .7s
-            }
-
-            .gba-screen-overlay {
-                position: absolute;
-                left: var(--gba-screen-left);
-                top: var(--gba-screen-top);
-                width: var(--gba-screen-width);
-                height: var(--gba-screen-height);
-                z-index: 1;
-                overflow: hidden;
-                border-radius: 2px
-            }
-
-            .gba-screen-content {
-                position: absolute;
-                inset: 0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: var(--space-2);
-                padding: 0 6%;
-                text-align: center;
-                animation: screen-fade-in 1s ease forwards
-            }
-
-            @keyframes screen-fade-in {
-                0% { opacity: 0 }
-                to { opacity: 1 }
-            }
-
-            .gba-screen-text {
-                display: block;
-                width: 100%;
-                font-size: clamp(14px,2vw,20px);
-                font-weight: 600;
-                color: #c8ccd2;
-                text-shadow: 0 0 12px rgba(200,204,210,.5)
-            }
-
-            .gba-screen-hint {
-                display: block;
-                width: 100%;
-                font-size: clamp(10px,1.2vw,13px);
-                color: #8b8f96;
-                text-shadow: 0 0 8px rgba(139,143,150,.4)
-            }
-
-            .gba-power-led {
-                position: absolute;
-                left: 30.5%;
-                top: 22%;
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background: var(--text-ghost);
-                transition: all .4s ease
-            }
-
-            .gba-power-led.on {
-                background: var(--led-green);
-                box-shadow: 0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow)
-            }
-
-            .gba-play-shell {
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2
-            }
-
-            .gba-shell-frame {
-                position: relative;
-                width: min(65vw,640px);
-                transform: translate(var(--expand-translate-x, 0px),var(--expand-translate-y, 0px)) scale(var(--expand-scale, 1));
-                transform-origin: var(--gba-screen-center-x) var(--gba-screen-center-y);
-                transition: transform 1s var(--ease-spring)
-            }
-
-            .gba-play-shell .gba-image { width: 100%; transition: opacity .6s ease }
-            .gba-play-shell .gba-power-led { transition: opacity .6s ease }
-
-            .gba-screen-overlay-live {
-                transition: border-radius 1s var(--ease-spring),box-shadow 1s var(--ease-spring)
-            }
-
-            .gba-screen {
-                width: 100%;
-                display: block;
-                image-rendering: pixelated;
-                image-rendering: crisp-edges
-            }
-
-            .emulator-playing.in-shell .gba-play-shell .gba-image,
-            .emulator-playing.in-shell .gba-play-shell .gba-power-led { opacity: 1 }
-
-            .emulator-playing.expanded .gba-play-shell .gba-image {
-                opacity: 0;
-                transition: opacity .6s ease .8s
-            }
-
-            .emulator-playing.expanded .gba-play-shell .gba-power-led {
-                opacity: 0;
-                transition: opacity .4s ease .6s
-            }
-
-            .emulator-playing.expanded .gba-screen-overlay-live {
-                border-radius: 1px;
-                box-shadow: 0 0 16px #0006;
-                z-index: 10
-            }
-
-            .landing {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100dvh;
-                width: 100vw;
-                gap: var(--space-4);
+            /* ── IDLE / LANDING ── */
+            #idle-screen {
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                height: 100dvh; width: 100vw;
+                position: relative; overflow: hidden;
                 cursor: pointer;
-                overflow: hidden
+                transition: opacity .5s ease;
             }
-
-            .landing.drag-over {
-                background: radial-gradient(ellipse at center,rgba(232,84,62,.04) 0%,transparent 70%)
-            }
-
-            .landing.drag-over .gba-image {
-                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px var(--accent-glow))
-            }
+            #idle-screen.fade-out { opacity: 0; pointer-events: none }
 
             .showcase {
-                position: absolute;
-                inset: 0;
-                z-index: 0;
-                overflow: hidden;
-                pointer-events: none
+                position: absolute; inset: 0; z-index: 0;
+                overflow: hidden; pointer-events: none;
             }
-
-            .showcase-bg {
-                position: absolute;
-                inset: 0;
-                transition: background 0.6s ease
+            .showcase-bg { position: absolute; inset: 0; transition: background 0.6s ease }
+            .showcase-flash {
+                position: absolute; inset: 0; z-index: 4;
+                opacity: .15; pointer-events: none;
+                animation: flash-pop .3s ease-out forwards;
             }
+            @keyframes flash-pop { 0% { opacity: .2 } to { opacity: 0 } }
 
             .showcase-wipe {
-                position: absolute;
-                inset: -50%;
-                z-index: 5;
-                animation: wipe-sweep .4s ease-out forwards;
-                pointer-events: none
+                position: absolute; inset: -50%; z-index: 5;
+                animation: wipe-sweep .4s ease-out forwards; pointer-events: none;
             }
-
             @keyframes wipe-sweep {
                 0% { transform: translate(-100%) rotate(15deg) }
                 to { transform: translate(100%) rotate(15deg) }
             }
 
-            .showcase-flash {
-                position: absolute;
-                inset: 0;
-                z-index: 4;
-                opacity: .15;
-                animation: flash-pop .3s ease-out forwards;
-                pointer-events: none
-            }
-
-            @keyframes flash-pop {
-                0% { opacity: .2 }
-                to { opacity: 0 }
-            }
-
             .showcase-slash {
-                position: absolute;
-                top: -20%;
-                right: 18%;
-                width: 1px;
-                height: 140%;
+                position: absolute; top: -20%; right: 18%;
+                width: 1px; height: 140%;
                 border-right: 2px solid rgba(255,255,255,.04);
-                transform: rotate(15deg);
-                pointer-events: none;
-                transition: border-color 0.6s ease
+                transform: rotate(15deg); pointer-events: none;
+                transition: border-color 0.6s ease;
             }
 
             .showcase-title {
-                position: absolute;
-                top: 6%;
-                left: 4%;
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                z-index: 2
+                position: absolute; top: 6%; left: 4%;
+                display: flex; flex-direction: column; gap: 6px; z-index: 2;
             }
-
             .showcase-title.slam { animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-            .showcase-title.out { animation: title-exit .25s ease-in forwards }
+            .showcase-title.out  { animation: title-exit .25s ease-in forwards }
 
             @keyframes title-slam {
-                0% { opacity: 0; transform: translate(-80px) scale(1.1) }
+                0%  { opacity: 0; transform: translate(-80px) scale(1.1) }
                 60% { opacity: 1; transform: translate(8px) scale(1) }
-                to { opacity: 1; transform: translate(0) scale(1) }
+                to  { opacity: 1; transform: translate(0) scale(1) }
             }
-
             @keyframes title-exit {
-                0% { opacity: 1; transform: translate(0) }
-                to { opacity: 0; transform: translate(-40px) }
+                0%  { opacity: 1; transform: translate(0) }
+                to  { opacity: 0; transform: translate(-40px) }
             }
 
             .showcase-label {
-                font-size: 10px;
-                letter-spacing: .2em;
-                color: var(--text-ghost);
-                text-transform: uppercase
+                font-size: 10px; letter-spacing: .2em;
+                color: var(--text-ghost); text-transform: uppercase;
             }
-
             .showcase-name {
-                font-size: clamp(18px,2.5vw,32px);
-                font-weight: 600;
-                color: #ffffffe6;
-                line-height: 1.1;
+                font-size: clamp(18px,2.5vw,32px); font-weight: 600;
+                color: #ffffffe6; line-height: 1.1;
                 text-shadow: 0 2px 20px rgba(0,0,0,.6);
-                max-width: 320px;
-                white-space: nowrap
+                max-width: 320px; white-space: nowrap;
             }
-
             .showcase-underline {
-                width: 0;
-                height: 3px;
-                border-radius: 2px;
-                margin-top: 4px;
-                animation: underline-grow .4s ease-out .2s forwards
+                width: 0; height: 3px; border-radius: 2px; margin-top: 4px;
+                animation: underline-grow .4s ease-out .2s forwards;
             }
-
-            @keyframes underline-grow {
-                0% { width: 0 }
-                to { width: 50px }
-            }
+            @keyframes underline-grow { 0% { width: 0 } to { width: 50px } }
 
             .showcase-art {
-                position: absolute;
-                right: 8vw;
-                top: 28%;
-                z-index: 2
+                position: absolute; right: 8vw; top: 28%; z-index: 2;
             }
-
             .showcase-art.slam { animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards }
-            .showcase-art.out { animation: art-exit .25s ease-in forwards }
+            .showcase-art.out  { animation: art-exit .25s ease-in forwards }
 
             @keyframes art-slam {
-                0% { opacity: 0; transform: translate(120px) scale(.8) rotate(3deg) }
+                0%  { opacity: 0; transform: translate(120px) scale(.8) rotate(3deg) }
                 50% { opacity: 1; transform: translate(-10px) scale(1.03) rotate(-1deg) }
-                to { opacity: 1; transform: translate(0) scale(1) rotate(0) }
+                to  { opacity: 1; transform: translate(0) scale(1) rotate(0) }
             }
-
             @keyframes art-exit {
-                0% { opacity: 1; transform: translate(0) scale(1) }
-                to { opacity: 0; transform: translate(80px) scale(.9) }
+                0%  { opacity: 1; transform: translate(0) scale(1) }
+                to  { opacity: 0; transform: translate(80px) scale(.9) }
             }
 
             .showcase-art-img {
-                width: clamp(160px,20vw,280px);
-                height: auto;
+                width: clamp(160px,20vw,280px); height: auto;
                 border-radius: 8px;
-                box-shadow: 0 12px 48px #000000b3,0 4px 12px #00000080;
-                user-select: none;
-                pointer-events: none
+                box-shadow: 0 12px 48px #000000b3, 0 4px 12px #00000080;
+                user-select: none; pointer-events: none;
             }
 
-            @media(prefers-reduced-motion:reduce) {
-                .showcase-wipe,.showcase-flash { display: none }
-                .showcase-title.slam,.showcase-art.slam { animation: none; opacity: 1; transform: none }
-                .showcase-title.out,.showcase-art.out { animation: none; opacity: 0 }
+            /* GBA shell */
+            .gba-shell {
+                --gba-screen-left: 29.4%; --gba-screen-top: 22.2%;
+                --gba-screen-width: 40.6%; --gba-screen-height: 45.1%;
+                position: relative; display: flex;
+                align-items: center; justify-content: center;
+                transform: translate(-6vw); z-index: 1;
+            }
+            .gba-image {
+                width: min(65vw,640px); height: auto;
+                user-select: none; pointer-events: none;
+                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
+            }
+            .gba-screen-overlay {
+                position: absolute;
+                left: var(--gba-screen-left); top: var(--gba-screen-top);
+                width: var(--gba-screen-width); height: var(--gba-screen-height);
+                z-index: 1; overflow: hidden; border-radius: 2px;
+            }
+            .gba-screen-content {
+                position: absolute; inset: 0;
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: var(--space-2); padding: 0 6%; text-align: center;
+                animation: screen-fade-in 1s ease forwards;
+            }
+            @keyframes screen-fade-in { 0% { opacity: 0 } to { opacity: 1 } }
+            .gba-screen-text {
+                display: block; width: 100%;
+                font-size: clamp(14px,2vw,20px); font-weight: 600;
+                color: #c8ccd2; text-shadow: 0 0 12px rgba(200,204,210,.5);
+            }
+            .gba-screen-hint {
+                display: block; width: 100%;
+                font-size: clamp(10px,1.2vw,13px); color: #8b8f96;
+                text-shadow: 0 0 8px rgba(139,143,150,.4);
+            }
+            .gba-power-led {
+                position: absolute; left: 30.5%; top: 22%;
+                width: 6px; height: 6px; border-radius: 50%;
+                background: var(--text-ghost); transition: all .4s ease;
+            }
+            .gba-power-led.on {
+                background: var(--led-green);
+                box-shadow: 0 0 6px var(--led-green-glow), 0 0 16px var(--led-green-glow);
             }
 
+            /* Brand / controls */
             .landing-brand {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: var(--space-2);
-                z-index: 1;
-                transform: translate(-6vw)
+                display: flex; flex-direction: column; align-items: center;
+                gap: var(--space-2); z-index: 1; transform: translate(-6vw);
             }
-
             .landing-title {
-                font-size: var(--text-2xl);
-                font-weight: 600;
-                letter-spacing: -.02em;
-                line-height: 1
+                font-size: var(--text-2xl); font-weight: 600;
+                letter-spacing: -.02em; line-height: 1;
             }
-
             .landing-title .accent { color: var(--accent); letter-spacing: .06em }
             .landing-title .dot { color: var(--text-tertiary) }
 
-            .landing-error {
-                position: fixed;
-                bottom: var(--space-7);
-                left: 50%;
-                transform: translate(-50%);
-                padding: var(--space-2) var(--space-4);
-                background: var(--bg-panel);
-                border: 1px solid var(--error);
-                border-radius: 8px;
-                font-size: var(--text-sm);
-                color: var(--error);
-                z-index: 10
-            }
-
             .landing-controls {
-                display: flex;
-                align-items: center;
-                gap: var(--space-3);
-                font-size: var(--text-xs);
-                color: var(--text-ghost);
-                z-index: 1;
-                transform: translate(-6vw)
+                display: flex; align-items: center; gap: var(--space-3);
+                font-size: var(--text-xs); color: var(--text-ghost);
+                z-index: 1; transform: translate(-6vw);
             }
-
-            .landing-copyright {
-                position: absolute;
-                bottom: var(--space-4);
-                left: 50%;
-                transform: translate(calc(-50% - 6vw));
-                font-size: 10px;
-                color: var(--text-ghost);
-                letter-spacing: .05em;
-                z-index: 1
-            }
-
-            .landing-disclaimer {
-                max-width: 480px;
-                text-align: center;
-                font-size: var(--text-xs);
-                line-height: 1.6;
-                color: var(--text-ghost);
-                z-index: 1;
-                transform: translate(-6vw)
-            }
-
             .landing-key {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 2px 6px;
-                border: 1px solid var(--border-subtle);
-                border-radius: 4px;
-                background: var(--bg-elevated);
-                color: var(--text-tertiary);
-                font-size: 10px;
-                line-height: 1.4;
-                min-width: 20px
+                display: inline-flex; align-items: center; justify-content: center;
+                padding: 2px 6px; border: 1px solid var(--border-subtle);
+                border-radius: 4px; background: var(--bg-elevated);
+                color: var(--text-tertiary); font-size: 10px; line-height: 1.4; min-width: 20px;
+            }
+            .landing-disclaimer {
+                max-width: 480px; text-align: center;
+                font-size: var(--text-xs); line-height: 1.6;
+                color: var(--text-ghost); z-index: 1; transform: translate(-6vw);
             }
 
-            .mobile-promo { display: none }
-
-            @media(max-width: 760px) {
-                html,body { overflow: hidden }
-                .emulator-idle { min-height: 100dvh; height: 100dvh }
-                .landing {
-                    justify-content: flex-start;
-                    min-height: 100dvh;
-                    padding: max(24px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
-                    cursor: default;
-                    background: radial-gradient(circle at 20% 14%,rgba(46,125,50,.18),transparent 34%),radial-gradient(circle at 86% 68%,rgba(232,84,62,.14),transparent 32%),linear-gradient(160deg,#101318,#0a0d11 58%,#121a15)
-                }
-                .showcase-title,.showcase-art,.showcase-slash,.showcase-wipe,.showcase-flash,.gba-shell,.landing-brand,.landing-controls,.landing-disclaimer,.landing-copyright { display: none }
-                .showcase { opacity: .48; mix-blend-mode: screen }
-                .showcase-bg { filter: blur(20px) saturate(1.35); transform: scale(1.12) }
-                .mobile-promo {
-                    position: relative;
-                    z-index: 2;
-                    display: grid;
-                    grid-template-rows: auto minmax(0,1fr);
-                    align-items: center;
-                    width: 100%;
-                    height: 100%;
-                    gap: clamp(18px,5dvh,36px);
-                    overflow: hidden
-                }
-                .mobile-promo:before {
-                    content: "";
-                    position: absolute;
-                    inset: 8% -28% auto 18%;
-                    height: 58dvh;
-                    border: 1px solid rgba(255,255,255,.08);
-                    border-radius: 999px;
-                    transform: rotate(-18deg);
-                    pointer-events: none
-                }
-                .mobile-promo-orbit {
-                    position: absolute;
-                    right: -86px;
-                    top: 8dvh;
-                    width: 210px;
-                    height: 210px;
-                    border-radius: 50%;
-                    background: radial-gradient(circle at 35% 35%,rgba(255,255,255,.16),transparent 18%),conic-gradient(from 130deg,#e8543e00,#e8543e8c,#2e7d3280,#e8543e00);
-                    filter: blur(.2px);
-                    opacity: .42
-                }
-                .mobile-promo-card {
-                    position: relative;
-                    align-self: start;
-                    width: min(100%,390px);
-                    padding: 18px 16px 16px;
-                    border: 1px solid rgba(255,255,255,.1);
-                    border-radius: 28px;
-                    background: linear-gradient(145deg,#1c1f24e0,#0e1116a3),#0f1114b8;
-                    box-shadow: 0 24px 80px #00000075,inset 0 1px #ffffff14;
-                    backdrop-filter: blur(18px);
-                    -webkit-backdrop-filter: blur(18px)
-                }
-                .mobile-promo-badge {
-                    width: max-content;
-                    margin-bottom: 12px;
-                    padding: 6px 9px;
-                    border: 1px solid rgba(232,84,62,.32);
-                    border-radius: 999px;
-                    background: #e8543e1a;
-                    color: #ffcec6eb;
-                    font-size: 10px;
-                    letter-spacing: .14em;
-                    text-transform: uppercase
-                }
-                .mobile-promo-title {
-                    max-width: 10ch;
-                    font-size: clamp(38px,13vw,64px);
-                    line-height: .92;
-                    letter-spacing: -.05em;
-                    color: #f6f8fcf2;
-                    text-wrap: balance
-                }
-                .mobile-promo-copy {
-                    max-width: 31ch;
-                    margin-top: 14px;
-                    color: #cacfd8b8;
-                    font-size: 14px;
-                    line-height: 1.55
-                }
-                .mobile-promo-url {
-                    display: inline-flex;
-                    margin-top: 18px;
-                    padding: 9px 12px;
-                    border-radius: 14px;
-                    background: #ffffff14;
-                    color: #ffffffdb;
-                    font-size: 12px;
-                    letter-spacing: .04em
-                }
-                .mobile-promo-device {
-                    position: relative;
-                    align-self: end;
-                    justify-self: center;
-                    width: min(124vw,520px);
-                    margin-bottom: clamp(12px,4dvh,34px);
-                    transform: rotate(-4deg) translate(-3%);
-                    filter: drop-shadow(0 30px 60px rgba(0,0,0,.56))
-                }
-                .mobile-promo-device img {
-                    display: block;
-                    width: 100%;
-                    height: auto;
-                    pointer-events: none;
-                    user-select: none
-                }
-                .mobile-promo-screen {
-                    position: absolute;
-                    left: 29.4%;
-                    top: 22.2%;
-                    width: 40.6%;
-                    height: 45.1%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    overflow: hidden;
-                    border-radius: 2px;
-                    background: repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),linear-gradient(155deg,#272d2d,#111617);
-                    color: #eaeef2d1;
-                    font-size: clamp(11px,4vw,18px);
-                    font-weight: 700;
-                    text-align: center;
-                    text-shadow: 0 0 14px rgba(255,255,255,.3)
-                }
+            /* drop-zone highlight */
+            #idle-screen.drag-over .gba-image {
+                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px rgba(0,188,240,.4));
             }
 
-            .toolbar {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 48px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 var(--space-5);
-                background: #1c1f24eb;
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
+            /* ── EMULATOR SCREEN ── */
+            #emu-screen {
+                display: none;
+                position: fixed; inset: 0; z-index: 100;
+                background: #000;
+                flex-direction: column; align-items: stretch;
+            }
+            #emu-screen.active { display: flex }
+
+            #emu-toolbar {
+                display: flex; align-items: center; justify-content: space-between;
+                height: 48px; padding: 0 var(--space-5);
+                background: #1c1f24eb; backdrop-filter: blur(8px);
                 border-bottom: 1px solid var(--border-subtle);
-                z-index: 10;
-                transition: opacity var(--duration-normal) var(--ease-out)
+                flex-shrink: 0;
             }
+            .toolbar-logo { font-size: var(--text-lg); font-weight: 600; letter-spacing: .02em }
+            .toolbar-logo .accent { color: var(--accent) }
+            .toolbar-logo .dot { color: var(--text-tertiary) }
 
-            .toolbar-logo {
-                font-size: var(--text-lg);
-                font-weight: 600;
-                letter-spacing: .02em
-            }
-
-            .toolbar-actions {
-                display: flex;
-                align-items: center;
-                gap: var(--space-2)
-            }
-
+            .toolbar-actions { display: flex; align-items: center; gap: var(--space-2) }
             .toolbar-btn {
-                background: none;
-                border: none;
-                color: var(--text-secondary);
-                font-size: var(--text-lg);
-                padding: var(--space-2);
-                cursor: pointer;
-                border-radius: 6px;
-                transition: color var(--duration-fast) ease,background var(--duration-fast) ease;
-                line-height: 1
+                background: none; border: none; color: var(--text-secondary);
+                font-size: var(--text-lg); padding: var(--space-2);
+                cursor: pointer; border-radius: 6px;
+                transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+                line-height: 1;
             }
-
             .toolbar-btn:hover { color: var(--text-primary); background: var(--bg-elevated) }
 
-            .toolbar-volume {
-                width: 80px;
-                height: 4px;
-                -webkit-appearance: none;
-                appearance: none;
-                background: var(--bg-input);
-                border-radius: 2px;
-                outline: none;
-                cursor: pointer
+            #emu-wrap {
+                flex: 1; display: flex;
+                align-items: center; justify-content: center;
+                overflow: hidden; position: relative;
             }
 
-            .toolbar-volume::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: var(--text-secondary);
-                cursor: pointer;
-                transition: background var(--duration-fast) ease
+            /* EmulatorJS mounts into #game — let it fill the wrap */
+            #game {
+                width: 100%; height: 100%;
             }
 
-            .toolbar-volume::-webkit-slider-thumb:hover { background: var(--text-primary) }
-
-            .toolbar-volume::-moz-range-thumb {
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: var(--text-secondary);
-                border: none;
-                cursor: pointer
+            /* upload prompt overlay */
+            #upload-prompt {
+                position: absolute; inset: 0;
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: var(--space-4); pointer-events: none;
             }
+            #upload-prompt.hidden { display: none }
 
-            .toolbar-separator {
-                width: 1px;
-                height: 20px;
-                background: var(--border-subtle);
-                margin: 0 var(--space-1)
+            /* ── FILE INPUT ── */
+            #rom-input { display: none }
+
+            /* ── ERROR TOAST ── */
+            #error-toast {
+                display: none;
+                position: fixed; bottom: var(--space-7); left: 50%;
+                transform: translate(-50%);
+                padding: var(--space-2) var(--space-4);
+                background: var(--bg-panel); border: 1px solid var(--error);
+                border-radius: 8px; font-size: var(--text-sm);
+                color: var(--error); z-index: 200;
             }
-
-            .status-bar {
-                position: absolute;
-                bottom: var(--space-4);
-                right: var(--space-5);
-                font-size: var(--text-xs);
-                line-height: 1.4;
-                z-index: 5
-            }
-
-            .scanline-sweep {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: var(--led-green);
-                box-shadow: 0 0 8px var(--led-green-glow),0 0 24px var(--led-green-glow);
-                animation: scanline-down .4s linear forwards;
-                pointer-events: none;
-                z-index: 20
-            }
-
-            @keyframes scanline-down {
-                0% { top: 0; opacity: 1 }
-                to { top: 100%; opacity: 0 }
-            }
-
-            .ambient-light {
-                position: absolute;
-                width: 160%;
-                height: 160%;
-                filter: blur(80px);
-                opacity: 0;
-                pointer-events: none;
-                z-index: -1;
-                transition: opacity 1.5s ease;
-                border-radius: 50%
-            }
-
-            .ambient-light.active { opacity: .25 }
 
             @media(prefers-reduced-motion:reduce) {
-                .ambient-light { display: none }
-            }
-
-            #seo-content {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                overflow: hidden;
-                clip: rect(0,0,0,0);
-                white-space: nowrap
+                .showcase-wipe, .showcase-flash { display: none }
+                .showcase-title.slam, .showcase-art.slam { animation: none; opacity: 1; transform: none }
+                .showcase-title.out, .showcase-art.out { animation: none; opacity: 0 }
             }
         </style>
     </head>
     <body>
-        <div id="seo-content">
-            <h1>SwiftGBA</h1>
-            <p>Free GBA emulator running entirely in your browser, Based on RustyGBA</p>
-        </div>
 
-        <div class="emulator-idle">
-            <div class="landing">
-                <input type="file" accept=".gba,.bin" style="display:none;"/>
-                <div class="showcase">
-                    <div class="showcase-bg" id="showcase-bg"></div>
-                    <div class="showcase-flash" id="showcase-flash"></div>
-                    <div class="showcase-slash" id="showcase-slash"></div>
-                    <div class="showcase-title slam" id="showcase-title">
-                        <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
-                        <h2 class="showcase-name font-display" id="showcase-name"></h2>
-                        <div class="showcase-underline" id="showcase-underline"></div>
-                    </div>
-                    <div class="showcase-art slam" id="showcase-art">
-                        <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
+        <!-- ══════════════ IDLE / LANDING ══════════════ -->
+        <div id="idle-screen">
+            <input type="file" id="rom-input" accept=".gba,.zip">
+
+            <div class="showcase">
+                <div class="showcase-bg" id="showcase-bg"></div>
+                <div class="showcase-flash" id="showcase-flash"></div>
+                <div class="showcase-slash" id="showcase-slash"></div>
+                <div class="showcase-title slam" id="showcase-title">
+                    <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
+                    <h2 class="showcase-name font-display" id="showcase-name"></h2>
+                    <div class="showcase-underline" id="showcase-underline"></div>
+                </div>
+                <div class="showcase-art slam" id="showcase-art">
+                    <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
+                </div>
+            </div>
+
+            <div class="gba-shell">
+                <div class="gba-screen-overlay">
+                    <div class="gba-screen-content">
+                        <span class="gba-screen-text font-display">Drop ROM here</span>
+                        <span class="gba-screen-hint">or click anywhere to browse</span>
                     </div>
                 </div>
-                <section class="mobile-promo" aria-label="RustyGBA mobile preview">
-                    <div class="mobile-promo-orbit" aria-hidden="true"></div>
-                    <div class="mobile-promo-card">
-                        <div class="mobile-promo-badge font-mono">Pocket-sized preview</div>
-                        <h1 class="mobile-promo-title font-display">Play the full emulator on desktop</h1>
-                        <p class="mobile-promo-copy">SwiftGBA runs real Game Boy Advance ROMs in-browser with local saves, keyboard controls, gamepad support, and no uploads.</p>
-                        <div class="mobile-promo-url font-mono"></div>
-                    </div>
-                    <div class="mobile-promo-device" aria-hidden="true">
-                        <img src="https://rustygba.com/gba.webp" alt draggable="false"/>
-                        <div class="mobile-promo-screen"><span>Desktop Ready</span></div>
-                    </div>
-                </section>
-                <div class="gba-shell">
-                    <div class="gba-screen-overlay">
-                        <div class="gba-screen-content">
-                            <span class="gba-screen-text font-display">Load BIOS</span>
-                            <span class="gba-screen-hint">Drop bios.bin anywhere</span>
-                        </div>
-                    </div>
-                    <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
-                    <div class="gba-power-led"></div>
-                </div>
-                <div class="landing-brand">
-                    <h1 class="landing-title font-display">
-                        <span>Swift</span><span class="accent">GBA</span><span class="dot">.</span>
-                    </h1>
-                </div>
-                <div class="landing-controls font-mono">
-                    <span class="landing-key">Z</span> A
-                    <span class="landing-key">X</span> B
-                    <span class="landing-key">←↑↓→</span> D-Pad
-                    <span class="landing-key">Enter</span> Start
-                    <span class="landing-key">M</span> Mute
-                </div>
-                <div class="landing-disclaimer">Your ROM never leaves your device. Everything runs locally in your browser. You are responsible for owning any ROMs you load.</div>
-               
+                <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
+                <div class="gba-power-led" id="power-led"></div>
+            </div>
+
+            <div class="landing-brand">
+                <h1 class="landing-title font-display">
+                    <span>Swift</span><span class="accent">GBA</span><span class="dot">.</span>
+                </h1>
+            </div>
+            <div class="landing-controls font-mono">
+                <span class="landing-key">Z</span> A
+                <span class="landing-key">X</span> B
+                <span class="landing-key">←↑↓→</span> D-Pad
+                <span class="landing-key">Enter</span> Start
+                <span class="landing-key">M</span> Mute
+            </div>
+            <div class="landing-disclaimer">
+                Your ROM never leaves your device. Everything runs locally in your browser.
+                You are responsible for owning any ROMs you load.
             </div>
         </div>
 
-        <noscript>
-            <div style="padding: 2rem; text-align: center; color: #8B8F96; font-family: system-ui;">
-                <h1>SwiftGBA</h1>
-                <p>JavaScript is required to run the GBA emulator. Please enable JavaScript and reload the page.</p>
+        <!-- ══════════════ EMULATOR ══════════════ -->
+        <div id="emu-screen">
+            <div id="emu-toolbar">
+                <span class="toolbar-logo font-display">
+                    Swift<span class="accent">GBA</span><span class="dot">.</span>
+                </span>
+                <div class="toolbar-actions">
+                    <button class="toolbar-btn" id="btn-load-new" title="Load new ROM">📂</button>
+                    <button class="toolbar-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
+                    <button class="toolbar-btn" id="btn-back" title="Back to menu">✕</button>
+                </div>
             </div>
-        </noscript>
+            <div id="emu-wrap">
+                <div id="game"></div>
+            </div>
+        </div>
+
+        <div id="error-toast"></div>
+
+        <!-- ══════════════ EmulatorJS ══════════════ -->
+        <!--
+            EmulatorJS is loaded from the CDN only when a ROM is launched.
+            It uses its own built-in GBA BIOS — no bios.bin needed.
+        -->
 
         <script>
         (() => {
+            /* ── Game showcase cycling ── */
             const GAMES = [
-                { name: "Pokemon Emerald",        img: "https://rustygba.com/games/pokemon-emerald.webp",        color: "#2E7D32" },
-                { name: "Pokemon FireRed",         img: "https://rustygba.com/games/pokemon-firered.webp",        color: "#C62828" },
-                { name: "Pokemon Ruby",            img: "https://rustygba.com/games/pokemon-ruby.webp",           color: "#AD1457" },
-                { name: "Pokemon Sapphire",        img: "https://rustygba.com/games/pokemon-sapphire.webp",       color: "#1565C0" },
-                { name: "Mario Kart: Super Circuit",img: "https://rustygba.com/games/mario-kart-super-circuit.webp", color: "#E53935" },
-                { name: "The Legend of Zelda: Minish Cap", img: "https://rustygba.com/games/zelda-minish-cap.webp", color: "#2E7D32" },
-                { name: "Metroid Fusion",          img: "https://rustygba.com/games/metroid-fusion.webp",         color: "#E65100" },
-                { name: "Golden Sun",              img: "https://rustygba.com/games/golden-sun.webp",             color: "#F9A825" },
-                { name: "Castlevania: Aria of Sorrow", img: "https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color: "#4A148C" },
-                { name: "Fire Emblem",             img: "https://rustygba.com/games/fire-emblem.webp",            color: "#B71C1C" },
+                { name: "Pokemon Emerald",              img: "https://rustygba.com/games/pokemon-emerald.webp",            color: "#2E7D32" },
+                { name: "Pokemon FireRed",               img: "https://rustygba.com/games/pokemon-firered.webp",            color: "#C62828" },
+                { name: "Pokemon Ruby",                  img: "https://rustygba.com/games/pokemon-ruby.webp",               color: "#AD1457" },
+                { name: "Pokemon Sapphire",              img: "https://rustygba.com/games/pokemon-sapphire.webp",           color: "#1565C0" },
+                { name: "Mario Kart: Super Circuit",     img: "https://rustygba.com/games/mario-kart-super-circuit.webp",   color: "#E53935" },
+                { name: "The Legend of Zelda: Minish Cap", img: "https://rustygba.com/games/zelda-minish-cap.webp",         color: "#2E7D32" },
+                { name: "Metroid Fusion",                img: "https://rustygba.com/games/metroid-fusion.webp",             color: "#E65100" },
+                { name: "Golden Sun",                    img: "https://rustygba.com/games/golden-sun.webp",                 color: "#F9A825" },
+                { name: "Castlevania: Aria of Sorrow",  img: "https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color: "#4A148C" },
+                { name: "Fire Emblem",                   img: "https://rustygba.com/games/fire-emblem.webp",                color: "#B71C1C" },
             ];
 
             const INTERVAL_MS = 3500;
-            const EXIT_MS = 250;    // how long the .out animation takes
-            const ENTER_MS = 500;   // slam animation duration
+            const EXIT_MS = 250;
 
             let currentIndex = 0;
-            let timer = null;
+            let cycleTimer = null;
 
             const bgEl        = document.getElementById('showcase-bg');
             const flashEl     = document.getElementById('showcase-flash');
@@ -907,14 +419,12 @@
                 nameEl.textContent = game.name;
                 imgEl.src = game.img;
                 imgEl.alt = game.name;
-
                 bgEl.style.background = `radial-gradient(ellipse at 80% 40%, ${game.color}30 0%, transparent 50%), var(--bg-deep)`;
                 flashEl.style.background = game.color;
                 slashEl.style.borderColor = `${game.color}25`;
                 underlineEl.style.background = game.color;
 
                 if (animate) {
-                    // Re-trigger wipe: clone & replace
                     const oldWipe = document.querySelector('.showcase-wipe');
                     if (oldWipe) oldWipe.remove();
                     const wipe = document.createElement('div');
@@ -923,22 +433,18 @@
                     bgEl.parentElement.insertBefore(wipe, bgEl.nextSibling);
                     wipe.addEventListener('animationend', () => wipe.remove(), { once: true });
 
-                    // Re-trigger flash
                     flashEl.style.animation = 'none';
-                    flashEl.offsetHeight; // reflow
+                    flashEl.offsetHeight;
                     flashEl.style.animation = '';
 
-                    // Slam title
                     titleEl.classList.remove('slam', 'out');
                     titleEl.offsetHeight;
                     titleEl.classList.add('slam');
 
-                    // Slam art
                     artEl.classList.remove('slam', 'out');
                     artEl.offsetHeight;
                     artEl.classList.add('slam');
 
-                    // Re-trigger underline grow
                     underlineEl.style.animation = 'none';
                     underlineEl.offsetHeight;
                     underlineEl.style.animation = '';
@@ -946,30 +452,131 @@
             }
 
             function showNext() {
-                const nextIndex = (currentIndex + 1) % GAMES.length;
-
-                // Exit current
-                titleEl.classList.remove('slam');
-                titleEl.classList.add('out');
-                artEl.classList.remove('slam');
-                artEl.classList.add('out');
-
+                titleEl.classList.remove('slam'); titleEl.classList.add('out');
+                artEl.classList.remove('slam');   artEl.classList.add('out');
                 setTimeout(() => {
-                    currentIndex = nextIndex;
+                    currentIndex = (currentIndex + 1) % GAMES.length;
                     applyGame(GAMES[currentIndex], true);
                 }, EXIT_MS);
             }
 
-            function startCycling() {
-                timer = setInterval(showNext, INTERVAL_MS);
+            applyGame(GAMES[0], false);
+            setTimeout(() => applyGame(GAMES[0], true), 200);
+            cycleTimer = setInterval(showNext, INTERVAL_MS);
+
+            /* ── Drag & Drop onto idle screen ── */
+            const idleScreen = document.getElementById('idle-screen');
+            idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over') });
+            idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
+            idleScreen.addEventListener('drop', e => {
+                e.preventDefault();
+                idleScreen.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file) launchROM(file);
+            });
+
+            /* ── Click anywhere on idle screen to open file picker ── */
+            idleScreen.addEventListener('click', () => document.getElementById('rom-input').click());
+            document.getElementById('rom-input').addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (file) launchROM(file);
+            });
+
+            /* ── Toolbar buttons ── */
+            document.getElementById('btn-back').addEventListener('click', returnToMenu);
+            document.getElementById('btn-load-new').addEventListener('click', () => document.getElementById('rom-input').click());
+            document.getElementById('btn-fullscreen').addEventListener('click', () => {
+                const wrap = document.getElementById('emu-wrap');
+                if (document.fullscreenElement) document.exitFullscreen();
+                else wrap.requestFullscreen();
+            });
+
+            /* ── EmulatorJS launcher ── */
+            let emuLoaded = false;
+
+            function launchROM(file) {
+                // Stop cycling
+                clearInterval(cycleTimer);
+
+                // Fade out idle screen
+                idleScreen.classList.add('fade-out');
+                setTimeout(() => { idleScreen.style.display = 'none' }, 500);
+
+                // Show emulator screen
+                const emuScreen = document.getElementById('emu-screen');
+                emuScreen.classList.add('active');
+
+                // Turn on power LED
+                document.getElementById('power-led').classList.add('on');
+
+                // Convert file to object URL for EmulatorJS
+                const romURL = URL.createObjectURL(file);
+
+                // Load EmulatorJS once
+                if (!emuLoaded) {
+                    emuLoaded = true;
+                    loadEmulatorJS(romURL);
+                } else {
+                    // If already loaded, restart with new ROM
+                    // EmulatorJS doesn't support hot-swap easily; reload the page state
+                    restartWithROM(romURL);
+                }
             }
 
-            // Init: show first game immediately, no animation on very first load
-            applyGame(GAMES[0], false);
-            // Trigger the initial slam after a short delay so fonts/images have a moment
-            setTimeout(() => applyGame(GAMES[0], true), 200);
+            function loadEmulatorJS(romURL) {
+                // EmulatorJS config — must be set BEFORE the script loads
+                window.EJS_player = '#game';
+                window.EJS_core = 'gba';          // Game Boy Advance core
+                window.EJS_gameUrl = romURL;
+                window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
 
-            startCycling();
+                // No bios needed — EmulatorJS bundles its own GBA BIOS
+                // If you DO have a bios.bin and want to use it, uncomment:
+                // window.EJS_biosUrl = 'bios.bin';
+
+                window.EJS_color = '#00bcf0';     // SwiftGBA accent color
+                window.EJS_startOnLoaded = true;
+                window.EJS_fullscreenOnLoaded = false;
+                window.EJS_language = 'en-US';
+                window.EJS_Buttons = {
+                    playPause: true, restart: true, mute: true,
+                    settings: true, fullscreen: true,
+                    saveState: true, loadState: true,
+                    screenRecord: false, gamepad: true,
+                };
+
+                const script = document.createElement('script');
+                script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+                script.onerror = () => showError('Failed to load EmulatorJS. Check your internet connection.');
+                document.body.appendChild(script);
+            }
+
+            function restartWithROM(romURL) {
+                // Simplest reliable approach: reload the page and re-init
+                // Store the file via sessionStorage isn't viable for binary data,
+                // so we just clear the game div and re-init EmulatorJS
+                const gameDiv = document.getElementById('game');
+                gameDiv.innerHTML = '';
+
+                window.EJS_gameUrl = romURL;
+                window.EJS_startOnLoaded = true;
+
+                const script = document.createElement('script');
+                script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+                document.body.appendChild(script);
+            }
+
+            function returnToMenu() {
+                // Reload page — cleanest way to reset EmulatorJS state
+                location.reload();
+            }
+
+            function showError(msg) {
+                const toast = document.getElementById('error-toast');
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none' }, 5000);
+            }
         })();
         </script>
     </body>
