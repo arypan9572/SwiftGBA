@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
+        <meta name="theme-color" content="#0F1114">
+        <!-- Canonical -->
+        <link rel="canonical" href="https://rustygba.com">
+        <!-- Open Graph -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://rustygba.com">
+        <meta property="og:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
+        <meta property="og:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
+        <meta property="og:image" content="https://rustygba.com/og-image.png">
+        <meta property="og:site_name" content="RustyGBA">
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="RustyGBA — Play Game Boy Advance Games in Your Browser">
+        <meta name="twitter:description" content="Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.">
+        <meta name="twitter:image" content="https://rustygba.com/og-image.png">
+        <!-- Fonts -->
+        <link rel="preload" href="/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/ClashDisplay-Semibold.woff2" as="font" type="font/woff2" crossorigin>
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" href="/favicon.ico" sizes="32x32">
+        <title>RustyGBA — Play Game Boy Advance Games in Your Browser</title>
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "RustyGBA",
+                "url": "https://rustygba.com",
+                "description": "Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.",
+                "applicationCategory": "GameApplication",
+                "operatingSystem": "Any (Web Browser)",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "author": {
+                    "@type": "Organization",
+                    "name": "OrCat Studios"
+                },
+                "browserRequirements": "Requires WebAssembly and WebGL2 support"
+            }</script>
+        <style>
+            @font-face {
+                font-family: Clash Display;
+                src: url(/fonts/ClashDisplay-Semibold.woff2) format("woff2");
+                font-weight: 600;
+                font-style: normal;
+                font-display: swap
+            }
+
+            @font-face {
+                font-family: Satoshi;
+                src: url(/fonts/Satoshi-Variable.woff2) format("woff2");
+                font-weight: 400 700;
+                font-style: normal;
+                font-display: swap
+            }
+
+            @font-face {
+                font-family: Departure Mono;
+                src: url(/fonts/DepartureMono-Regular.woff2) format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap
+            }
+
+            :root {
+                --bg-deep: #0F1114;
+                --bg-base: #14161B;
+                --bg-panel: #1C1F24;
+                --bg-window: #181A1F;
+                --bg-elevated: #252830;
+                --bg-input: #292C31;
+                --border-subtle: #2E3238;
+                --border-focus: #3E4248;
+                --text-primary: #E6E8EC;
+                --text-secondary: #8B8F96;
+                --text-tertiary: #585C64;
+                --text-ghost: #3A3E46;
+                --accent: #E8543E;
+                --accent-hover: #F06A52;
+                --accent-subtle: rgba(232, 84, 62, .12);
+                --accent-glow: rgba(232, 84, 62, .35);
+                --led-green: #00E85A;
+                --led-green-glow: rgba(0, 232, 90, .3);
+                --error: #E84057;
+                --success: #34D399;
+                --space-1: 4px;
+                --space-2: 8px;
+                --space-3: 12px;
+                --space-4: 16px;
+                --space-5: 24px;
+                --space-6: 32px;
+                --space-7: 48px;
+                --space-8: 64px;
+                --font-display: "Clash Display", system-ui, sans-serif;
+                --font-ui: "Satoshi", system-ui, sans-serif;
+                --font-mono: "Departure Mono", ui-monospace, monospace;
+                --text-xs: 11px;
+                --text-sm: 13px;
+                --text-base: 15px;
+                --text-lg: 18px;
+                --text-xl: 24px;
+                --text-2xl: 32px;
+                --text-3xl: 48px;
+                --ease-spring: cubic-bezier(.22, 1, .36, 1);
+                --ease-out: cubic-bezier(0, 0, .2, 1);
+                --ease-in: cubic-bezier(.4, 0, 1, 1);
+                --duration-fast: .15s;
+                --duration-normal: .28s;
+                --duration-slow: .5s;
+                --scale: 3
+            }
+
+            *,*:before,*:after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0
+            }
+
+            html,body {
+                height: 100dvh;
+                width: 100vw;
+                overflow: hidden;
+                background: var(--bg-deep);
+                color: var(--text-primary);
+                font-family: var(--font-ui);
+                font-size: var(--text-base);
+                line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale
+            }
+
+            .font-display {
+                font-family: var(--font-display)
+            }
+
+            .font-mono {
+                font-family: var(--font-mono)
+            }
+
+            @media(prefers-reduced-motion:reduce) {
+                *,*:before,*:after {
+                    animation-duration: .01ms!important;
+                    transition-duration: var(--duration-fast)!important
+                }
+            }
+
+            .emulator-loading,.emulator-error,.emulator-idle {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100dvh;
+                gap: var(--space-4);
+                transition: opacity .6s ease
+            }
+
+            .emulator-idle.fade-out {
+                opacity: 0
+            }
+
+            .emulator-idle.fade-out .showcase-title {
+                animation: title-exit .4s ease-in forwards
+            }
+
+            .emulator-idle.fade-out .showcase-art {
+                animation: art-exit .4s ease-in .1s forwards
+            }
+
+            .emulator-idle.fade-out .showcase-slash,.emulator-idle.fade-out .landing-brand,.emulator-idle.fade-out .landing-controls,.emulator-idle.fade-out .landing-disclaimer,.emulator-idle.fade-out .landing-copyright {
+                opacity: 0;
+                transition: opacity .3s ease
+            }
+
+            .emulator-playing {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100dvh;
+                overflow: hidden
+            }
+
+            .gba-shell,.gba-play-shell,.gba-shell-frame {
+                --gba-screen-left: 29.4%;
+                --gba-screen-top: 22.2%;
+                --gba-screen-width: 40.6%;
+                --gba-screen-height: 45.1%;
+                --gba-screen-center-x: calc(var(--gba-screen-left) + (var(--gba-screen-width) / 2));
+                --gba-screen-center-y: calc(var(--gba-screen-top) + (var(--gba-screen-height) / 2));
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center
+            }
+
+            .gba-shell {
+                transform: translate(-6vw)
+            }
+
+            .gba-image {
+                width: min(65vw,640px);
+                height: auto;
+                user-select: none;
+                pointer-events: none;
+                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5));
+                transition: opacity .45s ease .7s,filter .45s ease .7s
+            }
+
+            .gba-screen-overlay {
+                position: absolute;
+                left: var(--gba-screen-left);
+                top: var(--gba-screen-top);
+                width: var(--gba-screen-width);
+                height: var(--gba-screen-height);
+                z-index: 1;
+                overflow: hidden;
+                border-radius: 2px
+            }
+
+            .gba-screen-content {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: var(--space-2);
+                padding: 0 6%;
+                text-align: center;
+                animation: screen-fade-in 1s ease forwards
+            }
+
+            @keyframes screen-fade-in {
+                0% {
+                    opacity: 0
+                }
+
+                to {
+                    opacity: 1
+                }
+            }
+
+            .gba-screen-text {
+                display: block;
+                width: 100%;
+                font-size: clamp(14px,2vw,20px);
+                font-weight: 600;
+                color: #c8ccd2;
+                text-shadow: 0 0 12px rgba(200,204,210,.5)
+            }
+
+            .gba-screen-hint {
+                display: block;
+                width: 100%;
+                font-size: clamp(10px,1.2vw,13px);
+                color: #8b8f96;
+                text-shadow: 0 0 8px rgba(139,143,150,.4)
+            }
+
+            .gba-power-led {
+                position: absolute;
+                left: 30.5%;
+                top: 22%;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--text-ghost);
+                transition: all .4s ease
+            }
+
+            .gba-power-led.on {
+                background: var(--led-green);
+                box-shadow: 0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow)
+            }
+
+            .gba-play-shell {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2
+            }
+
+            .gba-shell-frame {
+                position: relative;
+                width: min(65vw,640px);
+                transform: translate(var(--expand-translate-x, 0px),var(--expand-translate-y, 0px)) scale(var(--expand-scale, 1));
+                transform-origin: var(--gba-screen-center-x) var(--gba-screen-center-y);
+                transition: transform 1s var(--ease-spring)
+            }
+
+            .gba-play-shell .gba-image {
+                width: 100%;
+                transition: opacity .6s ease
+            }
+
+            .gba-play-shell .gba-power-led {
+                transition: opacity .6s ease
+            }
+
+            .gba-screen-overlay-live {
+                transition: border-radius 1s var(--ease-spring),box-shadow 1s var(--ease-spring)
+            }
+
+            .gba-screen {
+                width: 100%;
+                display: block;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges
+            }
+
+            .emulator-playing.in-shell .gba-play-shell .gba-image,.emulator-playing.in-shell .gba-play-shell .gba-power-led {
+                opacity: 1
+            }
+
+            .emulator-playing.expanded .gba-play-shell .gba-image {
+                opacity: 0;
+                transition: opacity .6s ease .8s
+            }
+
+            .emulator-playing.expanded .gba-play-shell .gba-power-led {
+                opacity: 0;
+                transition: opacity .4s ease .6s
+            }
+
+            .emulator-playing.expanded .gba-screen-overlay-live {
+                border-radius: 1px;
+                box-shadow: 0 0 16px #0006;
+                z-index: 10
+            }
+
+            .landing {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100dvh;
+                width: 100vw;
+                gap: var(--space-4);
+                cursor: pointer;
+                overflow: hidden
+            }
+
+            .landing.drag-over {
+                background: radial-gradient(ellipse at center,rgba(232,84,62,.04) 0%,transparent 70%)
+            }
+
+            .landing.drag-over .gba-image {
+                filter: drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px var(--accent-glow))
+            }
+
+            .showcase {
+                position: absolute;
+                inset: 0;
+                z-index: 0;
+                overflow: hidden;
+                pointer-events: none
+            }
+
+            .showcase-bg {
+                position: absolute;
+                inset: 0
+            }
+
+            .showcase-wipe {
+                position: absolute;
+                inset: -50%;
+                z-index: 5;
+                animation: wipe-sweep .4s ease-out forwards;
+                pointer-events: none
+            }
+
+            @keyframes wipe-sweep {
+                0% {
+                    transform: translate(-100%) rotate(15deg)
+                }
+
+                to {
+                    transform: translate(100%) rotate(15deg)
+                }
+            }
+
+            .showcase-flash {
+                position: absolute;
+                inset: 0;
+                z-index: 4;
+                opacity: .15;
+                animation: flash-pop .3s ease-out forwards;
+                pointer-events: none
+            }
+
+            @keyframes flash-pop {
+                0% {
+                    opacity: .2
+                }
+
+                to {
+                    opacity: 0
+                }
+            }
+
+            .showcase-slash {
+                position: absolute;
+                top: -20%;
+                right: 18%;
+                width: 1px;
+                height: 140%;
+                border-right: 2px solid rgba(255,255,255,.04);
+                transform: rotate(15deg);
+                pointer-events: none
+            }
+
+            .showcase-title {
+                position: absolute;
+                top: 6%;
+                left: 4%;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                z-index: 2
+            }
+
+            .showcase-title.slam {
+                animation: title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards
+            }
+
+            .showcase-title.out {
+                animation: title-exit .25s ease-in forwards
+            }
+
+            @keyframes title-slam {
+                0% {
+                    opacity: 0;
+                    transform: translate(-80px) scale(1.1)
+                }
+
+                60% {
+                    opacity: 1;
+                    transform: translate(8px) scale(1)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translate(0) scale(1)
+                }
+            }
+
+            @keyframes title-exit {
+                0% {
+                    opacity: 1;
+                    transform: translate(0)
+                }
+
+                to {
+                    opacity: 0;
+                    transform: translate(-40px)
+                }
+            }
+
+            .showcase-label {
+                font-size: 10px;
+                letter-spacing: .2em;
+                color: var(--text-ghost);
+                text-transform: uppercase
+            }
+
+            .showcase-name {
+                font-size: clamp(18px,2.5vw,32px);
+                font-weight: 600;
+                color: #ffffffe6;
+                line-height: 1.1;
+                text-shadow: 0 2px 20px rgba(0,0,0,.6);
+                max-width: 320px;
+                white-space: nowrap
+            }
+
+            .showcase-underline {
+                width: 0;
+                height: 3px;
+                border-radius: 2px;
+                margin-top: 4px;
+                animation: underline-grow .4s ease-out .2s forwards
+            }
+
+            @keyframes underline-grow {
+                0% {
+                    width: 0
+                }
+
+                to {
+                    width: 50px
+                }
+            }
+
+            .showcase-art {
+                position: absolute;
+                right: 8vw;
+                top: 28%;
+                z-index: 2
+            }
+
+            .showcase-art.slam {
+                animation: art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards
+            }
+
+            .showcase-art.out {
+                animation: art-exit .25s ease-in forwards
+            }
+
+            @keyframes art-slam {
+                0% {
+                    opacity: 0;
+                    transform: translate(120px) scale(.8) rotate(3deg)
+                }
+
+                50% {
+                    opacity: 1;
+                    transform: translate(-10px) scale(1.03) rotate(-1deg)
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translate(0) scale(1) rotate(0)
+                }
+            }
+
+            @keyframes art-exit {
+                0% {
+                    opacity: 1;
+                    transform: translate(0) scale(1)
+                }
+
+                to {
+                    opacity: 0;
+                    transform: translate(80px) scale(.9)
+                }
+            }
+
+            .showcase-art-img {
+                width: clamp(160px,20vw,280px);
+                height: auto;
+                border-radius: 8px;
+                box-shadow: 0 12px 48px #000000b3,0 4px 12px #00000080;
+                user-select: none;
+                pointer-events: none
+            }
+
+            @media(prefers-reduced-motion:reduce) {
+                .showcase-wipe,.showcase-flash {
+                    display: none
+                }
+
+                .showcase-title.slam,.showcase-art.slam {
+                    animation: none;
+                    opacity: 1;
+                    transform: none
+                }
+
+                .showcase-title.out,.showcase-art.out {
+                    animation: none;
+                    opacity: 0
+                }
+            }
+
+            .landing-brand {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-2);
+                z-index: 1;
+                transform: translate(-6vw)
+            }
+
+            .landing-title {
+                font-size: var(--text-2xl);
+                font-weight: 600;
+                letter-spacing: -.02em;
+                line-height: 1
+            }
+
+            .landing-title .accent {
+                color: var(--accent);
+                letter-spacing: .06em
+            }
+
+            .landing-title .dot {
+                color: var(--text-tertiary)
+            }
+
+            .landing-error {
+                position: fixed;
+                bottom: var(--space-7);
+                left: 50%;
+                transform: translate(-50%);
+                padding: var(--space-2) var(--space-4);
+                background: var(--bg-panel);
+                border: 1px solid var(--error);
+                border-radius: 8px;
+                font-size: var(--text-sm);
+                color: var(--error);
+                z-index: 10
+            }
+
+            .landing-controls {
+                display: flex;
+                align-items: center;
+                gap: var(--space-3);
+                font-size: var(--text-xs);
+                color: var(--text-ghost);
+                z-index: 1;
+                transform: translate(-6vw)
+            }
+
+            .landing-copyright {
+                position: absolute;
+                bottom: var(--space-4);
+                left: 50%;
+                transform: translate(calc(-50% - 6vw));
+                font-size: 10px;
+                color: var(--text-ghost);
+                letter-spacing: .05em;
+                z-index: 1
+            }
+
+            .landing-disclaimer {
+                max-width: 480px;
+                text-align: center;
+                font-size: var(--text-xs);
+                line-height: 1.6;
+                color: var(--text-ghost);
+                z-index: 1;
+                transform: translate(-6vw)
+            }
+
+            .landing-key {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2px 6px;
+                border: 1px solid var(--border-subtle);
+                border-radius: 4px;
+                background: var(--bg-elevated);
+                color: var(--text-tertiary);
+                font-size: 10px;
+                line-height: 1.4;
+                min-width: 20px
+            }
+
+            .mobile-promo {
+                display: none
+            }
+
+            @media(max-width: 760px) {
+                html,body {
+                    overflow:hidden
+                }
+
+                .emulator-idle {
+                    min-height: 100dvh;
+                    height: 100dvh
+                }
+
+                .landing {
+                    justify-content: flex-start;
+                    min-height: 100dvh;
+                    padding: max(24px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
+                    cursor: default;
+                    background: radial-gradient(circle at 20% 14%,rgba(46,125,50,.18),transparent 34%),radial-gradient(circle at 86% 68%,rgba(232,84,62,.14),transparent 32%),linear-gradient(160deg,#101318,#0a0d11 58%,#121a15)
+                }
+
+                .showcase-title,.showcase-art,.showcase-slash,.showcase-wipe,.showcase-flash,.gba-shell,.landing-brand,.landing-controls,.landing-disclaimer,.landing-copyright {
+                    display: none
+                }
+
+                .showcase {
+                    opacity: .48;
+                    mix-blend-mode: screen
+                }
+
+                .showcase-bg {
+                    filter: blur(20px) saturate(1.35);
+                    transform: scale(1.12)
+                }
+
+                .mobile-promo {
+                    position: relative;
+                    z-index: 2;
+                    display: grid;
+                    grid-template-rows: auto minmax(0,1fr);
+                    align-items: center;
+                    width: 100%;
+                    height: 100%;
+                    gap: clamp(18px,5dvh,36px);
+                    overflow: hidden
+                }
+
+                .mobile-promo:before {
+                    content: "";
+                    position: absolute;
+                    inset: 8% -28% auto 18%;
+                    height: 58dvh;
+                    border: 1px solid rgba(255,255,255,.08);
+                    border-radius: 999px;
+                    transform: rotate(-18deg);
+                    pointer-events: none
+                }
+
+                .mobile-promo-orbit {
+                    position: absolute;
+                    right: -86px;
+                    top: 8dvh;
+                    width: 210px;
+                    height: 210px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle at 35% 35%,rgba(255,255,255,.16),transparent 18%),conic-gradient(from 130deg,#e8543e00,#e8543e8c,#2e7d3280,#e8543e00);
+                    filter: blur(.2px);
+                    opacity: .42
+                }
+
+                .mobile-promo-card {
+                    position: relative;
+                    align-self: start;
+                    width: min(100%,390px);
+                    padding: 18px 16px 16px;
+                    border: 1px solid rgba(255,255,255,.1);
+                    border-radius: 28px;
+                    background: linear-gradient(145deg,#1c1f24e0,#0e1116a3),#0f1114b8;
+                    box-shadow: 0 24px 80px #00000075,inset 0 1px #ffffff14;
+                    backdrop-filter: blur(18px);
+                    -webkit-backdrop-filter: blur(18px)
+                }
+
+                .mobile-promo-badge {
+                    width: max-content;
+                    margin-bottom: 12px;
+                    padding: 6px 9px;
+                    border: 1px solid rgba(232,84,62,.32);
+                    border-radius: 999px;
+                    background: #e8543e1a;
+                    color: #ffcec6eb;
+                    font-size: 10px;
+                    letter-spacing: .14em;
+                    text-transform: uppercase
+                }
+
+                .mobile-promo-title {
+                    max-width: 10ch;
+                    font-size: clamp(38px,13vw,64px);
+                    line-height: .92;
+                    letter-spacing: -.05em;
+                    color: #f6f8fcf2;
+                    text-wrap: balance
+                }
+
+                .mobile-promo-copy {
+                    max-width: 31ch;
+                    margin-top: 14px;
+                    color: #cacfd8b8;
+                    font-size: 14px;
+                    line-height: 1.55
+                }
+
+                .mobile-promo-url {
+                    display: inline-flex;
+                    margin-top: 18px;
+                    padding: 9px 12px;
+                    border-radius: 14px;
+                    background: #ffffff14;
+                    color: #ffffffdb;
+                    font-size: 12px;
+                    letter-spacing: .04em
+                }
+
+                .mobile-promo-device {
+                    position: relative;
+                    align-self: end;
+                    justify-self: center;
+                    width: min(124vw,520px);
+                    margin-bottom: clamp(12px,4dvh,34px);
+                    transform: rotate(-4deg) translate(-3%);
+                    filter: drop-shadow(0 30px 60px rgba(0,0,0,.56))
+                }
+
+                .mobile-promo-device img {
+                    display: block;
+                    width: 100%;
+                    height: auto;
+                    pointer-events: none;
+                    user-select: none
+                }
+
+                .mobile-promo-screen {
+                    position: absolute;
+                    left: 29.4%;
+                    top: 22.2%;
+                    width: 40.6%;
+                    height: 45.1%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                    border-radius: 2px;
+                    background: repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),linear-gradient(155deg,#272d2d,#111617);
+                    color: #eaeef2d1;
+                    font-size: clamp(11px,4vw,18px);
+                    font-weight: 700;
+                    text-align: center;
+                    text-shadow: 0 0 14px rgba(255,255,255,.3)
+                }
+            }
+
+            .toolbar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 var(--space-5);
+                background: #1c1f24eb;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border-bottom: 1px solid var(--border-subtle);
+                z-index: 10;
+                transition: opacity var(--duration-normal) var(--ease-out)
+            }
+
+            .toolbar-logo {
+                font-size: var(--text-lg);
+                font-weight: 600;
+                letter-spacing: .02em
+            }
+
+            .toolbar-actions {
+                display: flex;
+                align-items: center;
+                gap: var(--space-2)
+            }
+
+            .toolbar-btn {
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                font-size: var(--text-lg);
+                padding: var(--space-2);
+                cursor: pointer;
+                border-radius: 6px;
+                transition: color var(--duration-fast) ease,background var(--duration-fast) ease;
+                line-height: 1
+            }
+
+            .toolbar-btn:hover {
+                color: var(--text-primary);
+                background: var(--bg-elevated)
+            }
+
+            .toolbar-volume {
+                width: 80px;
+                height: 4px;
+                -webkit-appearance: none;
+                appearance: none;
+                background: var(--bg-input);
+                border-radius: 2px;
+                outline: none;
+                cursor: pointer
+            }
+
+            .toolbar-volume::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: var(--text-secondary);
+                cursor: pointer;
+                transition: background var(--duration-fast) ease
+            }
+
+            .toolbar-volume::-webkit-slider-thumb:hover {
+                background: var(--text-primary)
+            }
+
+            .toolbar-volume::-moz-range-thumb {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: var(--text-secondary);
+                border: none;
+                cursor: pointer
+            }
+
+            .toolbar-separator {
+                width: 1px;
+                height: 20px;
+                background: var(--border-subtle);
+                margin: 0 var(--space-1)
+            }
+
+            .status-bar {
+                position: absolute;
+                bottom: var(--space-4);
+                right: var(--space-5);
+                font-size: var(--text-xs);
+                line-height: 1.4;
+                z-index: 5
+            }
+
+            .scanline-sweep {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: var(--led-green);
+                box-shadow: 0 0 8px var(--led-green-glow),0 0 24px var(--led-green-glow);
+                animation: scanline-down .4s linear forwards;
+                pointer-events: none;
+                z-index: 20
+            }
+
+            @keyframes scanline-down {
+                0% {
+                    top: 0;
+                    opacity: 1
+                }
+
+                to {
+                    top: 100%;
+                    opacity: 0
+                }
+            }
+
+            .ambient-light {
+                position: absolute;
+                width: 160%;
+                height: 160%;
+                filter: blur(80px);
+                opacity: 0;
+                pointer-events: none;
+                z-index: -1;
+                transition: opacity 1.5s ease;
+                border-radius: 50%
+            }
+
+            .ambient-light.active {
+                opacity: .25
+            }
+
+            @media(prefers-reduced-motion:reduce) {
+                .ambient-light {
+                    display: none
+                }
+            }
+
+            #seo-content[data-astro-cid-j7pv25f6] {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0,0,0,0);
+                white-space: nowrap
+            }
+        </style>
+    </head>
+    <body>
+        <div id="seo-content" data-astro-cid-j7pv25f6>
+            <h1 data-astro-cid-j7pv25f6>RustyGBA — Game Boy Advance Emulator</h1>
+            <p data-astro-cid-j7pv25f6>Free GBA emulator running entirely in your browser via WebAssembly. No downloads, no installs, no tracking. Built with Rust for speed and safety. Load your ROM and play instantly.</p>
+            <h2 data-astro-cid-j7pv25f6>Play GBA Games Online</h2>
+            <p data-astro-cid-j7pv25f6>RustyGBA is a free, open-source Game Boy Advance emulator that runs entirely in your browser.
+      Built with Rust and compiled to WebAssembly, it delivers near-native performance with zero setup.
+      Your ROMs never leave your device — everything is processed locally.
+</p>
+            <h2 data-astro-cid-j7pv25f6>Features</h2>
+            <ul data-astro-cid-j7pv25f6>
+                <li data-astro-cid-j7pv25f6>Full GBA emulation — CPU, graphics, audio, and input</li>
+                <li data-astro-cid-j7pv25f6>Save support — cartridge saves persist in your browser</li>
+                <li data-astro-cid-j7pv25f6>Save states — quick save and load with F5/F8</li>
+                <li data-astro-cid-j7pv25f6>Keyboard and gamepad support</li>
+                <li data-astro-cid-j7pv25f6>100% client-side — no uploads, no servers, no tracking</li>
+                <li data-astro-cid-j7pv25f6>Built with Rust — zero unsafe code, maximum performance</li>
+            </ul>
+            <h2 data-astro-cid-j7pv25f6>Controls</h2>
+            <p data-astro-cid-j7pv25f6>Z = A, X = B, Arrow Keys = D-Pad, Enter = Start, Shift = Select, A = L, S = R</p>
+        </div>
+        <style>
+            astro-island,astro-slot,astro-static-slot {
+                display: contents
+            }
+        </style>
+        <script>
+            ( () => {
+                var e = async t => {
+                    await (await t())()
+                }
+                ;
+                (self.Astro || (self.Astro = {})).load = e;
+                window.dispatchEvent(new Event("astro:load"));
+            }
+            )();
+        </script>
+        <script>
+            ( () => {
+                var A = Object.defineProperty;
+                var g = (i, o, a) => o in i ? A(i, o, {
+                    enumerable: !0,
+                    configurable: !0,
+                    writable: !0,
+                    value: a
+                }) : i[o] = a;
+                var d = (i, o, a) => g(i, typeof o != "symbol" ? o + "" : o, a);
+                {
+                    let i = {
+                        0: t => m(t),
+                        1: t => a(t),
+                        2: t => new RegExp(t),
+                        3: t => new Date(t),
+                        4: t => new Map(a(t)),
+                        5: t => new Set(a(t)),
+                        6: t => BigInt(t),
+                        7: t => new URL(t),
+                        8: t => new Uint8Array(t),
+                        9: t => new Uint16Array(t),
+                        10: t => new Uint32Array(t),
+                        11: t => Number.POSITIVE_INFINITY * t
+                    }
+                      , o = t => {
+                        let[l,e] = t;
+                        return l in i ? i[l](e) : void 0
+                    }
+                      , a = t => t.map(o)
+                      , m = t => typeof t != "object" || t === null ? t : Object.fromEntries(Object.entries(t).map( ([l,e]) => [l, o(e)]));
+                    class y extends HTMLElement {
+                        constructor() {
+                            super(...arguments);
+                            d(this, "Component");
+                            d(this, "hydrator");
+                            d(this, "hydrate", async () => {
+                                var b;
+                                if (!this.hydrator || !this.isConnected)
+                                    return;
+                                let e = (b = this.parentElement) == null ? void 0 : b.closest("astro-island[ssr]");
+                                if (e) {
+                                    e.addEventListener("astro:hydrate", this.hydrate, {
+                                        once: !0
+                                    });
+                                    return
+                                }
+                                let c = this.querySelectorAll("astro-slot")
+                                  , n = {}
+                                  , h = this.querySelectorAll("template[data-astro-template]");
+                                for (let r of h) {
+                                    let s = r.closest(this.tagName);
+                                    s != null && s.isSameNode(this) && (n[r.getAttribute("data-astro-template") || "default"] = r.innerHTML,
+                                    r.remove())
+                                }
+                                for (let r of c) {
+                                    let s = r.closest(this.tagName);
+                                    s != null && s.isSameNode(this) && (n[r.getAttribute("name") || "default"] = r.innerHTML)
+                                }
+                                let p;
+                                try {
+                                    p = this.hasAttribute("props") ? m(JSON.parse(this.getAttribute("props"))) : {}
+                                } catch (r) {
+                                    let s = this.getAttribute("component-url") || "<unknown>"
+                                      , v = this.getAttribute("component-export");
+                                    throw v && (s += ` (export ${v})`),
+                                    console.error(`[hydrate] Error parsing props for component ${s}`, this.getAttribute("props"), r),
+                                    r
+                                }
+                                let u;
+                                await this.hydrator(this)(this.Component, p, n, {
+                                    client: this.getAttribute("client")
+                                }),
+                                this.removeAttribute("ssr"),
+                                this.dispatchEvent(new CustomEvent("astro:hydrate"))
+                            }
+                            );
+                            d(this, "unmount", () => {
+                                this.isConnected || this.dispatchEvent(new CustomEvent("astro:unmount"))
+                            }
+                            )
+                        }
+                        disconnectedCallback() {
+                            document.removeEventListener("astro:after-swap", this.unmount),
+                            document.addEventListener("astro:after-swap", this.unmount, {
+                                once: !0
+                            })
+                        }
+                        connectedCallback() {
+                            if (!this.hasAttribute("await-children") || document.readyState === "interactive" || document.readyState === "complete")
+                                this.childrenConnectedCallback();
+                            else {
+                                let e = () => {
+                                    document.removeEventListener("DOMContentLoaded", e),
+                                    c.disconnect(),
+                                    this.childrenConnectedCallback()
+                                }
+                                  , c = new MutationObserver( () => {
+                                    var n;
+                                    ((n = this.lastChild) == null ? void 0 : n.nodeType) === Node.COMMENT_NODE && this.lastChild.nodeValue === "astro:end" && (this.lastChild.remove(),
+                                    e())
+                                }
+                                );
+                                c.observe(this, {
+                                    childList: !0
+                                }),
+                                document.addEventListener("DOMContentLoaded", e)
+                            }
+                        }
+                        async childrenConnectedCallback() {
+                            let e = this.getAttribute("before-hydration-url");
+                            e && await import(e),
+                            this.start()
+                        }
+                        async start() {
+                            let e = JSON.parse(this.getAttribute("opts"))
+                              , c = this.getAttribute("client");
+                            if (Astro[c] === void 0) {
+                                window.addEventListener(`astro:${c}`, () => this.start(), {
+                                    once: !0
+                                });
+                                return
+                            }
+                            try {
+                                await Astro[c](async () => {
+                                    let n = this.getAttribute("renderer-url")
+                                      , [h,{default: p}] = await Promise.all([import(this.getAttribute("component-url")), n ? import(n) : () => () => {}
+                                    ])
+                                      , u = this.getAttribute("component-export") || "default";
+                                    if (!u.includes("."))
+                                        this.Component = h[u];
+                                    else {
+                                        this.Component = h;
+                                        for (let f of u.split("."))
+                                            this.Component = this.Component[f]
+                                    }
+                                    return this.hydrator = p,
+                                    this.hydrate
+                                }
+                                , e, this)
+                            } catch (n) {
+                                console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`, n)
+                            }
+                        }
+                        attributeChangedCallback() {
+                            this.hydrate()
+                        }
+                    }
+                    d(y, "observedAttributes", ["props"]),
+                    customElements.get("astro-island") || customElements.define("astro-island", y)
+                }
+            }
+            )();
+        </script>
+        <astro-island uid="2mb6Kw" data-preact-island-id="1" component-url="/_astro/Emulator.BMYy4QcN.js" component-export="Emulator" renderer-url="/_astro/client.D0cr761a.js" props="{&quot;data-astro-cid-j7pv25f6&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;Emulator&quot;,&quot;value&quot;:true}" await-children>
+            <div class="emulator-idle ">
+                <div class="landing ">
+                    <input type="file" accept=".gba,.bin" style="display:none;"/>
+                    <div class="showcase">
+                        <div class="showcase-bg" style="background:radial-gradient(ellipse at 80% 40%, #2E7D3230 0%, transparent 50%), var(--bg-deep);transition:background 0.6s ease;"></div>
+                        <div class="showcase-flash" style="background:#2E7D32;"></div>
+                        <div class="showcase-slash" style="border-color:#2E7D3225;"></div>
+                        <div class="showcase-title slam">
+                            <span class="showcase-label font-mono">GAME BOY ADVANCE</span>
+                            <h2 class="showcase-name font-display">Pokemon Emerald</h2>
+                            <div class="showcase-underline" style="background:#2E7D32;"></div>
+                        </div>
+                        <div class="showcase-art slam">
+                            <img src="/games/pokemon-emerald.webp" alt="Pokemon Emerald" class="showcase-art-img" draggable="false"/>
+                        </div>
+                    </div>
+                    <section class="mobile-promo" aria-label="RustyGBA mobile preview">
+                        <div class="mobile-promo-orbit" aria-hidden="true"></div>
+                        <div class="mobile-promo-card">
+                            <div class="mobile-promo-badge font-mono">Pocket-sized preview</div>
+                            <h1 class="mobile-promo-title font-display">Play the full emulator on desktop</h1>
+                            <p class="mobile-promo-copy">RustyGBA runs real Game Boy Advance ROMs in-browser with local saves, keyboard controls, gamepad support, and no uploads.</p>
+                            <div class="mobile-promo-url font-mono">rustygba.com</div>
+                        </div>
+                        <div class="mobile-promo-device" aria-hidden="true">
+                            <img src="/gba.webp" alt draggable="false"/>
+                            <div class="mobile-promo-screen">
+                                <span>Desktop Ready</span>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="gba-shell">
+                        <div class="gba-screen-overlay">
+                            <div class="gba-screen-content">
+                                <span class="gba-screen-text font-display">Load BIOS</span>
+                                <span class="gba-screen-hint">Drop bios.bin anywhere</span>
+                            </div>
+                        </div>
+                        <img src="/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
+                        <div class="gba-power-led "></div>
+                    </div>
+                    <div class="landing-brand">
+                        <h1 class="landing-title font-display">
+                            <span>Rusty</span>
+                            <span class="accent">GBA</span>
+                            <span class="dot">.</span>
+                        </h1>
+                    </div>
+                    <div class="landing-controls font-mono">
+                        <span class="landing-key">Z</span>
+                        A<span class="landing-key">X</span>
+                        B<span class="landing-key">←↑↓→</span>
+                        D-Pad<span class="landing-key">Enter</span>
+                        Start<span class="landing-key">M</span>
+                        Mute
+                    </div>
+                    <div class="landing-disclaimer">Your ROM never leaves your device. Everything runs locally in your browser via WebAssembly — no uploads, no servers, no tracking. You are responsible for owning any ROMs you load.</div>
+                    <div class="landing-copyright font-mono">© 2026 OrCat Studios</div>
+                </div>
+            </div>
+            <!--astro:end-->
+        </astro-island>
+        <noscript>
+            <div style="padding: 2rem; text-align: center; color: #8B8F96; font-family: system-ui;">
+                <h1>RustyGBA</h1>
+                <p>JavaScript is required to run the GBA emulator. Please enable JavaScript and reload the page.</p>
+            </div>
+        </noscript>
+        <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"ad1a880ee7f14542ab308cc51db65c6d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                function c() {
+                    var b = a.contentDocument || a.contentWindow.document;
+                    if (b) {
+                        var d = b.createElement('script');
+                        d.innerHTML = "window.__CF$cv$params={r:'a01e18222cf16c30',t:'MTc3OTgxMjI5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                        b.getElementsByTagName('head')[0].appendChild(d)
+                    }
+                }
+                if (document.body) {
+                    var a = document.createElement('iframe');
+                    a.height = 1;
+                    a.width = 1;
+                    a.style.position = 'absolute';
+                    a.style.top = 0;
+                    a.style.left = 0;
+                    a.style.border = 'none';
+                    a.style.visibility = 'hidden';
+                    document.body.appendChild(a);
+                    if ('loading' !== document.readyState)
+                        c();
+                    else if (window.addEventListener)
+                        document.addEventListener('DOMContentLoaded', c);
+                    else {
+                        var e = document.onreadystatechange || function() {}
+                        ;
+                        document.onreadystatechange = function(b) {
+                            e(b);
+                            'loading' !== document.readyState && (document.onreadystatechange = e,
+                            c())
+                        }
+                    }
+                }
+            }
+            )();
+        </script>
+    </body>
+</html>
