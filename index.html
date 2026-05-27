@@ -338,6 +338,19 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .modal-name-row{margin-top:var(--sp3)}
 .modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
 
+.autosave-slot {
+  border-color: rgba(0,196,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(0,196,248,.08),
+    0 8px 24px rgba(0,196,248,.08);
+}
+
+.autosave-slot .save-slot-thumb-num {
+  background: #00c4f8;
+  color: #001018;
+  font-weight: 800;
+}
+
 /* ═══════════════════════════════════════════════════════════
    EMULATOR SCREEN
    ═══════════════════════════════════════════════════════════ */
@@ -649,8 +662,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 <!-- File inputs outside click zones -->
 <input type="file" id="rom-input" accept=".gba,.zip,.GBA" style="display:none">
-<input type="file" id="sav-input" accept=".sav,.SAV,.srm,.SRM,.eep,.EEP,.fla,.FLA" style="display:none">
-<input type="file" id="state-input" accept=".state,.sav,.srm,.eep,.fla,.SAV,.SRM" style="display:none">
+<input type="file" id="state-input" accept=".state,.STATE" style="display:none">
 
 <!-- ══════════════ IDLE / LANDING ══════════════ -->
 <div id="idle-screen">
@@ -842,7 +854,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
       <!-- Quick Save -->
       <div class="sidebar-section">
-        <div class="sidebar-section-title">Quick Save</div>
+        <div class="sidebar-section-title">Cache Save</div>
         <button class="sb-btn accent-btn" id="sb-cache-save">
           <span class="sb-btn-icon">💾</span>
           <span class="sb-btn-text">Save State<span class="sb-btn-sub">Pick slot + name your save</span></span>
@@ -855,31 +867,46 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
         </button>
       </div>
 
-      <!-- Battery Save / State File -->
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Save Files</div>
-        <button class="sb-btn" id="sb-import-state">
-          <span class="sb-btn-icon">📥</span>
-          <span class="sb-btn-text">Import State File<span class="sb-btn-sub">.state — restores live snapshot</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-        <button class="sb-btn" id="sb-export-state">
-          <span class="sb-btn-icon">📤</span>
-          <span class="sb-btn-text">Export State File<span class="sb-btn-sub">.state — portable snapshot</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-        <div class="sb-divider"></div>
-        <button class="sb-btn" id="sb-import-sav">
-          <span class="sb-btn-icon">📥</span>
-          <span class="sb-btn-text">Import Battery Save<span class="sb-btn-sub">.sav/.srm — applies live</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-        <button class="sb-btn" id="sb-export-save">
-          <span class="sb-btn-icon">📤</span>
-          <span class="sb-btn-text">Export Battery Save<span class="sb-btn-sub">Download .sav file</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-      </div>
+
+      <!-- Snapshot System -->
+<div class="sidebar-section">
+
+ <div class="sidebar-section-title">
+ Snapshot System
+ </div>
+
+ <button class="sb-btn accent-btn" id="sb-import-snapshot">
+
+ <span class="sb-btn-icon">📂</span>
+
+ <span class="sb-btn-text">
+ Load Manual State
+ <span class="sb-btn-sub">
+ Continue from exact gameplay moment (.state)
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+ <button class="sb-btn" id="sb-export-state">
+
+ <span class="sb-btn-icon">💾⚙</span>
+
+ <span class="sb-btn-text">
+ Save Manual State
+ <span class="sb-btn-sub">
+ Download portable gameplay snapshot
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+</div>
+
 
       <!-- ROM -->
       <div class="sidebar-section">
@@ -933,8 +960,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
    SwiftGBA — Enhanced Frontend v3
    Key fixes:
    ✦ saveState() used everywhere (not getState())
-   ✦ Live .sav import via FS — no restart needed
-   ✦ Separate import/export for .state snapshots vs .sav battery saves
+   ✦ Separate import/export for .state snapshots
    ✦ Keyboard hotkeys for quick-save/load (1–6, Ctrl+1–6)
    ✦ In-viewport state toast replaces reliance on bottom toast
    ✦ Toolbar status pill
@@ -953,7 +979,6 @@ const S_META      = 'meta';
 const S_STATES    = 'states';
 const NUM_SLOTS   = 6;
 const AUTOSAVE_MS = 45000;
-const SAV_EXTS    = new Set(['.sav','.srm','.eep','.fla','.SAV','.SRM','.EEP','.FLA']);
 const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
 const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
 
@@ -1130,13 +1155,27 @@ function captureStateData() {
 /* ── Apply state data to running emulator ── */
 function applyStateData(data) {
   const emu = getEmu();
+
   if (!emu || !emu.gameManager) return false;
+
   const gm = emu.gameManager;
+
   for (const method of ['loadState', 'quickLoad']) {
     try {
-      if (typeof gm[method] === 'function') { gm[method](data); return true; }
+      if (typeof gm[method] === 'function') {
+
+        const fixedData =
+          data instanceof Uint8Array
+            ? data
+            : new Uint8Array(data);
+
+        gm[method](fixedData);
+
+        return true;
+      }
     } catch(e) {}
   }
+
   return false;
 }
 
@@ -1477,7 +1516,7 @@ idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag
 idleScreen.addEventListener('drop', e => {
   e.preventDefault(); idleScreen.classList.remove('drag-over');
   const f = e.dataTransfer.files[0]; if (!f) return;
-  if (SAV_EXTS.has(extOf(f.name))) { toast('Load a ROM first, then import the .sav','warn'); return; }
+  
   launchROM(f);
 });
 idleScreen.addEventListener('click', e => {
@@ -1493,7 +1532,7 @@ $('rom-input').addEventListener('change', e => {
 ══════════════════════════════════════════════════════════════ */
 async function launchROM(file) {
   const ext = extOf(file.name);
-  if (SAV_EXTS.has(ext)) { toast('That looks like a save file, not a ROM','error'); return; }
+ 
   clearInterval(cycleTimer);
   idleScreen.classList.add('fade-out');
   setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
@@ -1576,6 +1615,7 @@ function startEmulator(romURL, displayName) {
   );
 
   window.EJS_onGameStart = () => {
+     tryUnlockAudio();
     ejsReady = true;
     buildSaveSlots();
     hideLoadIndicator();
@@ -1624,7 +1664,7 @@ function startAutosave() {
     const thumb = captureThumbnail();
     try {
       await dbPut(S_STATES, {
-        id: `${currentRomName}::slot1`,
+        id: `${currentRomName}::autosave`
         data: stateData, ts: Date.now(),
         thumb, saveName: 'Auto-save', slotIdx: 1,
       });
@@ -1804,7 +1844,125 @@ async function buildSaveSlots() {
     return;
   }
   let filledCount = 0;
-  for (let i = 1; i <= NUM_SLOTS; i++) {
+
+/* ═════════════════════════════════════════════
+   AUTOSAVE CARD
+═════════════════════════════════════════════ */
+let autoMeta = null;
+
+try {
+  autoMeta = await dbGet(
+    S_STATES,
+    `${currentRomName}::autosave`
+  );
+} catch(e) {}
+
+if (autoMeta) {
+
+  const autoEl = document.createElement('div');
+
+  autoEl.className =
+    'save-slot has-data autosave-slot';
+
+  const thumbHtml = autoMeta.thumb
+    ? `<img src="${autoMeta.thumb}" alt="Autosave">`
+    : `<span class="save-slot-thumb-empty">💾</span>`;
+
+  autoEl.innerHTML = `
+    <div class="save-slot-left">
+      <div class="save-slot-thumb">
+        ${thumbHtml}
+        <span class="save-slot-thumb-num">A</span>
+      </div>
+
+      <div class="save-slot-info">
+        <div class="save-slot-name">
+          Auto Save
+        </div>
+
+        <div class="save-slot-time">
+          ${timeAgo(autoMeta.ts)}
+        </div>
+      </div>
+    </div>
+
+    <div class="save-slot-actions">
+      <button
+        class="slot-btn load"
+        title="Load autosave"
+      >
+        LOAD
+      </button>
+
+      <button
+        class="slot-btn del"
+        title="Delete autosave"
+      >
+        ✕
+      </button>
+    </div>
+  `;
+
+  autoEl
+    .querySelector('.slot-btn.load')
+    .addEventListener('click', async () => {
+
+      const ok = applyStateData(autoMeta.data);
+
+      if (!ok) {
+        toast(
+          'Could not load autosave',
+          'error'
+        );
+        return;
+      }
+
+      if (isPaused)
+        updatePauseUI(false);
+
+      showStateToast('Autosave loaded');
+
+      toast(
+        'Autosave restored ✓',
+        'success'
+      );
+    });
+
+  autoEl
+    .querySelector('.slot-btn.del')
+    .addEventListener('click', async () => {
+
+      try {
+
+        await dbDel(
+          S_STATES,
+          `${currentRomName}::autosave`
+        );
+
+        toast(
+          'Autosave deleted',
+          'info'
+        );
+
+        buildSaveSlots();
+
+      } catch(e) {
+
+        toast(
+          'Delete failed',
+          'error'
+        );
+      }
+    });
+
+  container.appendChild(autoEl);
+}
+
+/* ═════════════════════════════════════════════
+   NORMAL SAVE SLOTS
+═════════════════════════════════════════════ */
+
+for (let i = 1; i <= NUM_SLOTS; i++) {
     const key = `${currentRomName}::slot${i}`;
     let meta = null;
     try { meta = await dbGet(S_STATES, key); } catch(e) {}
@@ -2058,7 +2216,7 @@ async function quickLoadSlot(i) {
 $('sb-import-state').addEventListener('click', () => {
   if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
   if (!ejsReady)       { toast('Wait for the game to start first', 'warn'); return; }
-  $('state-input').accept = '.state,.sav,.srm';
+  $('state-input').accept = '.state';
   $('state-input').click();
 });
 
@@ -2067,11 +2225,11 @@ $('state-input').addEventListener('change', async e => {
   if (!f) return;
   // Determine if this is a state file or a battery save
   const ext = extOf(f.name);
-  if (SAV_EXTS.has(ext)) {
-    // Route to battery save importer
-    importBatterySavLive(f);
-    return;
-  }
+
+if (ext !== '.state') {
+  toast('Only .state files are supported', 'error');
+  return;
+}
   // Treat as state snapshot
   if (!ejsReady) { toast('Emulator not ready', 'warn'); return; }
   try {
@@ -2103,154 +2261,42 @@ $('sb-export-state').addEventListener('click', async () => {
   toast('State file exported ✓','success');
 });
 
-/* ══════════════════════════════════════════════════════════════
-   IMPORT BATTERY SAVE (.sav/.srm/.eep/.fla) — LIVE, NO RESTART
-   
-   Strategy:
-   1. Write the raw bytes to the emulator's virtual filesystem (FS.writeFile)
-   2. Call saveSaveFiles() or equivalent to tell mGBA to flush/reload
-   3. The game reads the updated save from the FS automatically — no restart
-   
-   This works because mGBA (the GBA core in EJS) reads the save file on demand.
-══════════════════════════════════════════════════════════════ */
-$('sb-import-sav').addEventListener('click', () => {
-  if (!currentRomName) { toast('Load a ROM first','error'); return; }
-  if (!ejsReady)       { toast('Wait for the game to start first','warn'); return; }
-  $('sav-input').click();
-});
-$('sav-input').addEventListener('change', e => {
-  const f = e.target.files[0]; if (!f) return; e.target.value = '';
-  importBatterySavLive(f);
-});
 
-async function importBatterySavLive(file) {
-  if (!ejsReady) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
-  const emu = getEmu();
-  if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
-
-  const u8 = new Uint8Array(await file.arrayBuffer());
-  const EXPECTED = [8192, 32768, 65536, 131072];
-  if (!EXPECTED.includes(u8.byteLength))
-    toast(`Unusual save size (${fmtSize(u8.byteLength)}) — importing anyway`, 'warn', 4000);
-
-  const gm = emu.gameManager;
-  let applied = false;
-
-  // Attempt 1: Direct FS write — preferred, works without restart
-  if (gm.FS && typeof gm.FS.writeFile === 'function') {
-    try {
-      const saveDirs = [
-        '/home/web_user/retroarch/userdata/saves/',
-        '/home/web_user/retroarch/userdata/',
-        '/data/saves/',
-      ];
-      // Derive save filename: same base name as ROM, .srm extension
-      const base = currentDisplay || currentRomName.replace(/\.[^.]+$/, '');
-      const savFile = base + '.srm';
-      for (const dir of saveDirs) {
-        try { gm.FS.mkdir(dir); } catch(e) {}
-        try { gm.FS.writeFile(dir + savFile, u8); } catch(e) { continue; }
-      }
-      // Signal EJS/mGBA to pick up the new save data
-      if (typeof gm.saveSaveFiles === 'function')  { try { gm.saveSaveFiles(); } catch(e) {} }
-      if (typeof gm.loadSaveFiles === 'function')  { try { gm.loadSaveFiles(); } catch(e) {} }
-      if (typeof gm.reloadSave    === 'function')  { try { gm.reloadSave();    } catch(e) {} }
-      applied = true;
-      toast('.sav imported live ✓ — if the game doesn\'t reflect it immediately, use in-game load or save rooms', 'success', 5000);
-    } catch(err) {
-      console.warn('FS write failed:', err);
-    }
-  }
-
-  // Attempt 2: loadSaveFile API (some EJS builds)
-  if (!applied && typeof gm.loadSaveFile === 'function') {
-    try { gm.loadSaveFile(u8); applied = true; toast('.sav imported live ✓','success'); } catch(e) {}
-  }
-
-  if (!applied) {
-    // Last resort: store for manual refresh
-    if (db) await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
-    toast('.sav stored but could not apply live — restart the game and it will load on next boot', 'warn', 5000);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SAV DROP ZONE (drag .sav onto game screen)
-══════════════════════════════════════════════════════════════ */
-const SAV_DROP_ZONE = $('emu-wrap');
-SAV_DROP_ZONE.addEventListener('dragover', e => {
-  if (!$('emu-screen').classList.contains('active') || !currentRomName) return;
-  const items = Array.from(e.dataTransfer.items || []);
-  const hasSav = items.some(it => { try { const n = it.getAsFile()?.name||''; return SAV_EXTS.has(extOf(n)) || extOf(n) === '.state'; } catch(e) { return false; } });
-  if (hasSav) { e.preventDefault(); $('sav-drop-overlay').classList.add('visible'); }
-});
-SAV_DROP_ZONE.addEventListener('dragleave', () => $('sav-drop-overlay').classList.remove('visible'));
-SAV_DROP_ZONE.addEventListener('drop', e => {
-  $('sav-drop-overlay').classList.remove('visible');
-  if (!currentRomName) return;
-  const f = e.dataTransfer.files[0]; if (!f) return;
-  const ext = extOf(f.name);
-  if (SAV_EXTS.has(ext)) { e.preventDefault(); importBatterySavLive(f); }
-  else if (ext === '.state') { e.preventDefault(); $('state-input').dispatchEvent(Object.assign(new Event('change'), { target: { files: [f], value:'' } })); importStateFileDirect(f); }
-  else if (ROM_EXTS.has(ext)) { e.preventDefault(); launchROM(f); }
-});
-
-async function importStateFileDirect(file) {
-  if (!ejsReady) return;
-  try {
-    const buf = await file.arrayBuffer();
-    const ok = applyStateData(buf);
-    if (!ok) { toast('Could not apply state','error'); return; }
-    if (isPaused) updatePauseUI(false);
-    showStateToast('State restored');
-    toast('State loaded from dropped file ✓','success');
-  } catch(e) {}
-}
-
-/* ══════════════════════════════════════════════════════════════
-   EXPORT .SAV FILE
-══════════════════════════════════════════════════════════════ */
-$('sb-export-save').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded','error'); return; }
-  const emu = getEmu();
-  if (emu && emu.gameManager) {
-    const gm = emu.gameManager;
-    try { if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles(); } catch(e) {}
-    try {
-      if (typeof gm.getSaveFile === 'function') {
-        const sav = gm.getSaveFile();
-        if (sav && sav.byteLength > 0) { download(new Blob([sav], { type:'application/octet-stream' }), savName(currentRomName)); toast('Battery save exported ✓','success'); return; }
-      }
-    } catch(e) {}
-    if (gm.FS) {
-      for (const dir of ['/home/web_user/retroarch/userdata/saves/','/home/web_user/retroarch/userdata/','/data/saves/']) {
-        try {
-          const entries = gm.FS.readdir(dir);
-          const savFile = entries.find(f => /\.(srm|sav|eep|fla)$/i.test(f));
-          if (savFile) { download(new Blob([gm.FS.readFile(dir + savFile)], { type:'application/octet-stream' }), savName(currentRomName)); toast('Battery save exported ✓','success'); return; }
-        } catch(e) {}
-      }
-    }
-  }
-  toast('No save data found — do an in-game save first','warn');
-});
 
 /* ══════════════════════════════════════════════════════════════
    SCREENSHOT
 ══════════════════════════════════════════════════════════════ */
 async function takeScreenshot() {
-  const emu = getEmu();
-  if (!emu || !emu.gameManager) { toast('Emulator not running','error'); return; }
   try {
+    const canvas = document.querySelector('#game canvas');
+
+    if (!canvas) {
+      toast('No game screen found', 'error');
+      return;
+    }
+
     const flash = $('ss-flash');
-    flash.classList.remove('pop'); flash.offsetHeight; flash.classList.add('pop');
-    const imgUrl = await emu.gameManager.screenshot();
-    const a = Object.assign(document.createElement('a'), {
-      href: imgUrl, download: `${currentDisplay || 'screenshot'}_${Date.now()}.png`,
+    flash.classList.remove('pop');
+    flash.offsetHeight;
+    flash.classList.add('pop');
+
+    canvas.toBlob(blob => {
+      if (!blob) {
+        toast('Screenshot failed', 'error');
+        return;
+      }
+
+      download(
+        blob,
+        `${currentDisplay || 'screenshot'}_${Date.now()}.png`
+      );
+
+      toast('Screenshot saved ✓', 'success', 1800);
     });
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    toast('Screenshot saved ✓','success',1800);
-  } catch(e) { toast('Screenshot failed','error'); }
+
+  } catch (e) {
+    toast('Screenshot failed', 'error');
+  }
 }
 $('btn-screenshot').addEventListener('click', takeScreenshot);
 $('sb-screenshot').addEventListener('click', takeScreenshot);
