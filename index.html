@@ -2401,6 +2401,20 @@ $('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle
 /* ══════════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS
 ══════════════════════════════════════════════════════════════ */
+// Track ` key
+window.backtickHeld = false;
+
+document.addEventListener('keydown', e => {
+  if (e.key === '`') {
+    window.backtickHeld = true;
+  }
+});
+
+document.addEventListener('keyup', e => {
+  if (e.key === '`') {
+    window.backtickHeld = false;
+  }
+});
 document.addEventListener('keydown', e => {
   if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
   const inEmu    = $('emu-screen').classList.contains('active');
@@ -2412,30 +2426,23 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
   if (!inEmu || keysOpen) return;
-// ALT+1-6 = quick-save
-// CTRL+1-6 = quick-load
-
+// ` + 1-6 = quick save
+// Ctrl + 1-6 = quick load
 if (/^[1-6]$/.test(e.key)) {
 
   const slot = parseInt(e.key, 10);
 
-  // QUICK SAVE
-  if (e.altKey) {
-
+  // Ctrl + number = LOAD
+  if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
-
-    quickSaveSlot(slot);
-
+    quickLoadSlot(slot);
     return;
   }
 
-  // QUICK LOAD
-  if (e.ctrlKey || e.metaKey) {
-
+  // ` key held + number = SAVE
+  if (window.backtickHeld) {
     e.preventDefault();
-
-    quickLoadSlot(slot);
-
+    quickSaveSlot(slot);
     return;
   }
 }
