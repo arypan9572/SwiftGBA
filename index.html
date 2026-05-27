@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="SwiftGBA – free Game Boy Advance emulator in your browser">
+<meta name="theme-color" content="#0F1114">
+<title>SwiftGBA</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   FONTS
+   ═══════════════════════════════════════════════════════════ */
+@font-face{font-family:Clash Display;src:url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2)format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:Satoshi;src:url(https://rustygba.com/fonts/Satoshi-Variable.woff2)format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+@font-face{font-family:Departure Mono;src:url(https://rustygba.com/fonts/DepartureMono-Regular.woff2)format("woff2");font-weight:400;font-style:normal;font-display:swap}
+
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --bg-deep:#08090d;--bg-base:#0e1018;--bg-panel:#161920;
+  --bg-elevated:#1e2128;--bg-input:#23262e;
+  --border-subtle:#272b33;--border-mid:#343840;
+  --text-primary:#e8eaef;--text-secondary:#8a8f99;
+  --text-tertiary:#545860;--text-ghost:#363a42;
+  --accent:#00c4f8;--accent-dim:rgba(0,196,248,.1);--accent-glow:rgba(0,196,248,.28);
+  --accent2:#7c3aed;--accent2-dim:rgba(124,58,237,.1);
+  --led-green:#00e85a;--led-green-glow:rgba(0,232,90,.28);
+  --error:#e84057;--warn:#f59e0b;--warn-dim:rgba(245,158,11,.1);
+  --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--sp6:32px;--sp7:48px;
+  --font-display:"Clash Display",system-ui,sans-serif;
+  --font-ui:"Satoshi",system-ui,sans-serif;
+  --font-mono:"Departure Mono",ui-monospace,monospace;
+  --xs:11px;--sm:13px;--base:15px;--lg:18px;--xl:24px;--2xl:32px;
+  --ease-spring:cubic-bezier(.22,1,.36,1);--ease-back:cubic-bezier(.34,1.56,.64,1);
+  --fast:.14s;--normal:.26s;--slow:.4s;
+  --sidebar-w:292px;--toolbar-h:50px;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:18px;
+}
+*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-ui);font-size:var(--base);line-height:1.5;-webkit-font-smoothing:antialiased}
+.font-display{font-family:var(--font-display)}
+.font-mono{font-family:var(--font-mono)}
+
+/* ═══════════════════════════════════════════════════════════
+   IDLE / LANDING
+   ═══════════════════════════════════════════════════════════ */
+#idle-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
+  cursor:pointer;transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
+  gap:var(--sp3);background:#07090c;isolation:isolate;
+}
+#idle-screen.fade-out{opacity:0;pointer-events:none;transform:scale(1.03)}
+
+.landing-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,196,248,.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 60%,rgba(0,80,200,.1) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 50% at 10% 80%,rgba(100,0,210,.07) 0%,transparent 50%),
+    linear-gradient(180deg,#07090c 0%,#0b0f16 40%,#0d1219 100%);
+  animation:bg-breathe 12s ease-in-out infinite alternate;
+}
+@keyframes bg-breathe{0%{opacity:.9}50%{opacity:1}100%{opacity:.85}}
+
+.landing-grid{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,196,248,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,248,.038) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 25%,transparent 72%);
+  animation:grid-drift 22s linear infinite;
+}
+@keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(56px)}}
+
+.landing-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px);z-index:0}
+.landing-orb-1{width:520px;height:520px;top:-18%;left:-12%;background:rgba(0,196,248,.07);animation:orb1 18s ease-in-out infinite alternate}
+.landing-orb-2{width:420px;height:420px;bottom:-12%;right:-6%;background:rgba(100,0,230,.08);animation:orb2 14s ease-in-out infinite alternate}
+.landing-orb-3{width:320px;height:320px;top:38%;left:33%;background:rgba(0,196,248,.045);animation:orb3 10s ease-in-out infinite alternate}
+@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(5%,8%) scale(1.1)}}
+@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-6%,-5%) scale(1.15)}}
+@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.6}to{transform:translate(3%,-4%) scale(1.2);opacity:1}}
+
+#idle-screen::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px 256px;
+}
+#idle-screen::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.055) 3px,rgba(0,0,0,.055) 4px);
+  animation:scan-drift 6s linear infinite;
+}
+@keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
+
+#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.45}
+
+/* ── Showcase ── */
+.showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.showcase-bg{position:absolute;inset:0;transition:background 1s ease}
+.showcase-pulse{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 45% at 76% 38%,var(--game-color,rgba(0,196,248,.12)) 0%,transparent 65%);
+  animation:ambient-pulse 5s ease-in-out infinite;transition:background 1s ease;
+}
+@keyframes ambient-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+.showcase-flash{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none}
+.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .5s ease-out forwards;pointer-events:none}
+@keyframes wipe-sweep{0%{transform:translate(-100%) rotate(12deg)}to{transform:translate(100%) rotate(12deg)}}
+.showcase-slash{position:absolute;top:-20%;right:18%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none;transition:border-color .8s ease}
+.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.032)}
+.showcase-slash::after{right:-14px;opacity:.3}
+
+.showcase-title{position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:8px;z-index:3}
+.showcase-title.slam{animation:title-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-title.out{animation:title-exit .22s ease-in forwards}
+@keyframes title-slam{0%{opacity:0;transform:translateX(-70px) scale(1.08)}65%{opacity:1;transform:translateX(6px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-36px)}}
+.showcase-label{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--text-ghost);text-transform:uppercase;font-family:var(--font-mono)}
+.showcase-label::before{content:'';width:16px;height:1px;background:var(--text-ghost);flex-shrink:0}
+.showcase-name{font-size:clamp(20px,2.6vw,34px);font-weight:600;color:#f0f2f6;line-height:1.1;max-width:340px;letter-spacing:-.01em}
+.showcase-genre{display:inline-flex;align-items:center;gap:6px;margin-top:2px;font-size:10px;font-family:var(--font-mono);color:rgba(0,196,248,.7);letter-spacing:.1em}
+.showcase-underline{width:0;height:2px;border-radius:2px;margin-top:2px;animation:underline-grow .45s ease-out .18s forwards}
+@keyframes underline-grow{0%{width:0}to{width:56px}}
+
+.showcase-art{position:absolute;right:7vw;top:18%;z-index:3}
+.showcase-art.slam{animation:art-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-art.out{animation:art-exit .22s ease-in forwards}
+@keyframes art-slam{0%{opacity:0;transform:translateX(110px) scale(.82) rotate(4deg)}55%{opacity:1;transform:translateX(-8px) scale(1.02) rotate(-.8deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
+@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(72px) scale(.9)}}
+.showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.08) contrast(1.04);box-shadow:0 24px 72px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);user-select:none;pointer-events:none;transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s ease}
+.showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(3px);border-radius:10px;pointer-events:none}
+
+/* ── GBA Shell ── */
+.gba-shell{
+  --gba-screen-left:29.4%;--gba-screen-top:22.2%;
+  --gba-screen-width:40.6%;--gba-screen-height:45.1%;
+  position:relative;display:flex;align-items:center;justify-content:center;
+  transform:translate(-5vw);z-index:3;
+  filter:drop-shadow(0 20px 60px rgba(0,0,0,.75));
+  animation:gba-float 6s ease-in-out infinite;
+}
+@keyframes gba-float{0%,100%{transform:translate(-5vw) translateY(0)}50%{transform:translate(-5vw) translateY(-9px)}}
+.gba-image{width:min(62vw,580px);height:auto;user-select:none;pointer-events:none}
+.gba-screen-overlay{
+  position:absolute;left:var(--gba-screen-left);top:var(--gba-screen-top);
+  width:var(--gba-screen-width);height:var(--gba-screen-height);
+  z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.28);
+}
+.gba-screen-content{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:var(--sp2);padding:0 6%;text-align:center;
+  animation:screen-fade-in 1.2s ease forwards;
+}
+@keyframes screen-fade-in{0%{opacity:0}to{opacity:1}}
+.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.38)}
+.gba-screen-hint{display:block;width:100%;font-size:clamp(8px,1vw,11px);color:#6b7280;margin-top:2px}
+.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7}
+.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;background:var(--text-ghost);transition:all .5s ease}
+.gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow)}
+
+/* ── Landing brand ── */
+.landing-brand{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
+@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(12px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
+.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1}
+.landing-title .accent{color:var(--accent);letter-spacing:.04em}
+.landing-title .dot{color:var(--text-tertiary)}
+.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px}
+
+.landing-controls{
+  display:flex;align-items:center;gap:10px;font-size:var(--xs);color:var(--text-ghost);
+  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:480px;
+  animation:brand-in 1s .45s ease both;
+}
+.landing-key{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:2px 7px;border:1px solid rgba(255,255,255,.09);border-radius:4px;
+  background:rgba(255,255,255,.055);color:var(--text-tertiary);font-size:9px;
+  line-height:1.5;min-width:20px;font-family:var(--font-mono);
+  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.055);
+}
+.landing-separator{width:1px;height:10px;background:var(--border-subtle);flex-shrink:0}
+.landing-disclaimer{
+  max-width:420px;text-align:center;font-size:var(--xs);line-height:1.7;
+  color:var(--text-ghost);z-index:3;transform:translate(-5vw);animation:brand-in 1s .55s ease both;
+}
+#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 60px rgba(0,196,248,.6))}
+#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
+
+/* ── Continue Bar ── */
+#continue-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 var(--sp5) var(--sp4);display:none}
+#continue-bar.visible{display:block}
+#continue-bar::before{content:'';display:block;height:60px;background:linear-gradient(to bottom,transparent,rgba(7,9,12,.96));pointer-events:none;margin-bottom:var(--sp3)}
+.continue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp3)}
+.continue-label{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono)}
+.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0}
+.continue-label-count{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;font-size:9px;color:var(--text-ghost);letter-spacing:0;text-transform:none;margin-left:4px}
+.continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
+.continue-list::-webkit-scrollbar{display:none}
+
+/* Cards */
+.continue-card{
+  flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
+  background:linear-gradient(135deg,rgba(255,255,255,.075) 0%,rgba(255,255,255,.028) 100%);
+  border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-lg);
+  padding:10px 14px 10px 10px;cursor:pointer;
+  min-width:215px;max-width:255px;position:relative;overflow:hidden;
+  backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.055);
+  transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease,background var(--normal) ease;
+  animation:card-slide-in .4s var(--ease-spring) both;
+}
+@keyframes card-slide-in{0%{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.continue-card:hover{
+  transform:translateY(-6px) scale(1.018);
+  border-color:rgba(0,196,248,.32);
+  background:linear-gradient(135deg,rgba(0,196,248,.1) 0%,rgba(255,255,255,.04) 100%);
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(0,196,248,.15),inset 0 1px 0 rgba(255,255,255,.1);
+}
+.continue-card::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,rgba(0,196,248,.07),transparent 60%);transition:opacity var(--normal) ease;pointer-events:none}
+.continue-card:hover::before{opacity:1}
+.continue-card-art{
+  width:52px;height:52px;border-radius:var(--radius-md);flex-shrink:0;overflow:hidden;
+  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  position:relative;box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.continue-card-art img{width:100%;height:100%;object-fit:cover;display:block}
+.continue-card-art-badge{
+  position:absolute;bottom:-2px;right:-2px;background:var(--led-green);border-radius:50%;
+  width:10px;height:10px;border:2px solid #07090c;box-shadow:0 0 6px var(--led-green-glow);display:none;
+}
+.continue-card.recently-played .continue-card-art-badge{display:block}
+.continue-card-info{flex:1;min-width:0}
+.continue-card-name{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.continue-card-meta{font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);margin-top:3px;display:flex;align-items:center;gap:5px}
+.continue-card-meta-dot{width:2px;height:2px;border-radius:50%;background:var(--text-ghost);flex-shrink:0}
+.continue-card-star{position:absolute;top:6px;left:6px;font-size:8px;color:var(--warn);display:none;text-shadow:0 0 8px rgba(245,158,11,.5)}
+.continue-card.favorited .continue-card-star{display:block}
+.continue-card-play{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#0099cc);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:#000;font-size:11px;font-weight:700;
+  box-shadow:0 4px 12px rgba(0,196,248,.35);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.continue-card:hover .continue-card-play{transform:scale(1.12);box-shadow:0 6px 20px rgba(0,196,248,.5)}
+.continue-card-menu{
+  position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
+  cursor:pointer;color:var(--text-ghost);font-size:12px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--fast) ease,background var(--fast) ease,color var(--fast) ease;
+}
+.continue-card:hover .continue-card-menu{opacity:1}
+.continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
+
+/* ── Context dropdown ── */
+.ctx-menu{
+  position:fixed;z-index:500;
+  background:rgba(22,25,32,.97);backdrop-filter:blur(24px);
+  border:1px solid var(--border-mid);border-radius:var(--radius-md);
+  padding:var(--sp2) 0;min-width:168px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.035);
+  animation:ctx-in .14s var(--ease-spring) forwards;
+}
+@keyframes ctx-in{0%{opacity:0;transform:scale(.9) translateY(-4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ctx-item{display:flex;align-items:center;gap:var(--sp2);padding:8px 14px;font-size:var(--sm);color:var(--text-secondary);cursor:pointer;transition:background var(--fast),color var(--fast)}
+.ctx-item:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.ctx-item.danger:hover{color:var(--error)}
+.ctx-item-icon{width:16px;text-align:center;font-size:12px;flex-shrink:0;opacity:.7}
+.ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
+
+/* ── Modals ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(5px);
+  display:flex;align-items:center;justify-content:center;
+  animation:fade-in .18s ease forwards;
+}
+@keyframes fade-in{0%{opacity:0}to{opacity:1}}
+.modal-box{
+  background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));
+  border:1px solid var(--border-mid);border-radius:var(--radius-xl);
+  padding:var(--sp5);min-width:340px;max-width:92vw;
+  animation:modal-in .2s var(--ease-back) forwards;
+  box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.035);
+}
+@keyframes modal-in{0%{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-size:var(--lg);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display);letter-spacing:-.01em}
+.modal-subtitle{font-size:var(--xs);color:var(--text-tertiary);margin-top:-12px;margin-bottom:var(--sp4);font-family:var(--font-mono);letter-spacing:.06em}
+.modal-input{
+  width:100%;background:var(--bg-input);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm);padding:10px var(--sp3);color:var(--text-primary);
+  font-size:var(--sm);font-family:var(--font-ui);outline:none;
+  transition:border-color var(--fast),box-shadow var(--fast);
+}
+.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,196,248,.1)}
+.modal-actions{display:flex;gap:var(--sp2);margin-top:var(--sp4);justify-content:flex-end}
+.modal-btn{
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-sm);padding:8px 18px;font-size:var(--sm);
+  color:var(--text-primary);cursor:pointer;font-family:var(--font-ui);
+  transition:border-color var(--fast),background var(--fast);
+}
+.modal-btn:hover{border-color:var(--accent);background:var(--bg-input)}
+.modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+.modal-btn.primary:hover{background:#00d5ff;border-color:#00d5ff}
+.modal-btn.danger{background:rgba(232,64,87,.1);border-color:rgba(232,64,87,.28);color:var(--error)}
+.modal-btn.danger:hover{background:rgba(232,64,87,.2);border-color:var(--error)}
+
+/* Slot picker */
+.slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
+.slot-picker-item{
+  display:flex;align-items:center;gap:var(--sp3);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;
+  transition:border-color .18s ease,background .18s ease,transform .18s ease;
+}
+.slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(2px)}
+.slot-picker-item.has-data{border-color:rgba(0,196,248,.18);background:rgba(0,196,248,.05)}
+.slot-picker-item:active{transform:scale(.98)}
+.slot-picker-thumb{
+  width:52px;height:40px;border-radius:7px;flex-shrink:0;overflow:hidden;
+  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;
+}
+.slot-picker-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
+.slot-picker-thumb-num{position:absolute;bottom:2px;right:3px;font-family:var(--font-mono);font-size:9px;font-weight:700;color:rgba(0,196,248,.9);line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.slot-picker-info{flex:1;min-width:0}
+.slot-picker-name{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot-picker-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px}
+.slot-picker-badge{font-size:9px;font-family:var(--font-mono);letter-spacing:.06em;flex-shrink:0;padding:2px 8px;border-radius:20px}
+.slot-picker-badge.filled{background:rgba(0,196,248,.1);color:var(--accent);border:1px solid rgba(0,196,248,.2)}
+.slot-picker-badge.empty{background:rgba(255,255,255,.04);color:var(--text-ghost);border:1px solid rgba(255,255,255,.07)}
+.modal-name-row{margin-top:var(--sp3)}
+.modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
+
+.autosave-slot {
+  border-color: rgba(0,196,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(0,196,248,.08),
+    0 8px 24px rgba(0,196,248,.08);
+}
+
+.autosave-slot .save-slot-thumb-num {
+  background: #00c4f8;
+  color: #001018;
+  font-weight: 800;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EMULATOR SCREEN
+   ═══════════════════════════════════════════════════════════ */
+#emu-screen{display:none;position:fixed;inset:0;z-index:100;background:#000}
+#emu-screen.active{display:flex;flex-direction:column}
+
+/* ── Toolbar ── */
+#emu-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  height:var(--toolbar-h);padding:0 var(--sp5);
+  background:rgba(14,16,24,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-subtle);flex-shrink:0;z-index:10;
+}
+.toolbar-logo{font-size:var(--lg);font-weight:600;letter-spacing:.02em}
+.toolbar-logo .accent{color:var(--accent)}
+.toolbar-logo .dot{color:var(--text-tertiary)}
+.toolbar-center{display:flex;flex-direction:column;align-items:center;gap:1px}
+.toolbar-game-name{font-size:var(--sm);color:var(--text-secondary);font-family:var(--font-mono);letter-spacing:.04em;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toolbar-status-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-family:var(--font-mono);color:var(--text-ghost);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:20px;padding:1px 8px;letter-spacing:.06em;
+  transition:all var(--fast);
+}
+.toolbar-status-pill .pill-dot{width:5px;height:5px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all var(--fast)}
+.toolbar-status-pill.running{color:rgba(0,232,90,.8);border-color:rgba(0,232,90,.2);background:rgba(0,232,90,.07)}
+.toolbar-status-pill.running .pill-dot{background:var(--led-green);box-shadow:0 0 4px var(--led-green-glow);animation:pill-pulse 2s ease-in-out infinite}
+.toolbar-status-pill.paused{color:rgba(245,158,11,.8);border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.07)}
+.toolbar-status-pill.paused .pill-dot{background:var(--warn)}
+@keyframes pill-pulse{0%,100%{opacity:.7}50%{opacity:1}}
+.toolbar-actions{display:flex;align-items:center;gap:2px}
+.toolbar-btn{
+  background:none;border:none;color:var(--text-secondary);font-size:16px;
+  padding:8px;cursor:pointer;border-radius:var(--radius-sm);
+  transition:color var(--fast),background var(--fast);line-height:1;
+  position:relative;
+}
+.toolbar-btn:hover{color:var(--text-primary);background:var(--bg-elevated)}
+.toolbar-btn.active{color:var(--accent)}
+.toolbar-btn[title]:hover::after{
+  content:attr(title);
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(22,25,32,.97);border:1px solid var(--border-mid);
+  border-radius:var(--radius-sm);padding:3px 8px;
+  font-size:10px;font-family:var(--font-mono);color:var(--text-secondary);
+  white-space:nowrap;pointer-events:none;z-index:20;
+  animation:tooltip-in .12s ease;
+}
+@keyframes tooltip-in{0%{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ── Emulator body ── */
+#emu-body{flex:1;display:flex;overflow:hidden;position:relative}
+#emu-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#000;min-width:0;min-height:0}
+#game{position:relative;width:100%;height:100%}
+
+/* SAV drop overlay */
+#sav-drop-overlay{
+  position:absolute;inset:0;z-index:20;
+  background:rgba(0,196,248,.08);border:2px dashed var(--accent);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:var(--sp3);font-size:var(--lg);color:var(--accent);
+  backdrop-filter:blur(4px);font-family:var(--font-display);
+}
+#sav-drop-overlay.visible{display:flex}
+
+/* Fast-forward badge */
+#ff-badge{
+  position:absolute;top:var(--sp3);left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.82);border:1px solid var(--accent);border-radius:20px;
+  padding:4px 14px;font-size:var(--xs);font-family:var(--font-mono);
+  color:var(--accent);letter-spacing:.12em;z-index:15;
+  animation:ff-pop .2s var(--ease-spring);pointer-events:none;display:none;
+  box-shadow:0 0 12px rgba(0,196,248,.25);
+}
+#ff-badge.visible{display:block}
+@keyframes ff-pop{0%{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+
+/* Screenshot flash */
+#ss-flash{position:absolute;inset:0;z-index:30;background:#fff;pointer-events:none;opacity:0}
+#ss-flash.pop{animation:ss-flash .4s ease forwards}
+@keyframes ss-flash{0%{opacity:.85}to{opacity:0}}
+
+/* Save-state notification */
+#state-toast{
+  position:absolute;top:var(--sp3);right:var(--sp4);z-index:25;
+  background:rgba(0,0,0,.88);border:1px solid rgba(0,232,90,.4);border-radius:var(--radius-md);
+  padding:8px 14px;font-family:var(--font-mono);font-size:var(--xs);color:var(--led-green);
+  display:none;align-items:center;gap:6px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 12px rgba(0,232,90,.15);
+  animation:state-toast-in .22s var(--ease-spring);
+}
+#state-toast.visible{display:flex}
+@keyframes state-toast-in{0%{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Hide all EJS chrome */
+.ejs_menu_bar,.ejs_buttons_container,.ejs_bottom_bar,
+.ejs-bar-menu,.ejs-top-bar,.ejs_control_bar,
+#ejs_controls_bar,.ejs-bar,
+.ejs_ui_container>.ejs_menu,
+.ejs_volume_slider,.ejs_netplay{display:none!important;height:0!important;overflow:hidden!important}
+
+/* ── Sidebar tab ── */
+#sidebar-tab{
+  position:relative;width:20px;flex-shrink:0;
+  background:var(--bg-panel);border-left:1px solid var(--border-subtle);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:5;color:var(--text-tertiary);font-size:11px;
+  user-select:none;transition:background var(--fast),color var(--fast);
+}
+#sidebar-tab:hover{background:var(--bg-elevated);color:var(--text-primary)}
+#sidebar-tab .tab-arrow{transition:transform var(--normal) var(--ease-spring);line-height:1}
+
+/* ── Sidebar ── */
+#sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--bg-panel);border-left:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;
+  transition:width var(--normal) var(--ease-spring),opacity var(--normal) ease;
+}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
+#emu-body.sidebar-collapsed #sidebar{width:0;opacity:0;pointer-events:none;border-left:none}
+#emu-body.sidebar-collapsed #sidebar-tab .tab-arrow{transform:rotate(180deg)}
+
+/* Sidebar header */
+.sidebar-game-header{
+  padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--border-subtle);
+  background:var(--bg-elevated);flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
+}
+.sb-cover-art{
+  width:44px;height:44px;border-radius:var(--radius-md);flex-shrink:0;
+  background:var(--bg-panel);border:1px solid var(--border-subtle);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.sb-cover-art img{width:100%;height:100%;object-fit:cover}
+.sb-game-info{flex:1;min-width:0}
+.sidebar-game-title{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-game-size{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);margin-top:2px}
+
+/* Sections */
+.sidebar-section{padding:var(--sp4);border-bottom:1px solid var(--border-subtle)}
+.sidebar-section:last-child{border-bottom:none}
+.sidebar-section-title{
+  font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:var(--sp3);
+  display:flex;align-items:center;gap:var(--sp2);
+}
+.sidebar-section-badge{
+  background:rgba(0,196,248,.1);border:1px solid rgba(0,196,248,.2);
+  color:var(--accent);border-radius:20px;padding:1px 7px;
+  font-size:9px;letter-spacing:.04em;text-transform:none;
+}
+
+/* Sidebar buttons — improved */
+.sb-btn{
+  width:100%;display:flex;align-items:center;gap:var(--sp3);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius-md);padding:10px var(--sp3);
+  color:var(--text-primary);font-size:var(--sm);font-family:var(--font-ui);
+  cursor:pointer;transition:border-color var(--fast),background var(--fast),transform var(--fast),box-shadow var(--fast);
+  margin-bottom:var(--sp2);text-align:left;
+  box-shadow:0 2px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.sb-btn:last-child{margin-bottom:0}
+.sb-btn:hover{border-color:var(--accent);background:rgba(0,196,248,.07);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25),0 0 12px rgba(0,196,248,.1)}
+.sb-btn:active{transform:scale(.98)!important;box-shadow:none}
+.sb-btn.accent-btn{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent)}
+.sb-btn.accent-btn:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.2),0 0 16px rgba(0,196,248,.18)}
+.sb-btn.active-state{border-color:var(--led-green)!important;color:var(--led-green)!important;background:rgba(0,232,90,.07)!important}
+.sb-btn-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.sb-btn-text{flex:1}
+.sb-btn-sub{font-size:10px;color:var(--text-tertiary);display:block;margin-top:1px;font-family:var(--font-mono)}
+.sb-btn.active-state .sb-btn-sub{color:rgba(0,232,90,.55)}
+.sb-btn-arrow{color:var(--text-ghost);font-size:11px;flex-shrink:0;transition:transform var(--fast),color var(--fast)}
+.sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
+
+/* Status */
+.status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all .4s}
+.status-dot.on{background:var(--led-green);box-shadow:0 0 5px var(--led-green-glow);animation:status-pulse 2.5s ease-in-out infinite}
+.status-dot.paused{background:var(--warn);box-shadow:0 0 5px rgba(245,158,11,.4)}
+@keyframes status-pulse{0%,100%{box-shadow:0 0 4px var(--led-green-glow)}50%{box-shadow:0 0 10px var(--led-green-glow),0 0 18px rgba(0,232,90,.15)}}
+
+/* Speed */
+.speed-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp2)}
+.speed-label{font-size:var(--sm);color:var(--text-secondary)}
+.speed-val{font-family:var(--font-mono);font-size:var(--sm);color:var(--accent);min-width:40px;text-align:right}
+.speed-slider{
+  width:100%;height:4px;border-radius:2px;outline:none;border:none;
+  appearance:none;cursor:pointer;margin-bottom:var(--sp3);
+  background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--pct,33%),var(--bg-elevated) var(--pct,33%));
+}
+.speed-slider::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow);cursor:pointer;transition:transform .15s ease}
+.speed-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.speed-presets{display:flex;gap:6px}
+.speed-preset{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius-sm);padding:5px 0;font-size:var(--xs);color:var(--text-secondary);
+  cursor:pointer;text-align:center;font-family:var(--font-mono);
+  transition:border-color var(--fast),color var(--fast),background var(--fast);
+}
+.speed-preset:hover,.speed-preset.active{border-color:var(--accent);color:var(--accent);background:rgba(0,196,248,.08)}
+.speed-preset.ff-active{border-color:var(--warn)!important;color:var(--warn)!important;background:rgba(245,158,11,.08)!important}
+
+/* Save Slots */
+.save-slots{
+  display:flex;flex-direction:column;gap:8px;
+  width:100%;max-height:440px;overflow-y:auto;
+  padding-right:2px;margin-top:4px;
+  scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;
+}
+.save-slots::-webkit-scrollbar{width:3px}
+.save-slots::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
+.save-slot{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-md);
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  position:relative;overflow:hidden;
+   justify-content: space-between;
+}
+.save-slot::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(0,196,248,.035),transparent);transition:opacity .2s ease}
+.save-slot:hover::before{opacity:1}
+.save-slot:hover{transform:translateY(-2px);border-color:rgba(0,196,248,.22);box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 12px rgba(0,196,248,.09)}
+.save-slot.has-data{border-color:rgba(0,196,248,.18);background:linear-gradient(160deg,rgba(0,196,248,.07),rgba(255,255,255,.02))}
+
+.save-slot-thumb{width:52px;height:40px;border-radius:6px;flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative}
+.save-slot-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
+.save-slot-thumb-empty{font-size:18px;opacity:.2;line-height:1}
+.save-slot-thumb-num{position:absolute;bottom:2px;right:3px;font-family:var(--font-mono);font-size:9px;font-weight:700;color:rgba(0,196,248,.9);line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+
+.save-slot-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.save-slot-info{flex:1;min-width:0}
+.save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.save-slot-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.slot-btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  min-width: 52px;
+  height: 32px;
+  padding: 0 10px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  transition: 0.15s;
+}
+
+.slot-btn.del {
+  min-width: 32px;
+  background: rgba(255, 80, 80, 0.18);
+  color: #ff8080;
+}
+
+.slot-btn.del:hover {
+  background: rgba(255, 80, 80, 0.32);
+}
+.slot-btn:active{transform:scale(.9)!important}
+.slot-btn.sav{color:var(--accent);border-color:rgba(0,196,248,.22);background:rgba(0,196,248,.07)}
+.slot-btn.sav:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 0 10px rgba(0,196,248,.22);transform:translateY(-1px)}
+.slot-btn.load{color:var(--led-green);border-color:rgba(0,232,90,.22);background:rgba(0,232,90,.06)}
+.slot-btn.load:hover{background:rgba(0,232,90,.18);border-color:var(--led-green);box-shadow:0 0 10px rgba(0,232,90,.22);transform:translateY(-1px)}
+.slot-btn.del{color:var(--text-ghost);border-color:rgba(255,255,255,.06);background:transparent;padding:5px 7px;font-size:11px}
+.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.32);background:rgba(232,64,87,.07);transform:translateY(-1px)}
+.save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
+
+/* Playtime */
+.playtime-display{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);color:var(--text-ghost);font-family:var(--font-mono);margin-top:var(--sp2)}
+
+/* Divider within sidebar section */
+.sb-divider{height:1px;background:var(--border-subtle);margin:var(--sp2) 0}
+
+/* File inputs */
+#rom-input,#sav-input,#state-input{display:none!important;position:fixed;left:-9999px}
+
+/* ═══════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUT OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+#keys-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;animation:fade-in .18s ease}
+#keys-overlay.visible{display:flex}
+.keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:340px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.keys-title{font-size:var(--xl);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display)}
+.keys-grid{display:grid;grid-template-columns:auto 1fr;gap:var(--sp2) var(--sp4)}
+.key-chip{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--border-mid);border-radius:4px;background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);color:var(--text-secondary);white-space:nowrap}
+.key-desc{font-size:var(--sm);color:var(--text-secondary);align-self:center}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST STACK
+   ═══════════════════════════════════════════════════════════ */
+#toast-stack{position:fixed;bottom:var(--sp5);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:var(--sp2);z-index:700;pointer-events:none;align-items:center}
+.toast{padding:8px 16px;border-radius:var(--radius-md);font-size:var(--sm);font-family:var(--font-mono);animation:toast-in .2s var(--ease-spring) forwards;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.success{background:rgba(0,232,90,.13);border:1px solid var(--led-green);color:var(--led-green)}
+.toast.error{background:rgba(232,64,87,.13);border:1px solid var(--error);color:var(--error)}
+.toast.info{background:var(--bg-panel);border:1px solid var(--border-subtle);color:var(--text-secondary)}
+.toast.warn{background:rgba(245,158,11,.13);border:1px solid var(--warn);color:var(--warn)}
+@keyframes toast-in{0%{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toast-out{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.88)}}
+.toast.out{animation:toast-out .18s ease forwards}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING INDICATOR
+   ═══════════════════════════════════════════════════════════ */
+#load-indicator{position:absolute;bottom:var(--sp4);left:50%;transform:translateX(-50%);display:none;align-items:center;gap:var(--sp2);font-size:var(--xs);font-family:var(--font-mono);color:var(--text-tertiary);z-index:20}
+#load-indicator.visible{display:flex}
+.load-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:load-bounce 1.2s ease-in-out infinite}
+.load-dot:nth-child(2){animation-delay:.2s}
+.load-dot:nth-child(3){animation-delay:.4s}
+@keyframes load-bounce{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.8);opacity:1}}
+
+@media(prefers-reduced-motion:reduce){
+  .showcase-wipe,.showcase-flash{display:none}
+  .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
+  .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- File inputs outside click zones -->
+<input type="file" id="rom-input" accept=".gba,.zip,.GBA" style="display:none">
+<input type="file" id="state-input" accept=".state,.STATE" style="display:none">
+
+<!-- ══════════════ IDLE / LANDING ══════════════ -->
+<div id="idle-screen">
+  <div class="landing-bg"></div>
+  <div class="landing-grid"></div>
+  <div class="landing-orb landing-orb-1"></div>
+  <div class="landing-orb landing-orb-2"></div>
+  <div class="landing-orb landing-orb-3"></div>
+  <canvas id="particles-canvas"></canvas>
+
+  <div class="showcase">
+    <div class="showcase-bg"    id="showcase-bg"></div>
+    <div class="showcase-pulse" id="showcase-pulse"></div>
+    <div class="showcase-flash" id="showcase-flash"></div>
+    <div class="showcase-slash" id="showcase-slash"></div>
+    <div class="showcase-title slam" id="showcase-title">
+      <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
+      <h2 class="showcase-name font-display" id="showcase-name"></h2>
+      <div class="showcase-genre font-mono" id="showcase-region"></div>
+      <div class="showcase-underline" id="showcase-underline"></div>
+    </div>
+    <div class="showcase-art slam" id="showcase-art">
+      <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
+      <div class="showcase-art-reflect"></div>
+    </div>
+  </div>
+
+  <div class="gba-shell">
+    <div class="gba-screen-overlay">
+      <div class="gba-screen-content">
+        <div class="gba-screen-drop-icon">🎮</div>
+        <span class="gba-screen-text font-display">Drop ROM here</span>
+        <span class="gba-screen-hint">or click anywhere to browse</span>
+      </div>
+    </div>
+    <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
+    <div class="gba-power-led" id="power-led"></div>
+  </div>
+
+  <div class="landing-brand">
+    <h1 class="landing-title font-display"><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
+    <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
+  </div>
+  <div class="landing-controls font-mono">
+    <span class="landing-key">Z</span> A
+    <div class="landing-separator"></div>
+    <span class="landing-key">X</span> B
+    <div class="landing-separator"></div>
+    <span class="landing-key">A</span> L &nbsp;
+    <span class="landing-key">S</span> R
+    <div class="landing-separator"></div>
+    <span class="landing-key">←↑↓→</span> D-Pad
+    <div class="landing-separator"></div>
+    <span class="landing-key">Enter</span> Start
+    <div class="landing-separator"></div>
+    <span class="landing-key">M</span> Mute
+  </div>
+  <div class="landing-disclaimer">
+    Your ROM never leaves your device — everything runs locally in your browser.
+  </div>
+
+  <div id="continue-bar">
+    <div class="continue-header">
+      <div class="continue-label">
+        <div class="continue-label-icon"></div>
+        <span>Continue Playing</span>
+        <span class="continue-label-count" id="continue-count">0 games</span>
+      </div>
+    </div>
+    <div class="continue-list" id="continue-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════ EMULATOR ══════════════ -->
+<div id="emu-screen">
+  <div id="emu-toolbar">
+    <span class="toolbar-logo font-display">Swift<span class="accent">GBA</span><span class="dot">.</span></span>
+    <div class="toolbar-center">
+      <span class="toolbar-game-name font-mono" id="toolbar-game-name">—</span>
+      <span class="toolbar-status-pill" id="toolbar-status-pill">
+        <span class="pill-dot"></span>
+        <span id="pill-text">Idle</span>
+      </span>
+    </div>
+    <div class="toolbar-actions">
+      <button class="toolbar-btn" id="btn-screenshot" title="Screenshot (C)">📷</button>
+      <button class="toolbar-btn" id="btn-keys"       title="Keyboard shortcuts (?)">⌨</button>
+      <button class="toolbar-btn" id="btn-fullscreen" title="Fullscreen (F)">⛶</button>
+      <button class="toolbar-btn" id="btn-sidebar-toggle" title="Toggle sidebar (Tab)">⊟</button>
+      <button class="toolbar-btn" id="btn-back"       title="Back to menu">✕</button>
+    </div>
+  </div>
+
+  <div id="emu-body">
+    <div id="emu-wrap">
+      <div id="game"></div>
+      <div id="sav-drop-overlay">
+        <div>📁</div>
+        <div>Drop save file to import live</div>
+      </div>
+      <div id="ff-badge">⚡ FAST FORWARD</div>
+      <div id="ss-flash"></div>
+      <div id="state-toast">
+        <span>●</span><span id="state-toast-text">State saved</span>
+      </div>
+      <div id="load-indicator">
+        <div class="load-dot"></div>
+        <div class="load-dot"></div>
+        <div class="load-dot"></div>
+        <span id="load-text">Loading core…</span>
+      </div>
+    </div>
+
+    <div id="sidebar-tab" title="Toggle sidebar">
+      <span class="tab-arrow">›</span>
+    </div>
+
+    <div id="sidebar">
+      <div class="sidebar-game-header">
+        <div class="sb-cover-art" id="sb-cover-art"><span id="sb-cover-fallback">🎮</span></div>
+        <div class="sb-game-info">
+          <div class="sidebar-game-title" id="sb-game-title">No game loaded</div>
+          <div class="sidebar-game-size"  id="sb-game-size">—</div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Status</div>
+        <div class="status-row">
+          <div class="status-dot on" id="emu-status-dot"></div>
+          <span id="emu-status-text">Running</span>
+        </div>
+        <div class="playtime-display" id="playtime-display">⏱ 0h 0m</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Controls</div>
+        <button class="sb-btn" id="sb-pause">
+          <span class="sb-btn-icon">⏸</span>
+          <span class="sb-btn-text">Pause / Resume<span class="sb-btn-sub">Space or P</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-restart">
+          <span class="sb-btn-icon">🔄</span>
+          <span class="sb-btn-text">Restart Game<span class="sb-btn-sub">Soft reset</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-mute">
+          <span class="sb-btn-icon">🔊</span>
+          <span class="sb-btn-text">Toggle Mute<span class="sb-btn-sub">Keyboard: M</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-screenshot">
+          <span class="sb-btn-icon">📷</span>
+          <span class="sb-btn-text">Screenshot<span class="sb-btn-sub">Keyboard: C</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+      </div>
+
+      <!-- Speed -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Speed</div>
+        <div class="speed-row">
+          <span class="speed-label">Multiplier</span>
+          <span class="speed-val" id="speed-val">1×</span>
+        </div>
+        <input type="range" class="speed-slider" id="speed-slider" min="1" max="7" step="1" value="3">
+        <div class="speed-presets">
+          <button class="speed-preset"        data-speed="0.5">½×</button>
+          <button class="speed-preset active" data-speed="1">1×</button>
+          <button class="speed-preset"        data-speed="2">2×</button>
+          <button class="speed-preset"        data-speed="3">3×</button>
+          <button class="speed-preset"        data-speed="4">4×</button>
+        </div>
+      </div>
+
+      <!-- Save States -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          Save States
+          <span class="sidebar-section-badge" id="save-slots-badge">7 slots</span>
+        </div>
+        <div class="save-slots" id="save-slots">
+          <div class="save-slot-empty">Load a game first</div>
+        </div>
+      </div>
+
+      <!-- Quick Save -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Cache Save</div>
+        <button class="sb-btn accent-btn" id="sb-cache-save">
+          <span class="sb-btn-icon">💾</span>
+          <span class="sb-btn-text">Save State<span class="sb-btn-sub">Pick slot + name your save</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-cache-load">
+          <span class="sb-btn-icon">📂</span>
+          <span class="sb-btn-text">Load State<span class="sb-btn-sub" id="cache-load-sub">Pick a slot to restore</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+      </div>
+
+
+      <!-- Snapshot System -->
+<div class="sidebar-section">
+
+ <div class="sidebar-section-title">
+ Snapshot System
+ </div>
+
+ <button class="sb-btn accent-btn" id="sb-import-state">
+
+ <span class="sb-btn-icon">📂⚙</span>
+
+ <span class="sb-btn-text">
+ Load Manual State
+ <span class="sb-btn-sub">
+ Continue from exact gameplay moment (.state)
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+ <button class="sb-btn" id="sb-export-state">
+
+ <span class="sb-btn-icon">💾⚙</span>
+
+ <span class="sb-btn-text">
+ Save Manual State
+ <span class="sb-btn-sub">
+ Download portable gameplay snapshot
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+</div>
+
+
+      <!-- ROM -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">ROM</div>
+        <button class="sb-btn" id="sb-export-rom">
+          <span class="sb-btn-icon">🎮</span>
+          <span class="sb-btn-text">Export ROM<span class="sb-btn-sub">Download .gba file</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-load-new">
+          <span class="sb-btn-icon">📥</span>
+          <span class="sb-btn-text">Load New ROM<span class="sb-btn-sub">Open file picker</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+      </div>
+    </div><!-- /sidebar -->
+  </div><!-- /emu-body -->
+</div><!-- /emu-screen -->
+
+<!-- Keyboard shortcuts overlay -->
+<div id="keys-overlay">
+  <div class="keys-box">
+    <div class="keys-title font-display">Keyboard Shortcuts</div>
+    <div class="keys-grid">
+      <span class="key-chip">Z</span><span class="key-desc">A button</span>
+      <span class="key-chip">X</span><span class="key-desc">B button</span>
+      <span class="key-chip">A</span><span class="key-desc">L shoulder</span>
+      <span class="key-chip">S</span><span class="key-desc">R shoulder</span>
+      <span class="key-chip">Enter</span><span class="key-desc">Start</span>
+      <span class="key-chip">Shift</span><span class="key-desc">Select</span>
+      <span class="key-chip">←↑↓→</span><span class="key-desc">D-Pad</span>
+      <span class="key-chip">Space / P</span><span class="key-desc">Pause / Resume</span>
+      <span class="key-chip">M</span><span class="key-desc">Toggle mute</span>
+      <span class="key-chip">F</span><span class="key-desc">Fullscreen</span>
+      <span class="key-chip">C</span><span class="key-desc">Screenshot</span>
+      <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar</span>
+      <span class="key-chip">Alt+1–6</span><span class="key-desc">Quick-save slot 1–6</span>
+<span class="key-chip">Ctrl+1–6</span><span class="key-desc">Quick-load slot 1–6</span>
+<span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave</span>
+      <span class="key-chip">?</span><span class="key-desc">This overlay</span>
+      <span class="key-chip">Esc</span><span class="key-desc">Close overlay</span>
+    </div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div id="ctx-menu" class="ctx-menu" style="display:none"></div>
+<div id="toast-stack"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SwiftGBA — Enhanced Frontend v3
+   Key fixes:
+   ✦ saveState() used everywhere (not getState())
+   ✦ Separate import/export for .state snapshots
+   ✦ Keyboard hotkeys for quick-save/load (1–6, Ctrl+1–6)
+   ✦ In-viewport state toast replaces reliance on bottom toast
+   ✦ Toolbar status pill
+   ✦ Improved button styles + arrows
+══════════════════════════════════════════════════════════════ */
+(() => {
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════════════════ */
+const DB_NAME     = 'SwiftGBA_v3';
+const DB_VER      = 1;
+const S_ROMS      = 'roms';
+const S_META      = 'meta';
+const S_STATES    = 'states';
+const NUM_SLOTS   = 7;
+const AUTOSAVE_MS = 45000;
+const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
+const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
+
+const SPEED_STEPS = [
+  { val:0.25, label:'¼×' },
+  { val:0.5,  label:'½×' },
+  { val:1,    label:'1×' }, // index 2 — default
+  { val:2,    label:'2×' },
+  { val:3,    label:'3×' },
+  { val:4,    label:'4×' },
+  { val:6,    label:'6×' },
+];
+
+/* ══════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════ */
+let db             = null;
+let ejsReady       = false;
+let currentRomName = '';
+let currentRomData = null;
+let currentRomUrl  = null;
+let currentDisplay = '';
+let currentColor   = '#00c4f8';
+let isPaused       = false;
+let isMuted        = false;
+let currentSpeedIdx = 2;
+let isFastForward  = false;
+let isSlowMotion   = false;
+let sidebarOpen    = true;
+let autosaveTimer  = null;
+let playtimeStart  = null;
+let playtimeAccum  = 0;
+let playtimeTimer  = null;
+
+/* ══════════════════════════════════════════════════════════════
+   DOM HELPERS
+══════════════════════════════════════════════════════════════ */
+const $  = id => document.getElementById(id);
+const qs = s  => document.querySelector(s);
+
+/* ══════════════════════════════════════════════════════════════
+   INDEXEDDB
+══════════════════════════════════════════════════════════════ */
+function openDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      [S_ROMS, S_META, S_STATES].forEach(s => {
+        if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath:'id' });
+      });
+    };
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+function dbPut(store, val) {
+  return new Promise((res, rej) => {
+    const r = db.transaction(store, 'readwrite').objectStore(store).put(val);
+    r.onsuccess = () => res();
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const r = db.transaction(store, 'readonly').objectStore(store).get(key);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function dbDel(store, key) {
+  return new Promise((res, rej) => {
+    const r = db.transaction(store, 'readwrite').objectStore(store).delete(key);
+    r.onsuccess = () => res();
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function dbAll(store) {
+  return new Promise((res, rej) => {
+    const r = db.transaction(store, 'readonly').objectStore(store).getAll();
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════════ */
+function toast(msg, type='info', dur=2800) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  $('toast-stack').appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, dur);
+}
+
+/* In-viewport state notification (top-right of game area) */
+let _stateTostTimer = null;
+function showStateToast(msg) {
+  clearTimeout(_stateTostTimer);
+  $('state-toast-text').textContent = msg;
+  $('state-toast').classList.add('visible');
+  _stateTostTimer = setTimeout(() => $('state-toast').classList.remove('visible'), 2200);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════════════ */
+function timeAgo(ts) {
+  if (!ts) return 'never';
+  const d = Date.now() - ts, m = Math.floor(d / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+function fmtSize(b) {
+  if (!b) return '';
+  if (b < 1048576) return `${(b/1024).toFixed(0)} KB`;
+  return `${(b/1048576).toFixed(1)} MB`;
+}
+function fmtPlaytime(ms) {
+  if (!ms) return '0h 0m';
+  const tot = Math.floor(ms / 60000);
+  return `${Math.floor(tot/60)}h ${tot%60}m`;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function extOf(name) {
+  const m = name.match(/(\.[^.]+)$/);
+  return m ? m[1].toLowerCase() : '';
+}
+function savName(romName) { return romName.replace(/\.[^.]+$/, '.srm'); }
+function download(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), { href:url, download:name });
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+function getEmu() { return window.EJS_emulator || null; }
+
+/* ── Capture thumbnail from game canvas ── */
+function captureThumbnail() {
+  try {
+    const canvas = document.querySelector('#game canvas');
+    if (!canvas) return null;
+    const tc = document.createElement('canvas');
+    tc.width = 120; tc.height = 90;
+    tc.getContext('2d').drawImage(canvas, 0, 0, 120, 90);
+    return tc.toDataURL('image/jpeg', 0.65);
+  } catch(e) { return null; }
+}
+
+/* ── Try to capture current state data from EJS ── */
+function captureStateData() {
+  const emu = getEmu();
+  if (!emu || !emu.gameManager) return null;
+  const gm = emu.gameManager;
+  // EJS exposes saveState() which returns an ArrayBuffer or Uint8Array
+  // Try multiple known method names across EJS versions
+  for (const method of ['saveState', 'getState', 'quickSave']) {
+    try {
+      if (typeof gm[method] === 'function') {
+        const s = gm[method]();
+        if (s && (s.byteLength || s.length)) return s;
+      }
+    } catch(e) {}
+  }
+  return null;
+}
+
+/* ── Apply state data to running emulator ── */
+function applyStateData(data) {
+  const emu = getEmu();
+
+  if (!emu || !emu.gameManager) return false;
+
+  const gm = emu.gameManager;
+
+  for (const method of ['loadState', 'quickLoad']) {
+    try {
+      if (typeof gm[method] === 'function') {
+
+        const fixedData =
+          data instanceof Uint8Array
+            ? data
+            : new Uint8Array(data);
+
+        gm[method](fixedData);
+
+        return true;
+      }
+    } catch(e) {}
+  }
+
+  return false;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUDIO UNLOCK
+══════════════════════════════════════════════════════════════ */
+let _audioUnlocked = false;
+let _audioRetryTimer = null;
+
+function tryUnlockAudio() {
+  const emu = getEmu();
+  const vol = isMuted ? 0 : 1;
+  const candidates = [];
+  if (emu) {
+    [
+      emu.audioContext,
+      emu.gameManager && emu.gameManager.audioContext,
+      emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
+      emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
+    ].forEach(ac => { if (ac instanceof AudioContext) candidates.push(ac); });
+  }
+  try {
+    for (const k of Object.keys(window)) {
+      try {
+        const v = window[k];
+        if (v instanceof AudioContext && !candidates.includes(v)) candidates.push(v);
+        if (v && typeof v === 'object') {
+          const sub = v.audioContext || v._audioCtx;
+          if (sub instanceof AudioContext && !candidates.includes(sub)) candidates.push(sub);
+        }
+      } catch(e) {}
+    }
+  } catch(e) {}
+  let foundSuspended = false;
+  candidates.forEach(ac => {
+    try { if (ac.state === 'suspended') { ac.resume().catch(() => {}); foundSuspended = true; } } catch(e) {}
+  });
+  if (candidates.length === 0 && !_audioUnlocked) {
+    clearTimeout(_audioRetryTimer);
+    _audioRetryTimer = setTimeout(tryUnlockAudio, 800);
+    return;
+  }
+  if (emu) {
+    try {
+      if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
+      else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
+        emu.gameManager.setVolume(vol);
+    } catch(e) {}
+    try { if (emu.gameManager && emu.gameManager.volumeNode) emu.gameManager.volumeNode.gain.value = vol; } catch(e) {}
+  }
+  if (!foundSuspended && candidates.length > 0) _audioUnlocked = true;
+}
+
+function scheduleAudioPolling() {
+  _audioUnlocked = false;
+  clearTimeout(_audioRetryTimer);
+  let polls = 0;
+  function poll() {
+    if (_audioUnlocked || polls++ > 12) return;
+    tryUnlockAudio();
+    _audioRetryTimer = setTimeout(poll, 800);
+  }
+  poll();
+}
+
+['click','keydown','touchstart','pointerdown'].forEach(ev => {
+  document.addEventListener(ev, () => { if (ejsReady) tryUnlockAudio(); }, { passive:true });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   ROM NAME CLEANER
+══════════════════════════════════════════════════════════════ */
+function cleanRomName(filename) {
+  let name = filename.replace(/\.[^.]+$/, '');
+  const regionMap = { 'USA':'🇺🇸', 'Europe':'🇪🇺', 'Japan':'🇯🇵', 'World':'🌎', 'Australia':'🇦🇺' };
+  const regions = Object.keys(regionMap).filter(r => name.includes(r)).map(r => regionMap[r]);
+  name = name
+    .replace(/\s*\([^)]*\)/g, '').replace(/\s*\[[^\]]*\]/g, '').replace(/\s*\{[^}]*\}/g, '')
+    .replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return { displayName: name || filename, region: regions.join(' ') };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GAME COLOR
+══════════════════════════════════════════════════════════════ */
+const PALETTE = [
+  '#2E7D32','#C62828','#AD1457','#1565C0','#E53935',
+  '#E65100','#F9A825','#4A148C','#B71C1C','#00838F',
+  '#558B2F','#4527A0','#0277BD','#E64A19','#37474F',
+];
+function colorFromName(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return PALETTE[h % PALETTE.length];
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COVER ART
+══════════════════════════════════════════════════════════════ */
+function generateArtCanvas(displayName, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 160; canvas.height = 160;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color + '22'; ctx.fillRect(0, 0, 160, 160);
+  ctx.strokeStyle = color + '66'; ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, 158, 158);
+  const words = displayName.trim().split(/\s+/);
+  const initials = words.length >= 2 ? words[0][0] + words[1][0] : displayName.slice(0, 2);
+  ctx.fillStyle = color;
+  ctx.font = 'bold 64px system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(initials.toUpperCase(), 80, 80);
+  return canvas.toDataURL('image/png');
+}
+async function fetchCoverArt(displayName, color) {
+  return generateArtCanvas(displayName, color);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PARTICLES
+══════════════════════════════════════════════════════════════ */
+(function initParticles() {
+  const canvas = $('particles-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 90; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
+      alpha: Math.random() * 0.55 + 0.1,
+    });
+  }
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(0,196,248,.35)';
+      ctx.fillStyle = `rgba(0,196,248,${p.alpha})`;
+      ctx.fill();
+    });
+    const idle = $('idle-screen');
+    if (idle && !idle.classList.contains('fade-out')) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   SHOWCASE CYCLE
+══════════════════════════════════════════════════════════════ */
+const GAMES = [
+  { name:"Pokemon Emerald",             img:"https://rustygba.com/games/pokemon-emerald.webp",            color:"#2E7D32", region:"🇺🇸 🇪🇺" },
+  { name:"Pokemon FireRed",             img:"https://rustygba.com/games/pokemon-firered.webp",            color:"#C62828", region:"🇺🇸 🇪🇺" },
+  { name:"Pokemon Ruby",                img:"https://rustygba.com/games/pokemon-ruby.webp",               color:"#AD1457", region:"🇺🇸 🇪🇺" },
+  { name:"Pokemon Sapphire",            img:"https://rustygba.com/games/pokemon-sapphire.webp",           color:"#1565C0", region:"🇺🇸 🇪🇺" },
+  { name:"Mario Kart: Super Circuit",   img:"https://rustygba.com/games/mario-kart-super-circuit.webp",   color:"#E53935", region:"🇺🇸 🇪🇺 🇯🇵" },
+  { name:"Zelda: Minish Cap",           img:"https://rustygba.com/games/zelda-minish-cap.webp",           color:"#2E7D32", region:"🇺🇸 🇪🇺" },
+  { name:"Metroid Fusion",              img:"https://rustygba.com/games/metroid-fusion.webp",             color:"#E65100", region:"🇺🇸 🇪🇺 🇯🇵" },
+  { name:"Golden Sun",                  img:"https://rustygba.com/games/golden-sun.webp",                 color:"#F9A825", region:"🇺🇸 🇪🇺" },
+  { name:"Castlevania: Aria of Sorrow", img:"https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color:"#4A148C", region:"🇺🇸 🇪🇺" },
+  { name:"Fire Emblem",                 img:"https://rustygba.com/games/fire-emblem.webp",                color:"#B71C1C", region:"🇺🇸 🇪🇺" },
+];
+
+let showcaseIdx = 0, cycleTimer = null;
+const $sBg    = $('showcase-bg'),
+      $sPulse = $('showcase-pulse'),
+      $sFlash = $('showcase-flash'),
+      $sSlash = $('showcase-slash'),
+      $sTitle = $('showcase-title'),
+      $sName  = $('showcase-name'),
+      $sRegion = $('showcase-region'),
+      $sUl    = $('showcase-underline'),
+      $sArt   = $('showcase-art'),
+      $sImg   = $('showcase-img');
+
+function applyShowcase(g, animate) {
+  $sName.textContent = g.name; $sRegion.textContent = g.region || '';
+  $sImg.src = g.img; $sImg.alt = g.name;
+  $sBg.style.background = `radial-gradient(ellipse at 80% 40%,${g.color}28 0%,transparent 55%),var(--bg-deep)`;
+  $sPulse.style.setProperty('--game-color', g.color + '28');
+  $sFlash.style.background = g.color;
+  $sSlash.style.borderColor = `${g.color}20`;
+  $sUl.style.background = g.color;
+  if (animate) {
+    const old = qs('.showcase-wipe'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'showcase-wipe';
+    w.style.background = `linear-gradient(to right,transparent,${g.color}16,transparent)`;
+    $sBg.parentElement.insertBefore(w, $sBg.nextSibling);
+    w.addEventListener('animationend', () => w.remove(), { once:true });
+    $sFlash.style.animation = 'none'; $sFlash.offsetHeight; $sFlash.style.animation = '';
+    [$sTitle, $sArt].forEach(el => { el.classList.remove('slam','out'); el.offsetHeight; el.classList.add('slam'); });
+    $sUl.style.animation = 'none'; $sUl.offsetHeight; $sUl.style.animation = '';
+  }
+}
+function cycleNext() {
+  $sTitle.classList.remove('slam'); $sTitle.classList.add('out');
+  $sArt.classList.remove('slam'); $sArt.classList.add('out');
+  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 250);
+}
+applyShowcase(GAMES[0], false);
+setTimeout(() => applyShowcase(GAMES[0], true), 200);
+cycleTimer = setInterval(cycleNext, 3800);
+
+/* ══════════════════════════════════════════════════════════════
+   CONTINUE BAR
+══════════════════════════════════════════════════════════════ */
+async function buildContinueBar() {
+  if (!db) return;
+  const list = $('continue-list'), bar = $('continue-bar');
+  list.innerHTML = '';
+  let roms = [];
+  try { roms = await dbAll(S_ROMS); } catch(e) {}
+  if (!roms.length) { bar.classList.remove('visible'); return; }
+  roms.sort((a, b) => {
+    if (a.favorite && !b.favorite) return -1;
+    if (!a.favorite && b.favorite) return 1;
+    return (b.lastPlayed||0) - (a.lastPlayed||0);
+  });
+  $('continue-count').textContent = `${roms.length} game${roms.length!==1?'s':''}`;
+  bar.classList.add('visible');
+  for (const rom of roms) {
+    const card = document.createElement('div');
+    const isRecent = rom.lastPlayed && (Date.now() - rom.lastPlayed) < 3600000;
+    card.className = 'continue-card' + (rom.favorite ? ' favorited' : '') + (isRecent ? ' recently-played' : '');
+    card.dataset.id = rom.id;
+    card.style.animationDelay = `${roms.indexOf(rom) * 60}ms`;
+    const artSrc = rom.artDataUrl || generateArtCanvas(rom.displayName || rom.name, rom.color || colorFromName(rom.name));
+    card.innerHTML = `
+      <div class="continue-card-star">★</div>
+      <div class="continue-card-art">
+        <img src="${esc(artSrc)}" alt="" loading="lazy" onerror="this.style.display='none'">
+        <div class="continue-card-art-badge"></div>
+      </div>
+      <div class="continue-card-info">
+        <div class="continue-card-name">${esc(rom.displayName || rom.name)}</div>
+        <div class="continue-card-meta">
+          <span>${timeAgo(rom.lastPlayed)}</span>
+          <div class="continue-card-meta-dot"></div>
+          <span>${fmtSize(rom.size)}</span>
+        </div>
+      </div>
+      <button class="continue-card-play" title="Play">▶</button>
+      <button class="continue-card-menu" title="Options">⋯</button>`;
+    card.querySelector('.continue-card-play').addEventListener('click', e => { e.stopPropagation(); loadRomFromCache(rom.id); });
+    card.querySelector('.continue-card-menu').addEventListener('click', e => { e.stopPropagation(); showCardCtxMenu(e, rom); });
+    card.addEventListener('click', () => loadRomFromCache(rom.id));
+    list.appendChild(card);
+  }
+}
+
+function showCardCtxMenu(e, rom) {
+  closeCtxMenu();
+  const menu = $('ctx-menu');
+  menu.innerHTML = `
+    <div class="ctx-item" data-action="play"><span class="ctx-item-icon">▶</span>Play</div>
+    <div class="ctx-item" data-action="rename"><span class="ctx-item-icon">✏</span>Rename</div>
+    <div class="ctx-item" data-action="fav"><span class="ctx-item-icon">${rom.favorite?'★':'☆'}</span>${rom.favorite?'Unfavorite':'Favorite'}</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item danger" data-action="remove"><span class="ctx-item-icon">✕</span>Remove from library</div>`;
+  menu.style.display = 'block';
+  const bx = e.target.getBoundingClientRect();
+  let top = bx.bottom + 4, left = bx.left;
+  if (left + 160 > window.innerWidth) left = window.innerWidth - 168;
+  if (top  + 150 > window.innerHeight) top  = bx.top - 154;
+  menu.style.top = top + 'px'; menu.style.left = left + 'px';
+  menu.querySelectorAll('.ctx-item').forEach(item => {
+    item.addEventListener('click', async () => {
+      closeCtxMenu();
+      const action = item.dataset.action;
+      if (action === 'play')   { loadRomFromCache(rom.id); }
+      else if (action === 'rename') { showRenameModal(rom); }
+      else if (action === 'fav') {
+        rom.favorite = !rom.favorite;
+        try { await dbPut(S_ROMS, rom); buildContinueBar(); } catch(e2) {}
+      }
+      else if (action === 'remove') {
+        try { await dbDel(S_ROMS, rom.id); buildContinueBar(); toast('Removed from library','info',1800); } catch(e2) {}
+      }
+    });
+  });
+}
+function closeCtxMenu() {
+  const menu = $('ctx-menu'); menu.style.display = 'none'; menu.innerHTML = '';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#ctx-menu') && !e.target.classList.contains('continue-card-menu')) closeCtxMenu();
+});
+
+function showRenameModal(rom) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-title font-display">Rename Game</div>
+      <input class="modal-input" id="rename-input" type="text" value="${esc(rom.displayName || rom.name)}" maxlength="100">
+      <div class="modal-actions">
+        <button class="modal-btn" id="rename-cancel">Cancel</button>
+        <button class="modal-btn primary" id="rename-ok">Rename</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const input = overlay.querySelector('#rename-input');
+  input.focus(); input.select();
+  overlay.querySelector('#rename-cancel').addEventListener('click', () => overlay.remove());
+  overlay.querySelector('#rename-ok').addEventListener('click', async () => {
+    const val = input.value.trim();
+    if (val) { rom.displayName = val; try { await dbPut(S_ROMS, rom); buildContinueBar(); toast('Renamed ✓','success',1800); } catch(e) {} }
+    overlay.remove();
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') overlay.querySelector('#rename-ok').click(); if (e.key === 'Escape') overlay.remove(); });
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+async function loadRomFromCache(id) {
+  try {
+    const rom = await dbGet(S_ROMS, id);
+    if (!rom || !rom.data) { toast('ROM not found in cache','error'); return; }
+    launchROM(new File([rom.data], rom.name, { type:'application/octet-stream' }));
+  } catch(e) { toast('Failed to load ROM from cache','error'); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DROP / CLICK TO LOAD
+══════════════════════════════════════════════════════════════ */
+const idleScreen = $('idle-screen');
+idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over'); });
+idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
+idleScreen.addEventListener('drop', e => {
+  e.preventDefault(); idleScreen.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  
+  launchROM(f);
+});
+idleScreen.addEventListener('click', e => {
+  if (e.target.closest('#continue-bar') || e.target.closest('#ctx-menu')) return;
+  $('rom-input').click();
+});
+$('rom-input').addEventListener('change', e => {
+  const f = e.target.files[0]; if (f) { launchROM(f); e.target.value = ''; }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   LAUNCH ROM
+══════════════════════════════════════════════════════════════ */
+async function launchROM(file) {
+  const ext = extOf(file.name);
+ 
+  clearInterval(cycleTimer);
+  idleScreen.classList.add('fade-out');
+  setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
+  $('emu-screen').classList.add('active');
+  $('power-led').classList.add('on');
+
+  const buf = await file.arrayBuffer();
+  currentRomData = buf;
+  currentRomName = file.name;
+  const { displayName } = cleanRomName(file.name);
+  currentDisplay = displayName;
+  currentColor   = colorFromName(displayName);
+  if (currentRomUrl) URL.revokeObjectURL(currentRomUrl);
+  currentRomUrl = URL.createObjectURL(new Blob([buf], { type:'application/octet-stream' }));
+
+  $('toolbar-game-name').textContent = displayName;
+  $('sb-game-title').textContent     = displayName;
+  $('sb-game-size').textContent      = fmtSize(file.size);
+
+  const art = await fetchCoverArt(displayName, currentColor);
+  $('sb-cover-art').innerHTML = `<img src="${art}" alt="">`;
+
+  if (db) {
+    try {
+      const existing = await dbGet(S_ROMS, file.name) || {};
+      await dbPut(S_ROMS, {
+        ...existing,
+        id:          file.name,
+        name:        file.name,
+        displayName: existing.displayName || displayName,
+        data:        buf,
+        size:        file.size,
+        lastPlayed:  Date.now(),
+        color:       currentColor,
+        artDataUrl:  art,
+      });
+    } catch(e) { console.warn('IDB ROM cache:', e); }
+  }
+
+  isPaused = false; isMuted = false; ejsReady = false;
+  _audioUnlocked = false; clearTimeout(_audioRetryTimer);
+  currentSpeedIdx = 2; isFastForward = false; isSlowMotion = false;
+  window.EJS_emulator = undefined;
+  updatePauseUI(false);
+  updateMuteUI(false);
+  buildSaveSlots();
+  refreshCacheLoadSub();
+  startPlaytimeTracking();
+  showLoadIndicator('Loading core…');
+  startEmulator(currentRomUrl, displayName);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EMULATORJS BOOT
+══════════════════════════════════════════════════════════════ */
+function startEmulator(romURL, displayName) {
+  $('game').innerHTML = '';
+  document.querySelectorAll('script[src*="loader.js"],script[src*="emulatorjs"]').forEach(s => s.remove());
+  Object.keys(window).filter(k => k.startsWith('EJS_')).forEach(k => {
+    try { delete window[k]; } catch(e) { window[k] = undefined; }
+  });
+  ejsReady = false;
+  window.EJS_emulator = undefined;
+
+  window.EJS_player           = '#game';
+  window.EJS_gameUrl          = romURL;
+  window.EJS_core             = 'mgba';
+  window.EJS_pathtodata       = EJS_CDN;
+  window.EJS_startOnLoaded    = true;
+  window.EJS_gameTitle        = displayName;
+  window.EJS_backgroundColor  = '#000000';
+  window.EJS_color            = '#00c4f8';
+  window.EJS_volume           = 1;
+  window.EJS_fixedSaveInterval = 30000;
+
+  window.EJS_Buttons = Object.fromEntries(
+    ['playPause','restart','mute','settings','fullscreen','saveState','loadState',
+     'screenRecord','gamepad','cheat','volume','saveSaveFiles','loadSavFiles',
+     'quickSave','quickLoad'].map(k => [k, false])
+  );
+
+  window.EJS_onGameStart = () => {
+     tryUnlockAudio();
+    ejsReady = true;
+    buildSaveSlots();
+    hideLoadIndicator();
+    updateToolbarPill(false);
+    setTimeout(() => {
+      applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
+      if (isMuted) applyMuteToEmu(true);
+      scheduleAudioPolling();
+      startAutosave();
+    }, 200);
+  };
+
+  setTimeout(() => {
+    const s = document.createElement('script');
+    s.src = EJS_CDN + 'loader.js?t=' + Date.now();
+    s.onerror = () => { hideLoadIndicator(); toast('Failed to load EmulatorJS — check your connection','error',5000); };
+    document.body.appendChild(s);
+  }, 60);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOADING INDICATOR
+══════════════════════════════════════════════════════════════ */
+function showLoadIndicator(text) { $('load-text').textContent = text; $('load-indicator').classList.add('visible'); }
+function hideLoadIndicator()     { $('load-indicator').classList.remove('visible'); }
+
+/* ══════════════════════════════════════════════════════════════
+   TOOLBAR PILL
+══════════════════════════════════════════════════════════════ */
+function updateToolbarPill(paused) {
+  const pill = $('toolbar-status-pill');
+  const text = $('pill-text');
+  pill.className = 'toolbar-status-pill ' + (paused ? 'paused' : 'running');
+  text.textContent = paused ? 'Paused' : 'Running';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUTO-SAVE
+══════════════════════════════════════════════════════════════ */
+function startAutosave() {
+  clearInterval(autosaveTimer);
+
+  autosaveTimer = setInterval(async () => {
+
+    if (!ejsReady || isPaused || !currentRomName || !db) return;
+
+    const stateData = captureStateData();
+    if (!stateData) return;
+
+    const thumb = captureThumbnail();
+
+    try {
+
+      await dbPut(S_STATES, {
+        id: `${currentRomName}::slot0`,
+        data: stateData,
+        ts: Date.now(),
+        thumb,
+        saveName: 'Slot 0 - Auto',
+        slotIdx: 0,
+        auto: true,
+      });
+
+      buildSaveSlots();
+      refreshCacheLoadSub();
+
+    } catch(e) {}
+
+  }, AUTOSAVE_MS);
+}
+
+window.addEventListener('beforeunload', () => {
+  const emu = getEmu();
+  if (emu && emu.gameManager && typeof emu.gameManager.saveSaveFiles === 'function') {
+    try { emu.gameManager.saveSaveFiles(); } catch(e) {}
+  }
+  if (currentRomName && db && playtimeStart) {
+    const elapsed = Date.now() - playtimeStart;
+    const tx = db.transaction(S_ROMS, 'readwrite');
+    const store = tx.objectStore(S_ROMS);
+    const req = store.get(currentRomName);
+    req.onsuccess = () => {
+      if (req.result) { req.result.playTime = (req.result.playTime || 0) + elapsed + playtimeAccum; store.put(req.result); }
+    };
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   PLAYTIME TRACKING
+══════════════════════════════════════════════════════════════ */
+function startPlaytimeTracking() {
+  clearInterval(playtimeTimer);
+  playtimeStart = Date.now();
+  playtimeAccum = 0;
+  updatePlaytimeUI();
+  playtimeTimer = setInterval(() => { if (!isPaused) updatePlaytimeUI(); }, 10000);
+}
+function updatePlaytimeUI() {
+  if (!playtimeStart) return;
+  const elapsed = isPaused ? playtimeAccum : playtimeAccum + (Date.now() - playtimeStart);
+  $('playtime-display').textContent = `⏱ ${fmtPlaytime(elapsed)}`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════════════════ */
+function setSidebar(open) {
+  sidebarOpen = open;
+  $('emu-body').classList.toggle('sidebar-collapsed', !open);
+  $('sidebar-tab').querySelector('.tab-arrow').textContent = open ? '›' : '‹';
+  $('btn-sidebar-toggle').classList.toggle('active', !open);
+}
+$('sidebar-tab').addEventListener('click', () => setSidebar(!sidebarOpen));
+$('btn-sidebar-toggle').addEventListener('click', () => setSidebar(!sidebarOpen));
+setSidebar(true);
+
+/* ══════════════════════════════════════════════════════════════
+   PAUSE / RESUME
+══════════════════════════════════════════════════════════════ */
+function updatePauseUI(paused) {
+  isPaused = paused;
+  $('emu-status-dot').className = 'status-dot ' + (paused ? 'paused' : 'on');
+  $('emu-status-text').textContent = paused ? 'Paused' : 'Running';
+  const btn = $('sb-pause');
+  btn.querySelector('.sb-btn-icon').textContent = paused ? '▶' : '⏸';
+  btn.querySelector('.sb-btn-text').firstChild.textContent = paused ? 'Resume ' : 'Pause / Resume';
+  btn.classList.toggle('active-state', paused);
+  updateToolbarPill(paused);
+  if (paused && playtimeStart) { playtimeAccum += Date.now() - playtimeStart; playtimeStart = null; }
+  else if (!paused && !playtimeStart) { playtimeStart = Date.now(); }
+}
+
+$('sb-pause').addEventListener('click', () => {
+  const emu = getEmu(), next = !isPaused;
+  try {
+    if (emu && emu.gameManager && typeof emu.gameManager.toggleMainLoop === 'function')
+      emu.gameManager.toggleMainLoop(!next);
+  } catch(e) {}
+  updatePauseUI(next);
+  toast(next ? 'Paused' : 'Resumed', 'info', 1200);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   RESTART
+══════════════════════════════════════════════════════════════ */
+$('sb-restart').addEventListener('click', () => {
+  const emu = getEmu();
+  try {
+    if (emu && emu.gameManager && typeof emu.gameManager.restart === 'function') {
+      emu.gameManager.restart(); updatePauseUI(false); toast('Game restarted','info',1500);
+    } else { toast('Reloading game…','info'); startEmulator(currentRomUrl, currentDisplay); }
+  } catch(e) { startEmulator(currentRomUrl, currentDisplay); }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   MUTE
+══════════════════════════════════════════════════════════════ */
+function updateMuteUI(muted) {
+  isMuted = muted;
+  $('sb-mute').querySelector('.sb-btn-icon').textContent = muted ? '🔇' : '🔊';
+  $('sb-mute').classList.toggle('active-state', muted);
+}
+function applyMuteToEmu(muted) {
+  const emu = getEmu(); if (!emu) return;
+  try {
+    if (!muted && emu.gameManager) {
+      const ac = emu.gameManager.audioContext;
+      if (ac && ac.state === 'suspended') ac.resume().catch(() => {});
+    }
+    const vol = muted ? 0 : 1;
+    if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
+    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(vol);
+  } catch(e) {}
+}
+$('sb-mute').addEventListener('click', () => {
+  const next = !isMuted; applyMuteToEmu(next); updateMuteUI(next);
+  toast(next ? 'Muted' : 'Unmuted', 'info', 1200);
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SPEED CONTROL
+══════════════════════════════════════════════════════════════ */
+function applySpeedToEmu(speedVal) {
+  const emu = getEmu(); if (!emu || !emu.gameManager) return;
+  const gm = emu.gameManager;
+  try {
+    if (speedVal === 1) {
+      if (isFastForward && typeof gm.toggleFastForward === 'function') gm.toggleFastForward(false);
+      if (isSlowMotion  && typeof gm.toggleSlowMotion  === 'function') gm.toggleSlowMotion(false);
+      isFastForward = false; isSlowMotion = false;
+    } else if (speedVal > 1) {
+      if (isSlowMotion && typeof gm.toggleSlowMotion === 'function') { gm.toggleSlowMotion(false); isSlowMotion = false; }
+      if (typeof gm.setFastForwardRatio === 'function') gm.setFastForwardRatio(speedVal);
+      if (!isFastForward && typeof gm.toggleFastForward === 'function') { gm.toggleFastForward(true); isFastForward = true; }
+    } else {
+      if (isFastForward && typeof gm.toggleFastForward === 'function') { gm.toggleFastForward(false); isFastForward = false; }
+      const ratio = Math.round(1 / speedVal);
+      if (typeof gm.setSlowMotionRatio === 'function') gm.setSlowMotionRatio(ratio);
+      if (!isSlowMotion && typeof gm.toggleSlowMotion === 'function') { gm.toggleSlowMotion(true); isSlowMotion = true; }
+    }
+  } catch(e) { console.warn('applySpeed:', e); }
+}
+function applySpeedUI(idx) {
+  currentSpeedIdx = idx;
+  const step = SPEED_STEPS[idx];
+  const pct  = (idx / (SPEED_STEPS.length - 1) * 100).toFixed(1);
+  const slider = $('speed-slider');
+  slider.value = idx + 1;
+  slider.style.setProperty('--pct', pct + '%');
+  $('speed-val').textContent = step.label;
+  document.querySelectorAll('.speed-preset').forEach(p => {
+    const pv = parseFloat(p.dataset.speed);
+    p.classList.toggle('active',    pv === step.val);
+    p.classList.toggle('ff-active', pv > 1 && pv === step.val);
+  });
+  const ffBadge = $('ff-badge');
+  if (step.val > 1) { ffBadge.textContent = `⚡ ${step.label} SPEED`; ffBadge.classList.add('visible'); }
+  else               ffBadge.classList.remove('visible');
+  applySpeedToEmu(step.val);
+}
+$('speed-slider').addEventListener('input', e => applySpeedUI(parseInt(e.target.value) - 1));
+document.querySelectorAll('.speed-preset').forEach(p => {
+  p.addEventListener('click', () => {
+    const idx = SPEED_STEPS.findIndex(s => s.val === parseFloat(p.dataset.speed));
+    if (idx >= 0) applySpeedUI(idx);
+  });
+});
+applySpeedUI(2);
+
+/* ══════════════════════════════════════════════════════════════
+   SAVE STATES — uses captureStateData() / applyStateData()
+══════════════════════════════════════════════════════════════ */
+async function buildSaveSlots() {
+  const container = $('save-slots');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!db || !currentRomName) {
+    container.innerHTML = '<div class="save-slot-empty">Load a game first</div>';
+    return;
+  }
+  let filledCount = 0;
+
+/* ═════════════════════════════════════════════
+   SLOT 0 — AUTOSAVE
+═════════════════════════════════════════════ */
+
+let autoMeta = null;
+
+try {
+  autoMeta = await dbGet(
+    S_STATES,
+    `${currentRomName}::slot0`
+  );
+} catch(e) {}
+
+if (autoMeta) {
+
+  const autoEl = document.createElement('div');
+
+  autoEl.className =
+    'save-slot has-data autosave-slot';
+
+  const thumbHtml = autoMeta.thumb
+    ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
+    : `<span class="save-slot-thumb-empty">💾</span>`;
+
+  autoEl.innerHTML = `
+    <div class="save-slot-left">
+
+      <div class="save-slot-thumb">
+        ${thumbHtml}
+        <span class="save-slot-thumb-num">0</span>
+      </div>
+
+      <div class="save-slot-info">
+
+        <div class="save-slot-name">
+          Slot 0 - Auto
+        </div>
+
+        <div class="save-slot-time">
+          ${timeAgo(autoMeta.ts)}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="save-slot-actions">
+
+      <button
+        class="slot-btn load"
+        title="Load Slot 0"
+      >
+        LOAD
+      </button>
+
+      <button
+        class="slot-btn del"
+        title="Delete Slot 0"
+      >
+        ✕
+      </button>
+
+    </div>
+  `;
+
+  autoEl
+    .querySelector('.slot-btn.load')
+    .addEventListener('click', async () => {
+
+      const ok = applyStateData(autoMeta.data);
+
+      if (!ok) {
+        toast(
+          'Could not load Slot 0',
+          'error'
+        );
+        return;
+      }
+
+      if (isPaused)
+        updatePauseUI(false);
+
+      showStateToast('Slot 0 loaded');
+
+      toast(
+        'Slot 0 restored ✓',
+        'success'
+      );
+    });
+
+  autoEl
+    .querySelector('.slot-btn.del')
+    .addEventListener('click', async () => {
+
+      try {
+
+        await dbDel(
+          S_STATES,
+          `${currentRomName}::slot0`
+        );
+
+        toast(
+          'Slot 0 deleted',
+          'info'
+        );
+
+        buildSaveSlots();
+
+      } catch(e) {
+
+        toast(
+          'Delete failed',
+          'error'
+        );
+      }
+    });
+
+  container.appendChild(autoEl);
+}
+
+/* ═════════════════════════════════════════════
+   NORMAL SAVE SLOTS
+═════════════════════════════════════════════ */
+
+for (let i = 1; i <= NUM_SLOTS; i++) {
+    const key = `${currentRomName}::slot${i}`;
+    let meta = null;
+    try { meta = await dbGet(S_STATES, key); } catch(e) {}
+    if (meta) filledCount++;
+    const el = document.createElement('div');
+    el.className = 'save-slot' + (meta ? ' has-data' : '');
+    let thumbHtml = meta && meta.thumb
+      ? `<img src="${meta.thumb}" alt="Slot ${i}">`
+      : `<span class="save-slot-thumb-empty">🎮</span>`;
+    el.innerHTML = `
+      <div class="save-slot-left">
+        <div class="save-slot-thumb">
+          ${thumbHtml}
+          <span class="save-slot-thumb-num">${i}</span>
+        </div>
+        <div class="save-slot-info">
+          <div class="save-slot-name">${meta ? (meta.saveName ? esc(meta.saveName) : `Slot ${i}`) : `Slot ${i} — empty`}</div>
+          <div class="save-slot-time">${meta ? timeAgo(meta.ts) : 'No data'}</div>
+        </div>
+      </div>
+      <div class="save-slot-actions">
+        <button class="slot-btn sav" title="Save to slot ${i}">SAV</button>
+        ${meta ? `<button class="slot-btn load" title="Load slot ${i}">LOAD</button><button class="slot-btn del" title="Delete slot ${i}">✕</button>` : ''}
+      </div>`;
+    el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
+    const loadBtn = el.querySelector('.slot-btn.load');
+const delBtn  = el.querySelector('.slot-btn.del');
+
+if (loadBtn) {
+  loadBtn.addEventListener('click', () => loadFromSlot(i));
+}
+
+if (delBtn) {
+  delBtn.addEventListener('click', () => deleteSlot(i));
+}
+    container.appendChild(el);
+  }
+  // Update badge
+  const badge = $('save-slots-badge');
+  if (badge) badge.textContent = filledCount ? `${filledCount}/${NUM_SLOTS} used` : `${NUM_SLOTS} slots`;
+}
+
+async function saveToSlot(i) {
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
+
+  // Try to capture state — attempt a few approaches
+  const stateData = captureStateData();
+  if (!stateData) {
+    toast('Save failed — make sure the game is actively running (not at boot screen)','warn', 4000);
+    return;
+  }
+
+  const thumb = captureThumbnail();
+  try {
+    await dbPut(S_STATES, { id:`${currentRomName}::slot${i}`, data:stateData, ts:Date.now(), thumb, slotIdx:i });
+    showStateToast(`Slot ${i} saved`);
+    buildSaveSlots();
+    refreshCacheLoadSub();
+  } catch(e) { toast('Failed to write save state to storage','error'); }
+}
+
+async function loadFromSlot(i) {
+  try {
+    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
+    if (!meta || !meta.data) { toast('Slot is empty','error'); return; }
+    if (!ejsReady) { toast('Emulator not ready','error'); return; }
+    const ok = applyStateData(meta.data);
+    if (!ok) { toast('Could not apply state — emulator not responding','error'); return; }
+    if (isPaused) updatePauseUI(false);
+    showStateToast(`Slot ${i} loaded`);
+    toast(`Slot ${i} restored ✓`,'success');
+  } catch(e) { toast('Failed to load state','error'); }
+}
+
+async function deleteSlot(i) {
+  try { await dbDel(S_STATES, `${currentRomName}::slot${i}`); toast(`Slot ${i} deleted`,'info',1500); buildSaveSlots(); }
+  catch(e) { toast('Delete failed','error'); }
+}
+async function showDeleteSlotPicker() {
+
+  return new Promise(async resolve => {
+
+    const slots = [];
+
+    for (let i = 1; i <= NUM_SLOTS; i++) {
+
+      let meta = null;
+
+      try {
+        meta = await dbGet(
+          S_STATES,
+          `${currentRomName}::slot${i}`
+        );
+      } catch(e) {}
+
+      if (meta) {
+        slots.push({
+          i,
+          meta
+        });
+      }
+    }
+
+    // No saves
+    if (!slots.length) {
+
+      toast(
+        'No save slots to delete',
+        'warn'
+      );
+
+      resolve(null);
+
+      return;
+    }
+
+    const overlay = document.createElement('div');
+
+    overlay.className = 'modal-overlay';
+
+    overlay.innerHTML = `
+      <div class="modal-box" style="min-width:380px">
+
+        <div class="modal-title font-display">
+          Delete Save Slot
+        </div>
+
+        <div class="modal-subtitle">
+          Choose a save to permanently delete
+        </div>
+
+        <div class="slot-picker-grid">
+
+          ${slots.map(({i, meta}) => `
+
+            <div
+              class="slot-picker-item has-data delete-picker"
+              data-slot="${i}"
+            >
+
+              <div class="slot-picker-thumb">
+
+                ${
+                  meta.thumb
+                    ? `<img src="${meta.thumb}" alt="">`
+                    : `<span style="font-size:16px;opacity:.22">🎮</span>`
+                }
+
+                <span class="slot-picker-thumb-num">
+                  ${i}
+                </span>
+
+              </div>
+
+              <div class="slot-picker-info">
+
+                <div class="slot-picker-name">
+                  ${esc(meta.saveName || `Slot ${i}`)}
+                </div>
+
+                <div class="slot-picker-time">
+                  ${timeAgo(meta.ts)}
+                </div>
+
+              </div>
+
+              <div
+                style="
+                  color:#ff5f5f;
+                  font-weight:700;
+                  font-size:18px;
+                "
+              >
+                ✕
+              </div>
+
+            </div>
+
+          `).join('')}
+
+        </div>
+
+        <div class="modal-actions">
+
+          <button
+            class="modal-btn"
+            id="delete-slot-cancel"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay
+      .querySelectorAll('.delete-picker')
+      .forEach(item => {
+
+        item.addEventListener('click', () => {
+
+          const slot =
+            parseInt(
+              item.dataset.slot,
+              10
+            );
+
+          overlay.remove();
+
+          resolve(slot);
+        });
+      });
+
+    overlay
+      .querySelector('#delete-slot-cancel')
+      .addEventListener('click', () => {
+
+        overlay.remove();
+
+        resolve(null);
+      });
+
+    overlay.addEventListener('click', e => {
+
+      if (e.target === overlay) {
+
+        overlay.remove();
+
+        resolve(null);
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SLOT PICKER MODAL
+══════════════════════════════════════════════════════════════ */
+async function showSlotPicker(mode) {
+  return new Promise(async (resolve) => {
+    const slots = [];
+    for (let i = 1; i <= NUM_SLOTS; i++) {
+      let meta = null;
+      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
+      slots.push({ i, meta });
+    }
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const isSave = mode === 'save';
+    const slotItems = slots.map(({ i, meta }) => {
+      const thumb = meta && meta.thumb
+        ? `<img src="${meta.thumb}" alt=""><span class="slot-picker-thumb-num">${i}</span>`
+        : `<span style="font-size:16px;opacity:.22">🎮</span><span class="slot-picker-thumb-num">${i}</span>`;
+      const badge = meta
+        ? `<span class="slot-picker-badge filled">FILLED</span>`
+        : `<span class="slot-picker-badge empty">EMPTY</span>`;
+      const label = meta ? (meta.saveName || `Slot ${i}`) : `Slot ${i}`;
+      const ts = meta ? timeAgo(meta.ts) : 'No save';
+      return `
+        <div class="slot-picker-item ${meta ? 'has-data' : ''}" data-slot="${i}">
+          <div class="slot-picker-thumb">${thumb}</div>
+          <div class="slot-picker-info">
+            <div class="slot-picker-name">${esc(label)}</div>
+            <div class="slot-picker-time">${ts}</div>
+          </div>
+          ${badge}
+        </div>`;
+    }).join('');
+    overlay.innerHTML = `
+      <div class="modal-box" style="min-width:380px">
+        <div class="modal-title font-display">${isSave ? 'Save to Slot' : 'Load from Slot'}</div>
+        <div class="modal-subtitle">${isSave ? 'Choose a slot — existing data will be overwritten' : 'Choose a slot to restore'}</div>
+        <div class="slot-picker-grid">${slotItems}</div>
+        ${isSave ? `
+        <div class="modal-name-row">
+          <label class="modal-name-label">SAVE NAME (OPTIONAL)</label>
+          <input class="modal-input" id="slot-name-input" type="text" placeholder="e.g. Before final boss" maxlength="60">
+        </div>` : ''}
+        <div class="modal-actions">
+          <button class="modal-btn" id="slot-cancel">Cancel</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    let selectedSlot = null;
+    overlay.querySelectorAll('.slot-picker-item').forEach(item => {
+      item.addEventListener('click', () => {
+        overlay.querySelectorAll('.slot-picker-item').forEach(el => { el.style.outline = 'none'; el.style.background = ''; });
+        item.style.outline = '2px solid var(--accent)';
+        item.style.outlineOffset = '-2px';
+        selectedSlot = parseInt(item.dataset.slot, 10);
+        if (!isSave) {
+          const meta = slots.find(s => s.i === selectedSlot)?.meta;
+          if (!meta) { toast('That slot is empty', 'warn', 2000); return; }
+          overlay.remove(); resolve({ slotIndex: selectedSlot, saveName: null });
+        } else {
+          overlay.querySelector('#slot-name-input')?.focus();
+          let confirmBtn = overlay.querySelector('#slot-confirm');
+          if (!confirmBtn) {
+            confirmBtn = document.createElement('button');
+            confirmBtn.id = 'slot-confirm'; confirmBtn.className = 'modal-btn primary';
+            confirmBtn.textContent = 'Save Here';
+            overlay.querySelector('.modal-actions').prepend(confirmBtn);
+            confirmBtn.addEventListener('click', () => {
+              if (!selectedSlot) return;
+              const name = overlay.querySelector('#slot-name-input')?.value.trim() || '';
+              overlay.remove(); resolve({ slotIndex: selectedSlot, saveName: name || null });
+            });
+          }
+        }
+      });
+    });
+    overlay.querySelector('#slot-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
+    overlay.querySelector('#slot-name-input')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && selectedSlot) overlay.querySelector('#slot-confirm')?.click();
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUICK SAVE / LOAD
+══════════════════════════════════════════════════════════════ */
+async function refreshCacheLoadSub() {
+  if (!db || !currentRomName) return;
+  try {
+    let latest = null;
+    for (let i = 1; i <= NUM_SLOTS; i++) {
+      const entry = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
+      if (entry && (!latest || entry.ts > latest.ts)) latest = entry;
+    }
+    $('cache-load-sub').textContent = latest
+      ? `Last: ${latest.saveName || `Slot ${latest.slotIdx||'?'}`} — ${timeAgo(latest.ts)}`
+      : 'No saves yet';
+  } catch(e) {}
+}
+
+$('sb-cache-save').addEventListener('click', async () => {
+  if (!currentRomName) { toast('No game loaded', 'error'); return; }
+  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
+  const pick = await showSlotPicker('save');
+  if (!pick) return;
+  const stateData = captureStateData();
+  if (!stateData) {
+    toast('Could not capture state — make sure the game is actively running (not loading)', 'warn', 4500);
+    return;
+  }
+  const thumb = captureThumbnail();
+  try {
+    await dbPut(S_STATES, {
+      id: `${currentRomName}::slot${pick.slotIndex}`,
+      data: stateData, ts: Date.now(), thumb,
+      saveName: pick.saveName, slotIdx: pick.slotIndex,
+    });
+    showStateToast(`Slot ${pick.slotIndex} saved`);
+    toast(`Saved to Slot ${pick.slotIndex}${pick.saveName ? ` — "${pick.saveName}"` : ''} ✓`, 'success');
+    buildSaveSlots(); refreshCacheLoadSub();
+  } catch(e) { toast('Save failed', 'error'); }
+});
+
+$('sb-cache-load').addEventListener('click', async () => {
+  if (!currentRomName) { toast('No game loaded', 'error'); return; }
+  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
+  const pick = await showSlotPicker('load');
+  if (!pick) return;
+  try {
+    const meta = await dbGet(S_STATES, `${currentRomName}::slot${pick.slotIndex}`);
+    if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
+    const ok = applyStateData(meta.data);
+    if (!ok) { toast('Could not apply state','error'); return; }
+    if (isPaused) updatePauseUI(false);
+    showStateToast(`Slot ${pick.slotIndex} loaded`);
+    toast(`Loaded Slot ${pick.slotIndex}${meta.saveName ? ` — "${meta.saveName}"` : ''} ✓`, 'success');
+  } catch(e) { toast('Load failed', 'error'); }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   KEYBOARD QUICK-SAVE / QUICK-LOAD (keys 1–6, Ctrl+1–6)
+   These bypass the slot picker modal for speed.
+══════════════════════════════════════════════════════════════ */
+async function quickSaveSlot(i) {
+  if (!currentRomName || !ejsReady) return;
+  const stateData = captureStateData();
+  if (!stateData) { toast(`Slot ${i} — game not ready yet`, 'warn'); return; }
+  const thumb = captureThumbnail();
+  try {
+    await dbPut(S_STATES, {
+      id: `${currentRomName}::slot${i}`, data: stateData, ts: Date.now(),
+      thumb, saveName: null, slotIdx: i,
+    });
+    showStateToast(`Slot ${i} saved`);
+    buildSaveSlots(); refreshCacheLoadSub();
+  } catch(e) { toast('Quick-save failed', 'error'); }
+}
+
+async function quickLoadSlot(i) {
+
+  if (!currentRomName || !ejsReady)
+    return;
+
+  try {
+
+    const meta = await dbGet(
+      S_STATES,
+      `${currentRomName}::slot${i}`
+    );
+
+    // EMPTY SLOT FIX
+    if (
+      !meta ||
+      !meta.data ||
+      (
+        meta.data.byteLength === 0 &&
+        meta.data.length === 0
+      )
+    ) {
+
+      toast(
+        `Error: Slot ${i} is empty`,
+        'error'
+      );
+
+      showStateToast(
+        `Slot ${i} empty`
+      );
+
+      return;
+    }
+
+    const ok = applyStateData(meta.data);
+
+    if (!ok) {
+
+      toast(
+        'Could not apply state',
+        'error'
+      );
+
+      return;
+    }
+
+    if (isPaused)
+      updatePauseUI(false);
+
+    showStateToast(
+      `Slot ${i} loaded`
+    );
+
+  } catch(e) {
+
+    toast(
+      'Quick-load failed',
+      'error'
+    );
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   IMPORT STATE FILE (.state) — applies LIVE, no restart
+   This is the "snapshot" / "save state" file format.
+   EJS state data is an ArrayBuffer. We try loadState() directly.
+══════════════════════════════════════════════════════════════ */
+$('sb-import-state').addEventListener('click', () => {
+  if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
+  if (!ejsReady)       { toast('Wait for the game to start first', 'warn'); return; }
+  $('state-input').accept = '.state';
+  $('state-input').click();
+});
+
+$('state-input').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  // Determine if this is a state file or a battery save
+  const ext = extOf(f.name);
+
+if (ext !== '.state') {
+  toast('Only .state files are supported', 'error');
+  return;
+}
+  // Treat as state snapshot
+  if (!ejsReady) { toast('Emulator not ready', 'warn'); return; }
+  try {
+    const buf = await f.arrayBuffer();
+    const ok = applyStateData(buf);
+    if (!ok) { toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
+    if (isPaused) updatePauseUI(false);
+    showStateToast('State restored');
+    toast('State file loaded — continuing from snapshot ✓', 'success');
+    // Also save to slot 1 so it's in the library
+    if (db && currentRomName) {
+      const thumb = captureThumbnail();
+      await dbPut(S_STATES, { id:`${currentRomName}::slot1`, data:buf, ts:Date.now(), thumb, saveName:'Imported state', slotIdx:1 });
+      buildSaveSlots(); refreshCacheLoadSub();
+    }
+  } catch(err) {
+    toast('Failed to load state file: ' + (err.message || 'unknown'), 'error', 5000);
+  }
+});
+
+/* Export current state as .state file */
+$('sb-export-state').addEventListener('click', async () => {
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  if (!ejsReady)       { toast('Wait for game to start','warn'); return; }
+  const stateData = captureStateData();
+  if (!stateData) { toast('No state to export — game may still be booting','warn'); return; }
+  const baseName = currentDisplay || currentRomName.replace(/\.[^.]+$/, '');
+  download(new Blob([stateData], { type:'application/octet-stream' }), `${baseName}.state`);
+  toast('State file exported ✓','success');
+});
+
+
+
+/* ══════════════════════════════════════════════════════════════
+   SCREENSHOT
+══════════════════════════════════════════════════════════════ */
+async function takeScreenshot() {
+  try {
+    const canvas = document.querySelector('#game canvas');
+
+    if (!canvas) {
+      toast('No game screen found', 'error');
+      return;
+    }
+
+    const flash = $('ss-flash');
+    flash.classList.remove('pop');
+    flash.offsetHeight;
+    flash.classList.add('pop');
+
+    canvas.toBlob(blob => {
+      if (!blob) {
+        toast('Screenshot failed', 'error');
+        return;
+      }
+
+      download(
+        blob,
+        `${currentDisplay || 'screenshot'}_${Date.now()}.png`
+      );
+
+      toast('Screenshot saved ✓', 'success', 1800);
+    });
+
+  } catch (e) {
+    toast('Screenshot failed', 'error');
+  }
+}
+$('btn-screenshot').addEventListener('click', takeScreenshot);
+$('sb-screenshot').addEventListener('click', takeScreenshot);
+
+/* ══════════════════════════════════════════════════════════════
+   EXPORT ROM
+══════════════════════════════════════════════════════════════ */
+$('sb-export-rom').addEventListener('click', () => {
+  if (!currentRomData) { toast('No ROM loaded','error'); return; }
+  download(new Blob([currentRomData], { type:'application/octet-stream' }), currentRomName);
+  toast('ROM downloaded ✓','success');
+});
+
+/* ══════════════════════════════════════════════════════════════
+   LOAD NEW ROM
+══════════════════════════════════════════════════════════════ */
+$('sb-load-new').addEventListener('click', () => $('rom-input').click());
+
+/* ══════════════════════════════════════════════════════════════
+   TOOLBAR BUTTONS
+══════════════════════════════════════════════════════════════ */
+$('btn-back').addEventListener('click', () => {
+  clearInterval(autosaveTimer); clearInterval(playtimeTimer);
+  location.reload();
+});
+$('btn-fullscreen').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else $('emu-wrap').requestFullscreen().catch(() => {});
+});
+$('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle('visible'));
+
+/* ══════════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════════════════════════════ */
+// Track ` key
+window.backtickHeld = false;
+
+document.addEventListener('keydown', async e => {
+
+  // Ctrl + ` = Delete Save Menu
+  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+
+    e.preventDefault();
+
+    if (!currentRomName) {
+      toast('No game loaded', 'error');
+      return;
+    }
+
+    const pick = await showDeleteSlotPicker();
+
+    if (pick == null) return;
+
+    await deleteSlot(pick);
+
+    return;
+  }
+
+  // Normal backtick hold for saving
+  if (e.key === '`') {
+    window.backtickHeld = true;
+  }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === '`') {
+    window.backtickHeld = false;
+  }
+});
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const inEmu    = $('emu-screen').classList.contains('active');
+  const keysOpen = $('keys-overlay').classList.contains('visible');
+
+  if (e.key === 'Escape') {
+    if (keysOpen) { $('keys-overlay').classList.remove('visible'); return; }
+    closeCtxMenu(); return;
+  }
+  if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
+  if (!inEmu || keysOpen) return;
+// ` + 1-6 = quick save
+// Ctrl + 1-6 = quick load
+if (/^[1-6]$/.test(e.key)) {
+
+  const slot = parseInt(e.key, 10);
+
+  // Ctrl + number = LOAD
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    quickLoadSlot(slot);
+    return;
+  }
+
+  // ` key held + number = SAVE
+  if (window.backtickHeld) {
+    e.preventDefault();
+    quickSaveSlot(slot);
+    return;
+  }
+}
+
+  switch (e.key) {
+    case 'm': case 'M': $('sb-mute').click(); break;
+    case 'p': case 'P': $('sb-pause').click(); break;
+    case ' ': e.preventDefault(); $('sb-pause').click(); break;
+    case 'f': case 'F': $('btn-fullscreen').click(); break;
+    case 'Tab': e.preventDefault(); setSidebar(!sidebarOpen); break;
+    case 'c': case 'C': takeScreenshot(); break;
+  }
+});
+
+$('keys-overlay').addEventListener('click', e => {
+  if (e.target === $('keys-overlay')) $('keys-overlay').classList.remove('visible');
+});
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════ */
+openDB()
+  .then(d => { db = d; buildContinueBar(); })
+  .catch(e => console.warn('IndexedDB unavailable — persistence disabled:', e));
+
+})();
+</script>
+</body>
+</html>
