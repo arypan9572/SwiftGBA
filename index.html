@@ -2094,6 +2094,164 @@ async function deleteSlot(i) {
   try { await dbDel(S_STATES, `${currentRomName}::slot${i}`); toast(`Slot ${i} deleted`,'info',1500); buildSaveSlots(); }
   catch(e) { toast('Delete failed','error'); }
 }
+async function showDeleteSlotPicker() {
+
+  return new Promise(async resolve => {
+
+    const slots = [];
+
+    for (let i = 1; i <= NUM_SLOTS; i++) {
+
+      let meta = null;
+
+      try {
+        meta = await dbGet(
+          S_STATES,
+          `${currentRomName}::slot${i}`
+        );
+      } catch(e) {}
+
+      if (meta) {
+        slots.push({
+          i,
+          meta
+        });
+      }
+    }
+
+    // No saves
+    if (!slots.length) {
+
+      toast(
+        'No save slots to delete',
+        'warn'
+      );
+
+      resolve(null);
+
+      return;
+    }
+
+    const overlay = document.createElement('div');
+
+    overlay.className = 'modal-overlay';
+
+    overlay.innerHTML = `
+      <div class="modal-box" style="min-width:380px">
+
+        <div class="modal-title font-display">
+          Delete Save Slot
+        </div>
+
+        <div class="modal-subtitle">
+          Choose a save to permanently delete
+        </div>
+
+        <div class="slot-picker-grid">
+
+          ${slots.map(({i, meta}) => `
+
+            <div
+              class="slot-picker-item has-data delete-picker"
+              data-slot="${i}"
+            >
+
+              <div class="slot-picker-thumb">
+
+                ${
+                  meta.thumb
+                    ? `<img src="${meta.thumb}" alt="">`
+                    : `<span style="font-size:16px;opacity:.22">🎮</span>`
+                }
+
+                <span class="slot-picker-thumb-num">
+                  ${i}
+                </span>
+
+              </div>
+
+              <div class="slot-picker-info">
+
+                <div class="slot-picker-name">
+                  ${esc(meta.saveName || `Slot ${i}`)}
+                </div>
+
+                <div class="slot-picker-time">
+                  ${timeAgo(meta.ts)}
+                </div>
+
+              </div>
+
+              <div
+                style="
+                  color:#ff5f5f;
+                  font-weight:700;
+                  font-size:18px;
+                "
+              >
+                ✕
+              </div>
+
+            </div>
+
+          `).join('')}
+
+        </div>
+
+        <div class="modal-actions">
+
+          <button
+            class="modal-btn"
+            id="delete-slot-cancel"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    overlay
+      .querySelectorAll('.delete-picker')
+      .forEach(item => {
+
+        item.addEventListener('click', () => {
+
+          const slot =
+            parseInt(
+              item.dataset.slot,
+              10
+            );
+
+          overlay.remove();
+
+          resolve(slot);
+        });
+      });
+
+    overlay
+      .querySelector('#delete-slot-cancel')
+      .addEventListener('click', () => {
+
+        overlay.remove();
+
+        resolve(null);
+      });
+
+    overlay.addEventListener('click', e => {
+
+      if (e.target === overlay) {
+
+        overlay.remove();
+
+        resolve(null);
+      }
+    });
+  });
+}
 
 /* ══════════════════════════════════════════════════════════════
    SLOT PICKER MODAL
@@ -2442,12 +2600,32 @@ $('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle
 // Track ` key
 window.backtickHeld = false;
 
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', async e => {
+
+  // Ctrl + ` = Delete Save Menu
+  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+
+    e.preventDefault();
+
+    if (!currentRomName) {
+      toast('No game loaded', 'error');
+      return;
+    }
+
+    const pick = await showDeleteSlotPicker();
+
+    if (pick == null) return;
+
+    await deleteSlot(pick);
+
+    return;
+  }
+
+  // Normal backtick hold for saving
   if (e.key === '`') {
     window.backtickHeld = true;
   }
 });
-
 document.addEventListener('keyup', e => {
   if (e.key === '`') {
     window.backtickHeld = false;
