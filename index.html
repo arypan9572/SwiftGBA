@@ -332,7 +332,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   /* Fade-in for the emulator screen appearing */
   opacity:0;transition:opacity .3s ease;
 }
-#emu-screen.active{display:flex;flex-direction:column}
+#emu-screen.active{
+  display:flex;
+  opacity:1;
+  pointer-events:auto;
+}
 #emu-screen.visible{opacity:1}
 
 /* ── Toolbar ── */
@@ -1487,6 +1491,9 @@ async function launchROM(file) {
   idleScreen.classList.add('fade-out');
   setTimeout(() => { idleScreen.style.display = 'none'; }, 400);
   $('emu-screen').classList.add('active');
+  requestAnimationFrame(() => {
+  $('emu-screen').classList.add('visible');
+});
   $('power-led').classList.add('on');
 
   const buf = await file.arrayBuffer();
