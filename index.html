@@ -844,6 +844,7 @@ let currentDisplay  = '';    // user-facing title (may differ)
 let currentColor    = '#00bcf0';
 let isPaused        = false;
 let isMuted         = false;
+let audioUnlocked   = false;
 let currentSpeedIdx = 2;     // index into SPEED_STEPS, 2 = 1×
 let isFastForward   = false;
 let isSlowMotion    = false;
@@ -956,6 +957,30 @@ function download(blob, name) {
 }
 function getEmu() { return window.EJS_emulator || null; }
 
+function unlockAudio() {
+
+ try {
+
+  const emu = getEmu();
+
+  if (!emu?.gameManager) return;
+
+  if (emu.gameManager.audioContext?.state === 'suspended') {
+   emu.gameManager.audioContext.resume();
+  }
+
+  if (emu.gameManager.setVolume) {
+   emu.gameManager.setVolume(1);
+  }
+
+  isMuted = false;
+  audioUnlocked = true;
+
+ } catch(e) {
+  console.error(e);
+ }
+
+}
 /* ══════════════════════════════════════════════════════════════
    ROM NAME CLEANER
    Strips scene tags: (USA), [!], (V1.1), etc.
@@ -1445,6 +1470,12 @@ function startEmulator(romURL, displayName) {
     }, 150);
   };
 
+
+   setTimeout(() => {
+ unlockAudio();
+}, 500);
+
+   
   // 4. Append loader — small delay ensures DOM is settled
   setTimeout(() => {
     const s = document.createElement('script');
@@ -1629,8 +1660,16 @@ function applyMuteToEmu(muted) {
   try {
     if (!emu) return;
     // EJS stable: emulator has changeVolume() or setVolume()
-    if (typeof emu.changeVolume === 'function') emu.changeVolume(muted ? 0 : 0.8);
-    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(muted ? 0 : 0.8);
+    if (!muted && emu?.gameManager?.audioContext?.state === 'suspended') {
+  emu.gameManager.audioContext.resume();
+}
+
+if (typeof emu.changeVolume === 'function') {
+  emu.changeVolume(muted ? 0 : 1);
+}
+else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') {
+  emu.gameManager.setVolume(muted ? 0 : 1);
+}
   } catch(e) {}
 }
 $('sb-mute').addEventListener('click', () => {
