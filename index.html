@@ -2008,10 +2008,16 @@ for (let i = 1; i <= NUM_SLOTS; i++) {
         ${meta ? `<button class="slot-btn load" title="Load slot ${i}">LOAD</button><button class="slot-btn del" title="Delete slot ${i}">✕</button>` : ''}
       </div>`;
     el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
-    if (meta) {
-      el.querySelector('.slot-btn.load').addEventListener('click', () => loadFromSlot(i));
-      el.querySelector('.slot-btn.del').addEventListener('click',  () => deleteSlot(i));
-    }
+    const loadBtn = el.querySelector('.slot-btn.load');
+const delBtn  = el.querySelector('.slot-btn.del');
+
+if (loadBtn) {
+  loadBtn.addEventListener('click', () => loadFromSlot(i));
+}
+
+if (delBtn) {
+  delBtn.addEventListener('click', () => deleteSlot(i));
+}
     container.appendChild(el);
   }
   // Update badge
