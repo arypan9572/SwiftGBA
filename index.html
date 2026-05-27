@@ -875,7 +875,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
  Snapshot System
  </div>
 
- <button class="sb-btn accent-btn" id="sb-import-snapshot">
+ <button class="sb-btn accent-btn" id="sb-import-state">
 
  <span class="sb-btn-icon">📂</span>
 
@@ -1663,11 +1663,14 @@ function startAutosave() {
     if (!stateData) return;
     const thumb = captureThumbnail();
     try {
-      await dbPut(S_STATES, {
-        id: `${currentRomName}::autosave`
-        data: stateData, ts: Date.now(),
-        thumb, saveName: 'Auto-save', slotIdx: 1,
-      });
+     await dbPut(S_STATES, {
+  id: `${currentRomName}::autosave`,
+  data: stateData,
+  ts: Date.now(),
+  thumb,
+  saveName: 'Auto-save',
+  slotIdx: 1,
+});
       buildSaveSlots();
       refreshCacheLoadSub();
     } catch(e) {}
