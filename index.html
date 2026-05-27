@@ -44,167 +44,79 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .font-mono{font-family:var(--font-mono)}
 
 /* ═══════════════════════════════════════════════════════════
-   IDLE / LANDING — ENHANCED
+   IDLE / LANDING
    ═══════════════════════════════════════════════════════════ */
 #idle-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
-  cursor:pointer;
-  transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1);
-  gap:var(--sp3);background:#06080b;isolation:isolate;
+  cursor:pointer;transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
+  gap:var(--sp3);background:#07090c;isolation:isolate;
 }
-#idle-screen.fade-out{opacity:0;pointer-events:none;}
-/* GBA zoom animation — the console zooms into its screen */
-#idle-screen.zoom-launch .gba-shell{
-  animation:gba-zoom-into-screen 0.85s cubic-bezier(.55,0,.1,1) forwards !important;
-}
-#idle-screen.zoom-launch .landing-brand,
-#idle-screen.zoom-launch .landing-controls,
-#idle-screen.zoom-launch .landing-disclaimer,
-#idle-screen.zoom-launch #continue-bar,
-#idle-screen.zoom-launch .showcase{
-  animation:ui-fade-out 0.4s ease forwards !important;
-}
-@keyframes gba-zoom-into-screen{
-  0%   { transform:translate(-5vw) translateY(0) scale(1); opacity:1; filter:drop-shadow(0 20px 60px rgba(0,0,0,.75)); }
-  30%  { transform:translate(-5vw) translateY(-4px) scale(1.08); opacity:1; filter:drop-shadow(0 40px 80px rgba(0,196,248,.35)); }
-  70%  { transform:translate(-2vw) scale(2.8); opacity:1; filter:drop-shadow(0 0 120px rgba(0,196,248,.6)) brightness(1.2); }
-  100% { transform:translate(20vw) scale(18); opacity:0; filter:drop-shadow(0 0 200px rgba(0,196,248,.9)) brightness(2); }
-}
-@keyframes ui-fade-out{
-  0%   { opacity:1; transform:translateY(0); }
-  100% { opacity:0; transform:translateY(-16px); pointer-events:none; }
-}
+#idle-screen.fade-out{opacity:0;pointer-events:none;transform:scale(1.03)}
 
-/* ── Enhanced background ── */
 .landing-bg{
   position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 90% 70% at 50% -5%, rgba(0,196,248,.18) 0%,transparent 55%),
-    radial-gradient(ellipse 60% 50% at 85% 65%,rgba(0,80,200,.13) 0%,transparent 50%),
-    radial-gradient(ellipse 70% 55% at 10% 80%,rgba(100,0,210,.09) 0%,transparent 50%),
-    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(0,196,248,.04) 0%,transparent 60%),
-    linear-gradient(180deg,#06080b 0%,#090d14 40%,#0b0f18 100%);
-  animation:bg-breathe 14s ease-in-out infinite alternate;
+    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,196,248,.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 60%,rgba(0,80,200,.1) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 50% at 10% 80%,rgba(100,0,210,.07) 0%,transparent 50%),
+    linear-gradient(180deg,#07090c 0%,#0b0f16 40%,#0d1219 100%);
+  animation:bg-breathe 12s ease-in-out infinite alternate;
 }
-@keyframes bg-breathe{
-  0%{opacity:.88}
-  50%{opacity:1}
-  100%{opacity:.82}
-}
+@keyframes bg-breathe{0%{opacity:.9}50%{opacity:1}100%{opacity:.85}}
 
-/* ── Enhanced animated grid ── */
 .landing-grid{
   position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(0,196,248,.05) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,196,248,.05) 1px,transparent 1px),
-    linear-gradient(rgba(0,196,248,.02) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,196,248,.02) 1px,transparent 1px);
-  background-size:56px 56px, 56px 56px, 14px 14px, 14px 14px;
-  mask-image:radial-gradient(ellipse 85% 65% at 50% 50%,black 20%,transparent 70%);
-  animation:grid-drift 28s linear infinite;
+  background-image:linear-gradient(rgba(0,196,248,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,248,.038) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 25%,transparent 72%);
+  animation:grid-drift 22s linear infinite;
 }
-@keyframes grid-drift{0%{transform:translateY(0) translateX(0)}100%{transform:translateY(56px) translateX(14px)}}
+@keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(56px)}}
 
-/* ── Enhanced orbs ── */
-.landing-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
-.landing-orb-1{width:600px;height:600px;top:-20%;left:-14%;background:radial-gradient(circle,rgba(0,196,248,.1) 0%,transparent 70%);filter:blur(80px);animation:orb1 20s ease-in-out infinite alternate}
-.landing-orb-2{width:500px;height:500px;bottom:-14%;right:-8%;background:radial-gradient(circle,rgba(100,0,230,.11) 0%,transparent 70%);filter:blur(70px);animation:orb2 16s ease-in-out infinite alternate}
-.landing-orb-3{width:380px;height:380px;top:35%;left:30%;background:radial-gradient(circle,rgba(0,196,248,.055) 0%,transparent 70%);filter:blur(60px);animation:orb3 12s ease-in-out infinite alternate}
-.landing-orb-4{width:280px;height:280px;top:10%;right:28%;background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 70%);filter:blur(50px);animation:orb4 9s ease-in-out infinite alternate}
-@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(6%,10%) scale(1.12)}}
-@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-7%,-6%) scale(1.18)}}
-@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.5}to{transform:translate(4%,-5%) scale(1.25);opacity:1}}
-@keyframes orb4{from{transform:translate(0,0);opacity:.4}to{transform:translate(-3%,8%);opacity:.9}}
+.landing-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px);z-index:0}
+.landing-orb-1{width:520px;height:520px;top:-18%;left:-12%;background:rgba(0,196,248,.07);animation:orb1 18s ease-in-out infinite alternate}
+.landing-orb-2{width:420px;height:420px;bottom:-12%;right:-6%;background:rgba(100,0,230,.08);animation:orb2 14s ease-in-out infinite alternate}
+.landing-orb-3{width:320px;height:320px;top:38%;left:33%;background:rgba(0,196,248,.045);animation:orb3 10s ease-in-out infinite alternate}
+@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(5%,8%) scale(1.1)}}
+@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-6%,-5%) scale(1.15)}}
+@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.6}to{transform:translate(3%,-4%) scale(1.2);opacity:1}}
 
-/* ── Noise + scanlines ── */
 #idle-screen::before{
-  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.032;
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.025;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:256px 256px;
 }
 #idle-screen::after{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);
-  animation:scan-drift 8s linear infinite;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.055) 3px,rgba(0,0,0,.055) 4px);
+  animation:scan-drift 6s linear infinite;
 }
 @keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
 
-/* ── Chromatic aberration edge effect ── */
-.landing-chroma{
-  position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:
-    radial-gradient(ellipse 120% 120% at 0% 0%,rgba(255,0,80,.018) 0%,transparent 40%),
-    radial-gradient(ellipse 120% 120% at 100% 100%,rgba(0,196,248,.018) 0%,transparent 40%);
-}
-
-/* ── Horizontal scan line sweep ── */
-.landing-sweep{
-  position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;
-}
-.landing-sweep::after{
-  content:'';position:absolute;left:0;right:0;height:3px;
-  background:linear-gradient(to right,transparent,rgba(0,196,248,.25),rgba(0,196,248,.08),transparent);
-  animation:sweep-line 7s ease-in-out infinite;
-  box-shadow:0 0 20px rgba(0,196,248,.3);
-}
-@keyframes sweep-line{
-  0%  {top:-10%;opacity:0}
-  10% {opacity:1}
-  90% {opacity:.3}
-  100%{top:110%;opacity:0}
-}
-
-/* ── Corner brackets decoration ── */
-.corner-bracket{
-  position:absolute;z-index:3;pointer-events:none;
-  width:40px;height:40px;opacity:.18;
-}
-.corner-bracket.tl{top:20px;left:20px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
-.corner-bracket.tr{top:20px;right:20px;border-top:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
-.corner-bracket.bl{bottom:20px;left:20px;border-bottom:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
-.corner-bracket.br{bottom:20px;right:20px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
-
-/* ── Floating hex decorations ── */
-.hex-deco{
-  position:absolute;z-index:2;pointer-events:none;
-  font-family:var(--font-mono);font-size:9px;color:rgba(0,196,248,.12);
-  letter-spacing:.1em;user-select:none;
-}
-.hex-deco.d1{top:12%;left:8%;animation:hex-float1 11s ease-in-out infinite}
-.hex-deco.d2{top:22%;right:5%;animation:hex-float2 14s ease-in-out infinite}
-.hex-deco.d3{bottom:28%;left:6%;animation:hex-float1 9s ease-in-out infinite 2s}
-.hex-deco.d4{bottom:18%;right:9%;animation:hex-float2 13s ease-in-out infinite 1s}
-.hex-deco.d5{top:50%;left:2%;animation:hex-float1 16s ease-in-out infinite 3s;opacity:.06}
-@keyframes hex-float1{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-12px) translateX(6px)}}
-@keyframes hex-float2{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(10px) translateX(-8px)}}
-
-#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
+#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.45}
 
 /* ── Showcase ── */
 .showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
-.showcase-bg{position:absolute;inset:0;transition:background 1.2s ease}
+.showcase-bg{position:absolute;inset:0;transition:background 1s ease}
 .showcase-pulse{
   position:absolute;inset:0;
   background:radial-gradient(ellipse 55% 45% at 76% 38%,var(--game-color,rgba(0,196,248,.12)) 0%,transparent 65%);
-  animation:ambient-pulse 5s ease-in-out infinite;transition:background 1.2s ease;
+  animation:ambient-pulse 5s ease-in-out infinite;transition:background 1s ease;
 }
-@keyframes ambient-pulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes ambient-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
 .showcase-flash{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none}
-.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .55s ease-out forwards;pointer-events:none}
+.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .5s ease-out forwards;pointer-events:none}
 @keyframes wipe-sweep{0%{transform:translate(-100%) rotate(12deg)}to{transform:translate(100%) rotate(12deg)}}
 .showcase-slash{position:absolute;top:-20%;right:18%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none;transition:border-color .8s ease}
-.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.04)}
+.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.032)}
 .showcase-slash::after{right:-14px;opacity:.3}
-.showcase-slash2{position:absolute;top:-20%;right:22%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none}
-.showcase-slash2::before{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.02)}
 
 .showcase-title{position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:8px;z-index:3}
-.showcase-title.slam{animation:title-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-title.slam{animation:title-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-title.out{animation:title-exit .22s ease-in forwards}
-@keyframes title-slam{0%{opacity:0;transform:translateX(-80px) scale(1.06)}65%{opacity:1;transform:translateX(5px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-40px)}}
+@keyframes title-slam{0%{opacity:0;transform:translateX(-70px) scale(1.08)}65%{opacity:1;transform:translateX(6px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-36px)}}
 .showcase-label{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--text-ghost);text-transform:uppercase;font-family:var(--font-mono)}
 .showcase-label::before{content:'';width:16px;height:1px;background:var(--text-ghost);flex-shrink:0}
 .showcase-name{font-size:clamp(20px,2.6vw,34px);font-weight:600;color:#f0f2f6;line-height:1.1;max-width:340px;letter-spacing:-.01em}
@@ -213,13 +125,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes underline-grow{0%{width:0}to{width:56px}}
 
 .showcase-art{position:absolute;right:7vw;top:18%;z-index:3}
-.showcase-art.slam{animation:art-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-art.slam{animation:art-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-art.out{animation:art-exit .22s ease-in forwards}
-@keyframes art-slam{0%{opacity:0;transform:translateX(120px) scale(.8) rotate(5deg)}55%{opacity:1;transform:translateX(-10px) scale(1.03) rotate(-.6deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
-@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(80px) scale(.88)}}
-.showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.1) contrast(1.05);box-shadow:0 24px 72px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06),0 0 60px rgba(0,196,248,.08);user-select:none;pointer-events:none;transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s ease}
-.showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(4px);border-radius:10px;pointer-events:none}
-.showcase-art-glow{position:absolute;inset:-20px;border-radius:20px;background:radial-gradient(circle,var(--art-glow,rgba(0,196,248,.15)) 0%,transparent 70%);filter:blur(20px);z-index:-1;transition:background 1.2s ease}
+@keyframes art-slam{0%{opacity:0;transform:translateX(110px) scale(.82) rotate(4deg)}55%{opacity:1;transform:translateX(-8px) scale(1.02) rotate(-.8deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
+@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(72px) scale(.9)}}
+.showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.08) contrast(1.04);box-shadow:0 24px 72px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);user-select:none;pointer-events:none;transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s ease}
+.showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(3px);border-radius:10px;pointer-events:none}
 
 /* ── GBA Shell ── */
 .gba-shell{
@@ -229,133 +140,61 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   transform:translate(-5vw);z-index:3;
   filter:drop-shadow(0 20px 60px rgba(0,0,0,.75));
   animation:gba-float 6s ease-in-out infinite;
-  transform-origin:center center;
-  will-change:transform;
 }
-@keyframes gba-float{
-  0%,100%{transform:translate(-5vw) translateY(0) rotate(0deg)}
-  25%{transform:translate(-5vw) translateY(-7px) rotate(.3deg)}
-  75%{transform:translate(-5vw) translateY(-9px) rotate(-.2deg)}
-}
-/* Subtle glow pulse on GBA */
-.gba-shell::after{
-  content:'';position:absolute;inset:-40px;border-radius:60px;
-  background:radial-gradient(ellipse at 50% 50%,rgba(0,196,248,.06) 0%,transparent 70%);
-  filter:blur(20px);
-  animation:gba-glow-pulse 4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes gba-glow-pulse{0%,100%{opacity:.5;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes gba-float{0%,100%{transform:translate(-5vw) translateY(0)}50%{transform:translate(-5vw) translateY(-9px)}}
 .gba-image{width:min(62vw,580px);height:auto;user-select:none;pointer-events:none}
 .gba-screen-overlay{
   position:absolute;left:var(--gba-screen-left);top:var(--gba-screen-top);
   width:var(--gba-screen-width);height:var(--gba-screen-height);
-  z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.3);
+  z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.28);
 }
-/* Screen flicker on load */
-.gba-screen-overlay::before{
-  content:'';position:absolute;inset:0;z-index:10;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(255,255,255,.04) 0%,transparent 100%);
-  animation:screen-flicker 8s ease-in-out infinite;
-}
-@keyframes screen-flicker{0%,95%,100%{opacity:1}96%{opacity:.4}97%{opacity:.9}98%{opacity:.3}99%{opacity:1}}
 .gba-screen-content{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:var(--sp2);padding:0 6%;text-align:center;
-  animation:screen-fade-in 1.4s ease forwards;
+  animation:screen-fade-in 1.2s ease forwards;
 }
 @keyframes screen-fade-in{0%{opacity:0}to{opacity:1}}
-.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.4)}
+.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.38)}
 .gba-screen-hint{display:block;width:100%;font-size:clamp(8px,1vw,11px);color:#6b7280;margin-top:2px}
-.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7;animation:icon-bounce 2.5s ease-in-out infinite}
-@keyframes icon-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-/* Drag glow */
+.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7}
 .gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;background:var(--text-ghost);transition:all .5s ease}
 .gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow)}
-/* Blinking idle LED */
-.gba-power-led{animation:led-idle-blink 4s ease-in-out infinite}
-@keyframes led-idle-blink{0%,88%,100%{background:rgba(0,232,90,.08);box-shadow:none}90%{background:rgba(0,232,90,.35);box-shadow:0 0 4px rgba(0,232,90,.4)}}
-
-/* Drag over state */
-#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 70px rgba(0,196,248,.7))}
-#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
-#idle-screen.drag-over .gba-screen-overlay{background:rgba(0,196,248,.08)}
 
 /* ── Landing brand ── */
-.landing-brand{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
-@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(14px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
-.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1;position:relative}
+.landing-brand{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
+@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(12px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
+.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1}
 .landing-title .accent{color:var(--accent);letter-spacing:.04em}
 .landing-title .dot{color:var(--text-tertiary)}
-/* Glitch effect on title */
-.landing-title::before,.landing-title::after{
-  content:attr(data-text);position:absolute;inset:0;
-  font-size:inherit;font-weight:inherit;letter-spacing:inherit;
-  opacity:0;pointer-events:none;
-}
-.landing-title::before{color:rgba(255,0,80,.6);animation:title-glitch1 12s infinite 4s}
-.landing-title::after{color:rgba(0,196,248,.5);animation:title-glitch2 12s infinite 4s}
-@keyframes title-glitch1{
-  0%,94%,100%{opacity:0;transform:translate(0)}
-  95%{opacity:.8;transform:translate(-2px,1px);clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%)}
-  96%{opacity:0}
-  97%{opacity:.6;transform:translate(1px,-1px);clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%)}
-  98%{opacity:0}
-}
-@keyframes title-glitch2{
-  0%,94%,100%{opacity:0;transform:translate(0)}
-  95%{opacity:.6;transform:translate(2px,-1px);clip-path:polygon(0 40%,100% 40%,100% 60%,0 60%)}
-  97%{opacity:.4;transform:translate(-1px,1px);clip-path:polygon(0 10%,100% 10%,100% 30%,0 30%)}
-  98%{opacity:0}
-}
-.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.15em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px;opacity:.7}
-.landing-version-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  background:rgba(0,196,248,.06);border:1px solid rgba(0,196,248,.15);
-  border-radius:20px;padding:2px 10px;font-size:9px;font-family:var(--font-mono);
-  color:rgba(0,196,248,.6);letter-spacing:.1em;margin-top:4px;
-  animation:badge-pulse 4s ease-in-out infinite;
-}
-.landing-version-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:rgba(0,196,248,.5);animation:badge-dot-blink 2s ease-in-out infinite}
-@keyframes badge-pulse{0%,100%{border-color:rgba(0,196,248,.12)}50%{border-color:rgba(0,196,248,.28)}}
-@keyframes badge-dot-blink{0%,100%{opacity:.4}50%{opacity:1}}
+.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px}
 
 .landing-controls{
   display:flex;align-items:center;gap:10px;font-size:var(--xs);color:var(--text-ghost);
-  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:500px;
+  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:480px;
   animation:brand-in 1s .45s ease both;
 }
 .landing-key{
   display:inline-flex;align-items:center;justify-content:center;
-  padding:2px 7px;border:1px solid rgba(255,255,255,.1);border-radius:4px;
-  background:rgba(255,255,255,.06);color:var(--text-tertiary);font-size:9px;
+  padding:2px 7px;border:1px solid rgba(255,255,255,.09);border-radius:4px;
+  background:rgba(255,255,255,.055);color:var(--text-tertiary);font-size:9px;
   line-height:1.5;min-width:20px;font-family:var(--font-mono);
-  box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
-  transition:all .15s ease;
+  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.055);
 }
-.landing-key:hover{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent);box-shadow:0 2px 0 rgba(0,0,0,.45),0 0 8px rgba(0,196,248,.15)}
 .landing-separator{width:1px;height:10px;background:var(--border-subtle);flex-shrink:0}
 .landing-disclaimer{
   max-width:420px;text-align:center;font-size:var(--xs);line-height:1.7;
   color:var(--text-ghost);z-index:3;transform:translate(-5vw);animation:brand-in 1s .55s ease both;
-  opacity:.6;
 }
-/* Privacy badge */
-.landing-privacy{
-  display:inline-flex;align-items:center;gap:5px;z-index:3;
-  font-size:9px;font-family:var(--font-mono);color:rgba(0,232,90,.5);
-  letter-spacing:.08em;transform:translate(-5vw);
-  animation:brand-in 1s .6s ease both;
-}
-.landing-privacy::before{content:'🔒';font-size:10px}
+#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 60px rgba(0,196,248,.6))}
+#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
 
 /* ── Continue Bar ── */
 #continue-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 var(--sp5) var(--sp4);display:none}
 #continue-bar.visible{display:block}
-#continue-bar::before{content:'';display:block;height:80px;background:linear-gradient(to bottom,transparent,rgba(6,8,11,.97));pointer-events:none;margin-bottom:var(--sp3)}
+#continue-bar::before{content:'';display:block;height:60px;background:linear-gradient(to bottom,transparent,rgba(7,9,12,.96));pointer-events:none;margin-bottom:var(--sp3)}
 .continue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp3)}
 .continue-label{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono)}
-.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0;animation:status-pulse 2.5s ease-in-out infinite}
+.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0}
 .continue-label-count{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;font-size:9px;color:var(--text-ghost);letter-spacing:0;text-transform:none;margin-left:4px}
 .continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .continue-list::-webkit-scrollbar{display:none}
@@ -363,21 +202,21 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 /* Cards */
 .continue-card{
   flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
-  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,.03) 100%);
+  background:linear-gradient(135deg,rgba(255,255,255,.075) 0%,rgba(255,255,255,.028) 100%);
   border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-lg);
   padding:10px 14px 10px 10px;cursor:pointer;
   min-width:215px;max-width:255px;position:relative;overflow:hidden;
   backdrop-filter:blur(20px);
-  box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
+  box-shadow:0 8px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.055);
   transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease,background var(--normal) ease;
   animation:card-slide-in .4s var(--ease-spring) both;
 }
-@keyframes card-slide-in{0%{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes card-slide-in{0%{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .continue-card:hover{
-  transform:translateY(-7px) scale(1.02);
-  border-color:rgba(0,196,248,.35);
+  transform:translateY(-6px) scale(1.018);
+  border-color:rgba(0,196,248,.32);
   background:linear-gradient(135deg,rgba(0,196,248,.1) 0%,rgba(255,255,255,.04) 100%);
-  box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 40px rgba(0,196,248,.18),inset 0 1px 0 rgba(255,255,255,.1);
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(0,196,248,.15),inset 0 1px 0 rgba(255,255,255,.1);
 }
 .continue-card::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,rgba(0,196,248,.07),transparent 60%);transition:opacity var(--normal) ease;pointer-events:none}
 .continue-card:hover::before{opacity:1}
@@ -390,7 +229,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-card-art img{width:100%;height:100%;object-fit:cover;display:block}
 .continue-card-art-badge{
   position:absolute;bottom:-2px;right:-2px;background:var(--led-green);border-radius:50%;
-  width:10px;height:10px;border:2px solid #06080b;box-shadow:0 0 6px var(--led-green-glow);display:none;
+  width:10px;height:10px;border:2px solid #07090c;box-shadow:0 0 6px var(--led-green-glow);display:none;
 }
 .continue-card.recently-played .continue-card-art-badge{display:block}
 .continue-card-info{flex:1;min-width:0}
@@ -407,7 +246,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 4px 12px rgba(0,196,248,.35);
   transition:transform .18s ease,box-shadow .18s ease;
 }
-.continue-card:hover .continue-card-play{transform:scale(1.14);box-shadow:0 6px 22px rgba(0,196,248,.55)}
+.continue-card:hover .continue-card-play{transform:scale(1.12);box-shadow:0 6px 20px rgba(0,196,248,.5)}
 .continue-card-menu{
   position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
@@ -437,16 +276,16 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 /* ── Modals ── */
 .modal-overlay{
   position:fixed;inset:0;z-index:600;
-  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.72);backdrop-filter:blur(5px);
   display:flex;align-items:center;justify-content:center;
-  animation:fade-in .32s cubic-bezier(.22,1,.36,1) forwards;
+  animation:fade-in .18s ease forwards;
 }
 @keyframes fade-in{0%{opacity:0}to{opacity:1}}
 .modal-box{
   background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));
   border:1px solid var(--border-mid);border-radius:var(--radius-xl);
   padding:var(--sp5);min-width:340px;max-width:92vw;
-  animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;
+  animation:modal-in .2s var(--ease-back) forwards;
   box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.035);
 }
 @keyframes modal-in{0%{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -499,16 +338,17 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .modal-name-row{margin-top:var(--sp3)}
 .modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
 
-/* Delete slot picker danger hover */
-.slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(2px)}
-.slot-picker-item.danger-item:hover .slot-picker-name{color:var(--error)}
-
-.autosave-slot{
-  border-color:rgba(0,196,248,.45);
-  box-shadow:0 0 0 1px rgba(0,196,248,.08),0 8px 24px rgba(0,196,248,.08);
+.autosave-slot {
+  border-color: rgba(0,196,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(0,196,248,.08),
+    0 8px 24px rgba(0,196,248,.08);
 }
-.autosave-slot .save-slot-thumb-num{
-  background:#00c4f8;color:#001018;font-weight:800;
+
+.autosave-slot .save-slot-thumb-num {
+  background: #00c4f8;
+  color: #001018;
+  font-weight: 800;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -603,8 +443,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 12px rgba(0,232,90,.15);
   animation:state-toast-in .22s var(--ease-spring);
 }
-#state-toast.error-toast{border-color:rgba(232,64,87,.5);color:var(--error);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 12px rgba(232,64,87,.15)}
-#state-toast.warn-toast{border-color:rgba(245,158,11,.4);color:var(--warn);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 12px rgba(245,158,11,.1)}
 #state-toast.visible{display:flex}
 @keyframes state-toast-in{0%{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 
@@ -669,7 +507,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   font-size:9px;letter-spacing:.04em;text-transform:none;
 }
 
-/* Sidebar buttons */
+/* Sidebar buttons — improved */
 .sb-btn{
   width:100%;display:flex;align-items:center;gap:var(--sp3);
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
@@ -685,15 +523,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn.accent-btn{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent)}
 .sb-btn.accent-btn:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.2),0 0 16px rgba(0,196,248,.18)}
 .sb-btn.active-state{border-color:var(--led-green)!important;color:var(--led-green)!important;background:rgba(0,232,90,.07)!important}
-.sb-btn.danger-btn{background:rgba(232,64,87,.07);border-color:rgba(232,64,87,.2);color:var(--error)}
-.sb-btn.danger-btn:hover{background:rgba(232,64,87,.14);border-color:var(--error);box-shadow:0 4px 14px rgba(0,0,0,.2),0 0 14px rgba(232,64,87,.15)}
 .sb-btn-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
 .sb-btn-text{flex:1}
 .sb-btn-sub{font-size:10px;color:var(--text-tertiary);display:block;margin-top:1px;font-family:var(--font-mono)}
 .sb-btn.active-state .sb-btn-sub{color:rgba(0,232,90,.55)}
 .sb-btn-arrow{color:var(--text-ghost);font-size:11px;flex-shrink:0;transition:transform var(--fast),color var(--fast)}
 .sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
-.sb-btn.danger-btn:hover .sb-btn-arrow{color:var(--error)}
 
 /* Status */
 .status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
@@ -733,37 +568,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slots::-webkit-scrollbar{width:3px}
 .save-slots::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
 .save-slot{
-  display:flex;
-  align-items:center;
-  gap:10px;
-
-  padding:10px 12px;
-  border-radius:var(--radius-md);
-
-  background:
-    linear-gradient(
-      160deg,
-      rgba(255,255,255,05),
-      rgba(255,255,255,018)
-    );
-
-  border:1px solid rgba(255,255,255,07);
-
-  box-shadow:0 4px 16px rgba(0,0,0,18);
-
-  transition:
-    transform .42s cubic-bezier(.22,1,.36,1),
-    border-color .32s ease,
-    box-shadow .32s ease,
-    background .32s ease;
-
-  position:relative;
-  overflow:hidden;
-
-  justify-content:space-between;
-
-  will-change:transform;
-  transform:translateZ(0);
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-md);
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  position:relative;overflow:hidden;
+   justify-content: space-between;
 }
 .save-slot::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(0,196,248,.035),transparent);transition:opacity .2s ease}
 .save-slot:hover::before{opacity:1}
@@ -780,26 +592,52 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.save-slot-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
-.slot-btn{
-  border:none;outline:none;cursor:pointer;
-  min-width:52px;height:32px;padding:0 10px;
-  border-radius:8px;font-size:11px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,0.08);color:white;
-  transition:.15s;
+.save-slot-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.slot-btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  min-width: 52px;
+  height: 32px;
+  padding: 0 10px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  transition: 0.15s;
+}
+
+.slot-btn.del {
+  min-width: 32px;
+  background: rgba(255, 80, 80, 0.18);
+  color: #ff8080;
+}
+
+.slot-btn.del:hover {
+  background: rgba(255, 80, 80, 0.32);
 }
 .slot-btn:active{transform:scale(.9)!important}
-.slot-btn.sav{color:var(--accent);background:rgba(0,196,248,.07);border:1px solid rgba(0,196,248,.22)}
+.slot-btn.sav{color:var(--accent);border-color:rgba(0,196,248,.22);background:rgba(0,196,248,.07)}
 .slot-btn.sav:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 0 10px rgba(0,196,248,.22);transform:translateY(-1px)}
-.slot-btn.load{color:var(--led-green);background:rgba(0,232,90,.06);border:1px solid rgba(0,232,90,.22)}
+.slot-btn.load{color:var(--led-green);border-color:rgba(0,232,90,.22);background:rgba(0,232,90,.06)}
 .slot-btn.load:hover{background:rgba(0,232,90,.18);border-color:var(--led-green);box-shadow:0 0 10px rgba(0,232,90,.22);transform:translateY(-1px)}
-.slot-btn.del{
-  min-width:32px;color:var(--text-ghost);
-  background:rgba(255,80,80,.04);border:1px solid rgba(255,255,255,.06);
-  padding:0 7px;font-size:11px;
-}
-.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.45);background:rgba(232,64,87,.12);transform:translateY(-1px);box-shadow:0 0 8px rgba(232,64,87,.2)}
+.slot-btn.del{color:var(--text-ghost);border-color:rgba(255,255,255,.06);background:transparent;padding:5px 7px;font-size:11px}
+.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.32);background:rgba(232,64,87,.07);transform:translateY(-1px)}
 .save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
 
 /* Playtime */
@@ -816,9 +654,8 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
    ═══════════════════════════════════════════════════════════ */
 #keys-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;animation:fade-in .18s ease}
 #keys-overlay.visible{display:flex}
-.keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:360px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
+.keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:340px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6)}
 .keys-title{font-size:var(--xl);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display)}
-.keys-section{font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono);margin:var(--sp4) 0 var(--sp2);padding-bottom:var(--sp2);border-bottom:1px solid var(--border-subtle)}
 .keys-grid{display:grid;grid-template-columns:auto 1fr;gap:var(--sp2) var(--sp4)}
 .key-chip{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--border-mid);border-radius:4px;background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);color:var(--text-secondary);white-space:nowrap}
 .key-desc{font-size:var(--sm);color:var(--text-secondary);align-self:center}
@@ -846,31 +683,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .load-dot:nth-child(3){animation-delay:.4s}
 @keyframes load-bounce{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.8);opacity:1}}
 
-/* Confirm delete modal */
-.delete-confirm-overlay{
-  position:fixed;inset:0;z-index:650;
-  background:rgba(0,0,0,.75);backdrop-filter:blur(5px);
-  display:flex;align-items:center;justify-content:center;
-  animation:fade-in .15s ease forwards;
-}
-.delete-confirm-box{
-  background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));
-  border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);
-  padding:var(--sp5);min-width:320px;max-width:88vw;
-  animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;
-  box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 0 1px rgba(232,64,87,.08),0 0 40px rgba(232,64,87,.06);
-}
-.delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
-.delete-confirm-title{font-size:var(--lg);font-weight:600;font-family:var(--font-display);letter-spacing:-.01em;margin-bottom:8px;text-align:center;color:var(--text-primary)}
-.delete-confirm-desc{font-size:var(--sm);color:var(--text-secondary);text-align:center;line-height:1.6;margin-bottom:var(--sp5)}
-.delete-confirm-actions{display:flex;gap:var(--sp2)}
-.delete-confirm-actions .modal-btn{flex:1;justify-content:center;display:flex}
-
 @media(prefers-reduced-motion:reduce){
   .showcase-wipe,.showcase-flash{display:none}
   .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
   .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
-  #idle-screen.zoom-launch .gba-shell{animation:none!important}
 }
 </style>
 </head>
@@ -887,23 +703,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="landing-orb landing-orb-1"></div>
   <div class="landing-orb landing-orb-2"></div>
   <div class="landing-orb landing-orb-3"></div>
-  <div class="landing-orb landing-orb-4"></div>
-  <div class="landing-chroma"></div>
-  <div class="landing-sweep"></div>
-
-  <!-- Corner brackets -->
-  <div class="corner-bracket tl"></div>
-  <div class="corner-bracket tr"></div>
-  <div class="corner-bracket bl"></div>
-  <div class="corner-bracket br"></div>
-
-  <!-- Floating hex decorations -->
-  <div class="hex-deco d1">0x0800<br>GBA_ROM<br>0x03FF</div>
-  <div class="hex-deco d2">ARM7TDMI<br>16.78MHz<br>0xC000</div>
-  <div class="hex-deco d3">EWRAM<br>256KB<br>0x0200</div>
-  <div class="hex-deco d4">VRAM<br>96KB<br>0x06FF</div>
-  <div class="hex-deco d5">OAM<br>1KB<br>0x07FF</div>
-
   <canvas id="particles-canvas"></canvas>
 
   <div class="showcase">
@@ -911,7 +710,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="showcase-pulse" id="showcase-pulse"></div>
     <div class="showcase-flash" id="showcase-flash"></div>
     <div class="showcase-slash" id="showcase-slash"></div>
-    <div class="showcase-slash2"></div>
     <div class="showcase-title slam" id="showcase-title">
       <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
       <h2 class="showcase-name font-display" id="showcase-name"></h2>
@@ -919,13 +717,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <div class="showcase-underline" id="showcase-underline"></div>
     </div>
     <div class="showcase-art slam" id="showcase-art">
-      <div class="showcase-art-glow" id="showcase-art-glow"></div>
       <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
       <div class="showcase-art-reflect"></div>
     </div>
   </div>
 
-  <div class="gba-shell" id="gba-shell">
+  <div class="gba-shell">
     <div class="gba-screen-overlay">
       <div class="gba-screen-content">
         <div class="gba-screen-drop-icon">🎮</div>
@@ -938,9 +735,8 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   </div>
 
   <div class="landing-brand">
-    <h1 class="landing-title font-display" data-text="SwiftGBA."><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
+    <h1 class="landing-title font-display"><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
     <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
-    <div class="landing-version-badge font-mono">v4.0 · STABLE</div>
   </div>
   <div class="landing-controls font-mono">
     <span class="landing-key">Z</span> A
@@ -956,7 +752,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="landing-separator"></div>
     <span class="landing-key">M</span> Mute
   </div>
-  <div class="landing-privacy font-mono">100% local · zero uploads · no tracking</div>
   <div class="landing-disclaimer">
     Your ROM never leaves your device — everything runs locally in your browser.
   </div>
@@ -998,12 +793,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <div id="game"></div>
       <div id="sav-drop-overlay">
         <div>📁</div>
-        <div>Drop .state file to restore snapshot</div>
+        <div>Drop save file to import live</div>
       </div>
       <div id="ff-badge">⚡ FAST FORWARD</div>
       <div id="ss-flash"></div>
       <div id="state-toast">
-        <span id="state-toast-icon">●</span><span id="state-toast-text">State saved</span>
+        <span>●</span><span id="state-toast-text">State saved</span>
       </div>
       <div id="load-indicator">
         <div class="load-dot"></div>
@@ -1102,27 +897,48 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           <span class="sb-btn-text">Load State<span class="sb-btn-sub" id="cache-load-sub">Pick a slot to restore</span></span>
           <span class="sb-btn-arrow">›</span>
         </button>
-        <button class="sb-btn danger-btn" id="sb-delete-slot">
-          <span class="sb-btn-icon">🗑</span>
-          <span class="sb-btn-text">Delete Save<span class="sb-btn-sub">Remove a save slot</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
       </div>
 
+
       <!-- Snapshot System -->
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Snapshot System</div>
-        <button class="sb-btn accent-btn" id="sb-import-state">
-          <span class="sb-btn-icon">📂⚙</span>
-          <span class="sb-btn-text">Load Manual State<span class="sb-btn-sub">Continue from exact gameplay moment (.state)</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-        <button class="sb-btn" id="sb-export-state">
-          <span class="sb-btn-icon">💾⚙</span>
-          <span class="sb-btn-text">Save Manual State<span class="sb-btn-sub">Download portable gameplay snapshot</span></span>
-          <span class="sb-btn-arrow">›</span>
-        </button>
-      </div>
+<div class="sidebar-section">
+
+ <div class="sidebar-section-title">
+ Snapshot System
+ </div>
+
+ <button class="sb-btn accent-btn" id="sb-import-state">
+
+ <span class="sb-btn-icon">📂⚙</span>
+
+ <span class="sb-btn-text">
+ Load Manual State
+ <span class="sb-btn-sub">
+ Continue from exact gameplay moment (.state)
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+ <button class="sb-btn" id="sb-export-state">
+
+ <span class="sb-btn-icon">💾⚙</span>
+
+ <span class="sb-btn-text">
+ Save Manual State
+ <span class="sb-btn-sub">
+ Download portable gameplay snapshot
+ </span>
+ </span>
+
+ <span class="sb-btn-arrow">›</span>
+
+ </button>
+
+</div>
+
 
       <!-- ROM -->
       <div class="sidebar-section">
@@ -1146,8 +962,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 <div id="keys-overlay">
   <div class="keys-box">
     <div class="keys-title font-display">Keyboard Shortcuts</div>
-
-    <div class="keys-section">GBA Controls</div>
     <div class="keys-grid">
       <span class="key-chip">Z</span><span class="key-desc">A button</span>
       <span class="key-chip">X</span><span class="key-desc">B button</span>
@@ -1155,26 +969,17 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <span class="key-chip">S</span><span class="key-desc">R shoulder</span>
       <span class="key-chip">Enter</span><span class="key-desc">Start</span>
       <span class="key-chip">Shift</span><span class="key-desc">Select</span>
-      <span class="key-chip">← ↑ ↓ →</span><span class="key-desc">D-Pad</span>
-    </div>
-
-    <div class="keys-section">Emulator</div>
-    <div class="keys-grid">
+      <span class="key-chip">←↑↓→</span><span class="key-desc">D-Pad</span>
       <span class="key-chip">Space / P</span><span class="key-desc">Pause / Resume</span>
       <span class="key-chip">M</span><span class="key-desc">Toggle mute</span>
       <span class="key-chip">F</span><span class="key-desc">Fullscreen</span>
       <span class="key-chip">C</span><span class="key-desc">Screenshot</span>
       <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar</span>
+      <span class="key-chip">Alt+1–6</span><span class="key-desc">Quick-save slot 1–6</span>
+<span class="key-chip">Ctrl+1–6</span><span class="key-desc">Quick-load slot 1–6</span>
+<span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave</span>
       <span class="key-chip">?</span><span class="key-desc">This overlay</span>
       <span class="key-chip">Esc</span><span class="key-desc">Close overlay</span>
-    </div>
-
-    <div class="keys-section">Save States</div>
-    <div class="keys-grid">
-      <span class="key-chip">` + 1–6</span><span class="key-desc">Quick-save slot 1–6</span>
-      <span class="key-chip">Ctrl + 1–6</span><span class="key-desc">Quick-load slot 1–6</span>
-      <span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave (every 45s)</span>
-      <span class="key-chip">Ctrl + `</span><span class="key-desc">Open delete save picker</span>
     </div>
   </div>
 </div>
@@ -1185,14 +990,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   SwiftGBA — Enhanced Frontend v5
-   ✦ ROM launch fix — proper EJS config & URL handling
-   ✦ Backtick+1-6 for quick-save (replaces Alt+1-6)
-   ✦ GBA console zoom-into-screen animation on ROM select
-   ✦ Way better landing page: hex deco, scanline sweep, corner brackets,
-     glitch title, version badge, privacy badge, enhanced orbs/grid,
-     art glow, GBA float with glow, screen flicker, icon bounce
-   ✦ All original features preserved
+   SwiftGBA — Enhanced Frontend v3
+   Key fixes:
+   ✦ saveState() used everywhere (not getState())
+   ✦ Separate import/export for .state snapshots
+   ✦ Keyboard hotkeys for quick-save/load (1–6, Ctrl+1–6)
+   ✦ In-viewport state toast replaces reliance on bottom toast
+   ✦ Toolbar status pill
+   ✦ Improved button styles + arrows
 ══════════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
@@ -1208,7 +1013,7 @@ const S_STATES    = 'states';
 const NUM_SLOTS   = 7;
 const AUTOSAVE_MS = 45000;
 const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
-const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
+const EJS_CDN     = 'https://cdn.emulatorjs.org/4.2/data/';
 
 const SPEED_STEPS = [
   { val:0.25, label:'¼×' },
@@ -1303,19 +1108,13 @@ function toast(msg, type='info', dur=2800) {
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, dur);
 }
 
+/* In-viewport state notification (top-right of game area) */
 let _stateTostTimer = null;
-function showStateToast(msg, type='success') {
+function showStateToast(msg) {
   clearTimeout(_stateTostTimer);
-  const el = $('state-toast');
-  const iconEl = $('state-toast-icon');
-  const textEl = $('state-toast-text');
-  el.classList.remove('error-toast','warn-toast');
-  if (type === 'error')    { el.classList.add('error-toast');    iconEl.textContent = '✕'; }
-  else if (type === 'warn'){ el.classList.add('warn-toast');     iconEl.textContent = '⚠'; }
-  else                     { iconEl.textContent = '●'; }
-  textEl.textContent = msg;
-  el.classList.add('visible');
-  _stateTostTimer = setTimeout(() => el.classList.remove('visible'), 2400);
+  $('state-toast-text').textContent = msg;
+  $('state-toast').classList.add('visible');
+  _stateTostTimer = setTimeout(() => $('state-toast').classList.remove('visible'), 2200);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1356,6 +1155,7 @@ function download(blob, name) {
 }
 function getEmu() { return window.EJS_emulator || null; }
 
+/* ── Capture thumbnail from game canvas ── */
 function captureThumbnail() {
   try {
     const canvas = document.querySelector('#game canvas');
@@ -1367,10 +1167,13 @@ function captureThumbnail() {
   } catch(e) { return null; }
 }
 
+/* ── Try to capture current state data from EJS ── */
 function captureStateData() {
   const emu = getEmu();
   if (!emu || !emu.gameManager) return null;
   const gm = emu.gameManager;
+  // EJS exposes saveState() which returns an ArrayBuffer or Uint8Array
+  // Try multiple known method names across EJS versions
   for (const method of ['saveState', 'getState', 'quickSave']) {
     try {
       if (typeof gm[method] === 'function') {
@@ -1382,19 +1185,30 @@ function captureStateData() {
   return null;
 }
 
+/* ── Apply state data to running emulator ── */
 function applyStateData(data) {
   const emu = getEmu();
+
   if (!emu || !emu.gameManager) return false;
+
   const gm = emu.gameManager;
+
   for (const method of ['loadState', 'quickLoad']) {
     try {
       if (typeof gm[method] === 'function') {
-        const fixedData = data instanceof Uint8Array ? data : new Uint8Array(data);
+
+        const fixedData =
+          data instanceof Uint8Array
+            ? data
+            : new Uint8Array(data);
+
         gm[method](fixedData);
+
         return true;
       }
     } catch(e) {}
   }
+
   return false;
 }
 
@@ -1525,13 +1339,12 @@ async function fetchCoverArt(displayName, color) {
   function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  for (let i = 0; i < 110; i++) {
+  for (let i = 0; i < 90; i++) {
     particles.push({
       x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.6 + 0.2,
-      vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
-      alpha: Math.random() * 0.5 + 0.1,
-      hue: Math.random() > 0.85 ? 280 : 195,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
+      alpha: Math.random() * 0.55 + 0.1,
     });
   }
   function frame() {
@@ -1542,11 +1355,9 @@ async function fetchCoverArt(displayName, color) {
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = p.hue === 280 ? 'rgba(124,58,237,.3)' : 'rgba(0,196,248,.35)';
-      ctx.fillStyle = p.hue === 280
-        ? `rgba(124,58,237,${p.alpha})`
-        : `rgba(0,196,248,${p.alpha})`;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(0,196,248,.35)';
+      ctx.fillStyle = `rgba(0,196,248,${p.alpha})`;
       ctx.fill();
     });
     const idle = $('idle-screen');
@@ -1572,17 +1383,16 @@ const GAMES = [
 ];
 
 let showcaseIdx = 0, cycleTimer = null;
-const $sBg     = $('showcase-bg'),
-      $sPulse  = $('showcase-pulse'),
-      $sFlash  = $('showcase-flash'),
-      $sSlash  = $('showcase-slash'),
-      $sTitle  = $('showcase-title'),
-      $sName   = $('showcase-name'),
+const $sBg    = $('showcase-bg'),
+      $sPulse = $('showcase-pulse'),
+      $sFlash = $('showcase-flash'),
+      $sSlash = $('showcase-slash'),
+      $sTitle = $('showcase-title'),
+      $sName  = $('showcase-name'),
       $sRegion = $('showcase-region'),
-      $sUl     = $('showcase-underline'),
-      $sArt    = $('showcase-art'),
-      $sImg    = $('showcase-img'),
-      $sGlow   = $('showcase-art-glow');
+      $sUl    = $('showcase-underline'),
+      $sArt   = $('showcase-art'),
+      $sImg   = $('showcase-img');
 
 function applyShowcase(g, animate) {
   $sName.textContent = g.name; $sRegion.textContent = g.region || '';
@@ -1592,11 +1402,10 @@ function applyShowcase(g, animate) {
   $sFlash.style.background = g.color;
   $sSlash.style.borderColor = `${g.color}20`;
   $sUl.style.background = g.color;
-  if ($sGlow) $sGlow.style.setProperty('--art-glow', g.color + '25');
   if (animate) {
     const old = qs('.showcase-wipe'); if (old) old.remove();
     const w = document.createElement('div'); w.className = 'showcase-wipe';
-    w.style.background = `linear-gradient(to right,transparent,${g.color}18,transparent)`;
+    w.style.background = `linear-gradient(to right,transparent,${g.color}16,transparent)`;
     $sBg.parentElement.insertBefore(w, $sBg.nextSibling);
     w.addEventListener('animationend', () => w.remove(), { once:true });
     $sFlash.style.animation = 'none'; $sFlash.offsetHeight; $sFlash.style.animation = '';
@@ -1607,7 +1416,7 @@ function applyShowcase(g, animate) {
 function cycleNext() {
   $sTitle.classList.remove('slam'); $sTitle.classList.add('out');
   $sArt.classList.remove('slam'); $sArt.classList.add('out');
-  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 260);
+  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 250);
 }
 applyShowcase(GAMES[0], false);
 setTimeout(() => applyShowcase(GAMES[0], true), 200);
@@ -1740,6 +1549,7 @@ idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag
 idleScreen.addEventListener('drop', e => {
   e.preventDefault(); idleScreen.classList.remove('drag-over');
   const f = e.dataTransfer.files[0]; if (!f) return;
+  
   launchROM(f);
 });
 idleScreen.addEventListener('click', e => {
@@ -1750,63 +1560,18 @@ $('rom-input').addEventListener('change', e => {
   const f = e.target.files[0]; if (f) { launchROM(f); e.target.value = ''; }
 });
 
-/* Drag .state file onto game area while playing */
-const emuWrap = $('emu-wrap');
-emuWrap.addEventListener('dragover', e => {
-  e.preventDefault();
-  if ($('emu-screen').classList.contains('active')) {
-    $('sav-drop-overlay').classList.add('visible');
-  }
-});
-emuWrap.addEventListener('dragleave', e => {
-  if (!emuWrap.contains(e.relatedTarget)) $('sav-drop-overlay').classList.remove('visible');
-});
-emuWrap.addEventListener('drop', async e => {
-  e.preventDefault();
-  $('sav-drop-overlay').classList.remove('visible');
-  if (!$('emu-screen').classList.contains('active')) return;
-  const f = e.dataTransfer.files[0];
-  if (!f) return;
-  const ext = extOf(f.name);
-  if (ext === '.state') {
-    if (!ejsReady) { toast('Wait for the game to start first','warn'); return; }
-    try {
-      const buf = await f.arrayBuffer();
-      const ok = applyStateData(buf);
-      if (!ok) { showStateToast('Failed to apply state','error'); toast('Failed to apply state','error'); return; }
-      if (isPaused) updatePauseUI(false);
-      showStateToast('State restored');
-      toast('State file applied ✓','success');
-    } catch(err) { toast('Failed to load state: ' + (err.message || 'unknown'),'error'); }
-  } else if (ext === '.gba' || ext === '.zip') {
-    launchROM(f);
-  }
-});
-
-/* ══════════════════════════════════════════════════════════════
-   GBA ZOOM ANIMATION → then launch
-══════════════════════════════════════════════════════════════ */
-function triggerZoomLaunch(file) {
-  clearInterval(cycleTimer);
-  idleScreen.classList.add('zoom-launch');
-  // Wait for zoom animation, then show emulator
-  setTimeout(() => {
-    idleScreen.classList.add('fade-out');
-    idleScreen.style.display = 'none';
-    $('emu-screen').classList.add('active');
-    $('power-led').classList.add('on');
-    _doLaunchROM(file);
-  }, 820);
-}
-
 /* ══════════════════════════════════════════════════════════════
    LAUNCH ROM
 ══════════════════════════════════════════════════════════════ */
 async function launchROM(file) {
-  triggerZoomLaunch(file);
-}
+  const ext = extOf(file.name);
+ 
+  clearInterval(cycleTimer);
+  idleScreen.classList.add('fade-out');
+  setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
+  $('emu-screen').classList.add('active');
+  $('power-led').classList.add('on');
 
-async function _doLaunchROM(file) {
   const buf = await file.arrayBuffer();
   currentRomData = buf;
   currentRomName = file.name;
@@ -1850,64 +1615,44 @@ async function _doLaunchROM(file) {
   refreshCacheLoadSub();
   startPlaytimeTracking();
   showLoadIndicator('Loading core…');
-  lator(currentRomUrl, displayName);
+  startEmulator(currentRomUrl, displayName);
 }
 
 /* ══════════════════════════════════════════════════════════════
-   EMULATORJS BOOT  ← FIXED
-   Key fixes:
-   - EJS_Buttons must be an object with false values (not array)
-   - EJS_gameUrl must be set before loader is appended
-   - Remove stale EJS globals before each launch
-   - Use a short delay so DOM settles after emu-screen becomes active
+   EMULATORJS BOOT
 ══════════════════════════════════════════════════════════════ */
 function startEmulator(romURL, displayName) {
-
   $('game').innerHTML = '';
-
-  // cleanup old emulator
-  document.querySelectorAll('script[data-ejs-loader]').forEach(s => s.remove());
-
-  Object.keys(window)
-    .filter(k => k.startsWith('EJS_'))
-    .forEach(k => {
-      try { delete window[k]; } catch(e) { window[k] = undefined; }
-    });
-
+  document.querySelectorAll('script[src*="loader.js"],script[src*="emulatorjs"],script[data-ejs-loader]').forEach(s => s.remove());
+  Object.keys(window).filter(k => k.startsWith('EJS_')).forEach(k => {
+    try { delete window[k]; } catch(e) { window[k] = undefined; }
+  });
   ejsReady = false;
   window.EJS_emulator = undefined;
 
-  // ─────────────────────────────
-  // STEP 1: SET GLOBALS IMMEDIATELY (IMPORTANT FIX)
-  // ─────────────────────────────
-  window.EJS_player          = '#game';
-  window.EJS_gameUrl         = romURL;
-  window.EJS_core            = 'mgba';
-  window.EJS_pathtodata      = EJS_CDN;
-  window.EJS_startOnLoaded   = true;
-  window.EJS_gameTitle       = displayName;
-  window.EJS_backgroundColor = '#000000';
-  window.EJS_color           = '#00c4f8';
-  window.EJS_volume          = 1;
-  window.EJS_defaultControls = true;
+  window.EJS_player           = '#game';
+  window.EJS_gameUrl          = romURL;
+  window.EJS_core             = 'mgba';
+  window.EJS_pathtodata       = EJS_CDN;
+  window.EJS_startOnLoaded    = true;
+  window.EJS_gameTitle        = displayName;
+  window.EJS_backgroundColor  = '#000000';
+  window.EJS_color            = '#00c4f8';
+  window.EJS_volume           = 1;
+  window.EJS_fixedSaveInterval = 30000;
 
-  window.EJS_Buttons = {
-    playPause:false, restart:false, mute:false,
-    settings:false, fullscreen:false,
-    saveState:false, loadState:false,
-    screenRecord:false, gamepad:false,
-    cheat:false, volume:false,
-    saveSaveFiles:false, loadSavFiles:false,
-    quickSave:false, quickLoad:false
-  };
+  window.EJS_Buttons = Object.fromEntries(
+    ['playPause','restart','mute','settings','fullscreen','saveState','loadState',
+     'screenRecord','gamepad','cheat','volume','saveSaveFiles','loadSavFiles',
+     'quickSave','quickLoad'].map(k => [k, false])
+  );
 
   window.EJS_onGameStart = () => {
+     tryUnlockAudio();
     ejsReady = true;
-    tryUnlockAudio();
     buildSaveSlots();
     hideLoadIndicator();
     updateToolbarPill(false);
-
     setTimeout(() => {
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       if (isMuted) applyMuteToEmu(true);
@@ -1917,29 +1662,18 @@ function startEmulator(romURL, displayName) {
   };
 
   window.EJS_onLoadError = (err) => {
-    console.error(err);
+    console.error('EJS load error:', err);
     hideLoadIndicator();
-    toast('ROM failed to load', 'error', 5000);
+    toast('ROM failed to load — make sure it is a valid .gba file', 'error', 5000);
   };
 
-  // ─────────────────────────────
-  // STEP 2: LIGHT PRELOAD (NON-BLOCKING)
-  // ─────────────────────────────
-  showLoadIndicator('Loading core…');
-
-  // DO NOT block EmulatorJS init (important fix)
   setTimeout(() => {
     const s = document.createElement('script');
-    s.dataset.ejsLoader = '1';
+    s.setAttribute('data-ejs-loader', '1');
     s.src = EJS_CDN + 'loader.js?t=' + Date.now();
-
-    s.onerror = () => {
-      hideLoadIndicator();
-      toast('Failed to load EmulatorJS core', 'error', 5000);
-    };
-
+    s.onerror = () => { hideLoadIndicator(); toast('Failed to load EmulatorJS — check your connection','error',5000); };
     document.body.appendChild(s);
-  }, 50);
+  }, 60);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1963,24 +1697,33 @@ function updateToolbarPill(paused) {
 ══════════════════════════════════════════════════════════════ */
 function startAutosave() {
   clearInterval(autosaveTimer);
+
   autosaveTimer = setInterval(async () => {
+
     if (!ejsReady || isPaused || !currentRomName || !db) return;
+
     const stateData = captureStateData();
     if (!stateData) return;
+
     const thumb = captureThumbnail();
+
     try {
+
       await dbPut(S_STATES, {
         id: `${currentRomName}::slot0`,
         data: stateData,
         ts: Date.now(),
         thumb,
-        saveName: 'Slot 0 — Auto',
+        saveName: 'Slot 0 - Auto',
         slotIdx: 0,
         auto: true,
       });
+
       buildSaveSlots();
       refreshCacheLoadSub();
+
     } catch(e) {}
+
   }, AUTOSAVE_MS);
 }
 
@@ -2143,35 +1886,7 @@ document.querySelectorAll('.speed-preset').forEach(p => {
 applySpeedUI(2);
 
 /* ══════════════════════════════════════════════════════════════
-   CONFIRMATION MODAL
-══════════════════════════════════════════════════════════════ */
-function showConfirmDelete(slotLabel) {
-  return new Promise(resolve => {
-    const overlay = document.createElement('div');
-    overlay.className = 'delete-confirm-overlay';
-    overlay.innerHTML = `
-      <div class="delete-confirm-box">
-        <span class="delete-confirm-icon">🗑</span>
-        <div class="delete-confirm-title">Delete ${esc(slotLabel)}?</div>
-        <div class="delete-confirm-desc">This save will be permanently removed and cannot be recovered.</div>
-        <div class="delete-confirm-actions">
-          <button class="modal-btn" id="dc-cancel">Cancel</button>
-          <button class="modal-btn danger" id="dc-confirm">Delete</button>
-        </div>
-      </div>`;
-    document.body.appendChild(overlay);
-    overlay.querySelector('#dc-cancel').addEventListener('click', () => { overlay.remove(); resolve(false); });
-    overlay.querySelector('#dc-confirm').addEventListener('click', () => { overlay.remove(); resolve(true); });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
-    document.addEventListener('keydown', function handler(e) {
-      if (e.key === 'Escape') { overlay.remove(); resolve(false); document.removeEventListener('keydown', handler); }
-      if (e.key === 'Enter')  { overlay.remove(); resolve(true);  document.removeEventListener('keydown', handler); }
-    });
-  });
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SAVE STATES
+   SAVE STATES — uses captureStateData() / applyStateData()
 ══════════════════════════════════════════════════════════════ */
 async function buildSaveSlots() {
   const container = $('save-slots');
@@ -2183,54 +1898,130 @@ async function buildSaveSlots() {
   }
   let filledCount = 0;
 
-  /* ── SLOT 0 — AUTOSAVE ── */
-  let autoMeta = null;
-  try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
-  if (autoMeta) {
-    const autoEl = document.createElement('div');
-    autoEl.className = 'save-slot has-data autosave-slot';
-    const thumbHtml = autoMeta.thumb
-      ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
-      : `<span class="save-slot-thumb-empty">💾</span>`;
-    autoEl.innerHTML = `
-      <div class="save-slot-left">
-        <div class="save-slot-thumb">
-          ${thumbHtml}
-          <span class="save-slot-thumb-num">0</span>
-        </div>
-        <div class="save-slot-info">
-          <div class="save-slot-name">Slot 0 — Auto</div>
-          <div class="save-slot-time">${timeAgo(autoMeta.ts)}</div>
-        </div>
+/* ═════════════════════════════════════════════
+   SLOT 0 — AUTOSAVE
+═════════════════════════════════════════════ */
+
+let autoMeta = null;
+
+try {
+  autoMeta = await dbGet(
+    S_STATES,
+    `${currentRomName}::slot0`
+  );
+} catch(e) {}
+
+if (autoMeta) {
+
+  const autoEl = document.createElement('div');
+
+  autoEl.className =
+    'save-slot has-data autosave-slot';
+
+  const thumbHtml = autoMeta.thumb
+    ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
+    : `<span class="save-slot-thumb-empty">💾</span>`;
+
+  autoEl.innerHTML = `
+    <div class="save-slot-left">
+
+      <div class="save-slot-thumb">
+        ${thumbHtml}
+        <span class="save-slot-thumb-num">0</span>
       </div>
-      <div class="save-slot-actions">
-        <button class="slot-btn load" title="Load autosave">LOAD</button>
-        <button class="slot-btn del" title="Delete autosave">✕</button>
-      </div>`;
 
-    autoEl.querySelector('.slot-btn.load').addEventListener('click', async () => {
+      <div class="save-slot-info">
+
+        <div class="save-slot-name">
+          Slot 0 - Auto
+        </div>
+
+        <div class="save-slot-time">
+          ${timeAgo(autoMeta.ts)}
+        </div>
+
+      </div>
+    </div>
+
+    <div class="save-slot-actions">
+
+      <button
+        class="slot-btn load"
+        title="Load Slot 0"
+      >
+        LOAD
+      </button>
+
+      <button
+        class="slot-btn del"
+        title="Delete Slot 0"
+      >
+        ✕
+      </button>
+
+    </div>
+  `;
+
+  autoEl
+    .querySelector('.slot-btn.load')
+    .addEventListener('click', async () => {
+
       const ok = applyStateData(autoMeta.data);
-      if (!ok) { showStateToast('Slot 0 load failed','error'); toast('Could not load Slot 0','error'); return; }
-      if (isPaused) updatePauseUI(false);
+
+      if (!ok) {
+        toast(
+          'Could not load Slot 0',
+          'error'
+        );
+        return;
+      }
+
+      if (isPaused)
+        updatePauseUI(false);
+
       showStateToast('Slot 0 loaded');
-      toast('Slot 0 restored ✓','success');
+
+      toast(
+        'Slot 0 restored ✓',
+        'success'
+      );
     });
 
-    autoEl.querySelector('.slot-btn.del').addEventListener('click', async () => {
-      const confirmed = await showConfirmDelete('Slot 0 — Autosave');
-      if (!confirmed) return;
+  autoEl
+    .querySelector('.slot-btn.del')
+    .addEventListener('click', async () => {
+
       try {
-        await dbDel(S_STATES, `${currentRomName}::slot0`);
-        toast('Slot 0 deleted','info');
+
+        await dbDel(
+          S_STATES,
+          `${currentRomName}::slot0`
+        );
+
+        toast(
+          'Slot 0 deleted',
+          'info'
+        );
+
         buildSaveSlots();
-      } catch(e) { toast('Delete failed','error'); }
+
+      } catch(e) {
+
+        toast(
+          'Delete failed',
+          'error'
+        );
+      }
     });
 
-    container.appendChild(autoEl);
-  }
+  container.appendChild(autoEl);
+}
 
-  /* ── NORMAL SAVE SLOTS 1–7 ── */
-  for (let i = 1; i <= NUM_SLOTS; i++) {
+/* ═════════════════════════════════════════════
+   NORMAL SAVE SLOTS
+═════════════════════════════════════════════ */
+
+for (let i = 1; i <= NUM_SLOTS; i++) {
     const key = `${currentRomName}::slot${i}`;
     let meta = null;
     try { meta = await dbGet(S_STATES, key); } catch(e) {}
@@ -2255,17 +2046,20 @@ async function buildSaveSlots() {
         <button class="slot-btn sav" title="Save to slot ${i}">SAV</button>
         ${meta ? `<button class="slot-btn load" title="Load slot ${i}">LOAD</button><button class="slot-btn del" title="Delete slot ${i}">✕</button>` : ''}
       </div>`;
-
     el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
-
     const loadBtn = el.querySelector('.slot-btn.load');
-    const delBtn  = el.querySelector('.slot-btn.del');
-    if (loadBtn) loadBtn.addEventListener('click', () => loadFromSlot(i));
-    if (delBtn)  delBtn.addEventListener('click',  () => deleteSlotWithConfirm(i));
+const delBtn  = el.querySelector('.slot-btn.del');
 
+if (loadBtn) {
+  loadBtn.addEventListener('click', () => loadFromSlot(i));
+}
+
+if (delBtn) {
+  delBtn.addEventListener('click', () => deleteSlot(i));
+}
     container.appendChild(el);
   }
-
+  // Update badge
   const badge = $('save-slots-badge');
   if (badge) badge.textContent = filledCount ? `${filledCount}/${NUM_SLOTS} used` : `${NUM_SLOTS} slots`;
 }
@@ -2273,11 +2067,14 @@ async function buildSaveSlots() {
 async function saveToSlot(i) {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
+
+  // Try to capture state — attempt a few approaches
   const stateData = captureStateData();
   if (!stateData) {
     toast('Save failed — make sure the game is actively running (not at boot screen)','warn', 4000);
     return;
   }
+
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, { id:`${currentRomName}::slot${i}`, data:stateData, ts:Date.now(), thumb, slotIdx:i });
@@ -2293,113 +2090,178 @@ async function loadFromSlot(i) {
     if (!meta || !meta.data) { toast('Slot is empty','error'); return; }
     if (!ejsReady) { toast('Emulator not ready','error'); return; }
     const ok = applyStateData(meta.data);
-    if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); toast('Could not apply state — emulator not responding','error'); return; }
+    if (!ok) { toast('Could not apply state — emulator not responding','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${i} loaded`);
     toast(`Slot ${i} restored ✓`,'success');
   } catch(e) { toast('Failed to load state','error'); }
 }
 
-async function deleteSlotWithConfirm(i, slotLabel) {
-  const label = slotLabel || `Slot ${i}`;
-  const confirmed = await showConfirmDelete(label);
-  if (!confirmed) return;
-  await deleteSlot(i);
-}
-
 async function deleteSlot(i) {
-  try {
-    await dbDel(S_STATES, `${currentRomName}::slot${i}`);
-    toast(`Slot ${i} deleted`,'info',1500);
-    buildSaveSlots();
-    refreshCacheLoadSub();
-  } catch(e) { toast('Delete failed','error'); }
+  try { await dbDel(S_STATES, `${currentRomName}::slot${i}`); toast(`Slot ${i} deleted`,'info',1500); buildSaveSlots(); }
+  catch(e) { toast('Delete failed','error'); }
 }
-
-/* ══════════════════════════════════════════════════════════════
-   DELETE SLOT PICKER MODAL
-══════════════════════════════════════════════════════════════ */
 async function showDeleteSlotPicker() {
+
   return new Promise(async resolve => {
+
     const slots = [];
-    let autoMeta = null;
-    try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
-    if (autoMeta) slots.push({ i: 0, meta: autoMeta, label: 'Slot 0 — Auto' });
 
     for (let i = 1; i <= NUM_SLOTS; i++) {
+
       let meta = null;
-      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
-      if (meta) slots.push({ i, meta, label: meta.saveName || `Slot ${i}` });
+
+      try {
+        meta = await dbGet(
+          S_STATES,
+          `${currentRomName}::slot${i}`
+        );
+      } catch(e) {}
+
+      if (meta) {
+        slots.push({
+          i,
+          meta
+        });
+      }
     }
 
+    // No saves
     if (!slots.length) {
-      toast('No saved states to delete','warn');
+
+      toast(
+        'No save slots to delete',
+        'warn'
+      );
+
       resolve(null);
+
       return;
     }
 
     const overlay = document.createElement('div');
+
     overlay.className = 'modal-overlay';
+
     overlay.innerHTML = `
       <div class="modal-box" style="min-width:380px">
-        <div class="modal-title font-display">Delete Save State</div>
-        <div class="modal-subtitle">Select a save to permanently remove</div>
+
+        <div class="modal-title font-display">
+          Delete Save Slot
+        </div>
+
+        <div class="modal-subtitle">
+          Choose a save to permanently delete
+        </div>
+
         <div class="slot-picker-grid">
-          ${slots.map(({ i, meta, label }) => `
-            <div class="slot-picker-item has-data danger-item" data-slot="${i}" data-label="${esc(label)}">
+
+          ${slots.map(({i, meta}) => `
+
+            <div
+              class="slot-picker-item has-data delete-picker"
+              data-slot="${i}"
+            >
+
               <div class="slot-picker-thumb">
-                ${meta.thumb ? `<img src="${meta.thumb}" alt="">` : `<span style="font-size:16px;opacity:.22">🎮</span>`}
-                <span class="slot-picker-thumb-num">${i}</span>
+
+                ${
+                  meta.thumb
+                    ? `<img src="${meta.thumb}" alt="">`
+                    : `<span style="font-size:16px;opacity:.22">🎮</span>`
+                }
+
+                <span class="slot-picker-thumb-num">
+                  ${i}
+                </span>
+
               </div>
+
               <div class="slot-picker-info">
-                <div class="slot-picker-name">${esc(label)}</div>
-                <div class="slot-picker-time">${timeAgo(meta.ts)}</div>
+
+                <div class="slot-picker-name">
+                  ${esc(meta.saveName || `Slot ${i}`)}
+                </div>
+
+                <div class="slot-picker-time">
+                  ${timeAgo(meta.ts)}
+                </div>
+
               </div>
-              <span style="color:var(--error);font-size:16px;font-weight:700;flex-shrink:0">✕</span>
-            </div>`).join('')}
+
+              <div
+                style="
+                  color:#ff5f5f;
+                  font-weight:700;
+                  font-size:18px;
+                "
+              >
+                ✕
+              </div>
+
+            </div>
+
+          `).join('')}
+
         </div>
+
         <div class="modal-actions">
-          <button class="modal-btn" id="del-picker-cancel">Cancel</button>
+
+          <button
+            class="modal-btn"
+            id="delete-slot-cancel"
+          >
+            Cancel
+          </button>
+
         </div>
-      </div>`;
+
+      </div>
+    `;
+
     document.body.appendChild(overlay);
 
-    overlay.querySelectorAll('.danger-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const slot  = parseInt(item.dataset.slot, 10);
-        const label = item.dataset.label;
-        overlay.remove();
-        resolve({ slot, label });
-      });
-    });
+    overlay
+      .querySelectorAll('.delete-picker')
+      .forEach(item => {
 
-    overlay.querySelector('#del-picker-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
-    document.addEventListener('keydown', function handler(e) {
-      if (e.key === 'Escape') { overlay.remove(); resolve(null); document.removeEventListener('keydown', handler); }
+        item.addEventListener('click', () => {
+
+          const slot =
+            parseInt(
+              item.dataset.slot,
+              10
+            );
+
+          overlay.remove();
+
+          resolve(slot);
+        });
+      });
+
+    overlay
+      .querySelector('#delete-slot-cancel')
+      .addEventListener('click', () => {
+
+        overlay.remove();
+
+        resolve(null);
+      });
+
+    overlay.addEventListener('click', e => {
+
+      if (e.target === overlay) {
+
+        overlay.remove();
+
+        resolve(null);
+      }
     });
   });
 }
 
-$('sb-delete-slot').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded','error'); return; }
-  const pick = await showDeleteSlotPicker();
-  if (!pick) return;
-  const confirmed = await showConfirmDelete(pick.label);
-  if (!confirmed) return;
-  if (pick.slot === 0) {
-    try {
-      await dbDel(S_STATES, `${currentRomName}::slot0`);
-      toast('Autosave deleted','info');
-      buildSaveSlots();
-    } catch(e) { toast('Delete failed','error'); }
-  } else {
-    await deleteSlot(pick.slot);
-  }
-});
-
 /* ══════════════════════════════════════════════════════════════
-   SLOT PICKER MODAL (save/load)
+   SLOT PICKER MODAL
 ══════════════════════════════════════════════════════════════ */
 async function showSlotPicker(mode) {
   return new Promise(async (resolve) => {
@@ -2483,7 +2345,7 @@ async function showSlotPicker(mode) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CACHE SAVE / LOAD BUTTONS
+   QUICK SAVE / LOAD
 ══════════════════════════════════════════════════════════════ */
 async function refreshCacheLoadSub() {
   if (!db || !currentRomName) return;
@@ -2531,7 +2393,7 @@ $('sb-cache-load').addEventListener('click', async () => {
     const meta = await dbGet(S_STATES, `${currentRomName}::slot${pick.slotIndex}`);
     if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
     const ok = applyStateData(meta.data);
-    if (!ok) { showStateToast(`Slot ${pick.slotIndex} load failed`,'error'); toast('Could not apply state','error'); return; }
+    if (!ok) { toast('Could not apply state','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${pick.slotIndex} loaded`);
     toast(`Loaded Slot ${pick.slotIndex}${meta.saveName ? ` — "${meta.saveName}"` : ''} ✓`, 'success');
@@ -2539,65 +2401,90 @@ $('sb-cache-load').addEventListener('click', async () => {
 });
 
 /* ══════════════════════════════════════════════════════════════
-   QUICK SAVE (` + 1–6) / QUICK LOAD (Ctrl+1–6)
-   Backtick + number = quick-save
-   Ctrl + number    = quick-load
+   KEYBOARD QUICK-SAVE / QUICK-LOAD (keys 1–6, Ctrl+1–6)
+   These bypass the slot picker modal for speed.
 ══════════════════════════════════════════════════════════════ */
 async function quickSaveSlot(i) {
-  if (!currentRomName || !ejsReady) {
-    showStateToast('Not ready', 'warn');
-    return;
-  }
+  if (!currentRomName || !ejsReady) return;
   const stateData = captureStateData();
-  if (!stateData) {
-    showStateToast(`Slot ${i} — game not ready`, 'warn');
-    toast(`Slot ${i} — game not ready yet`, 'warn');
-    return;
-  }
+  if (!stateData) { toast(`Slot ${i} — game not ready yet`, 'warn'); return; }
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, {
-      id: `${currentRomName}::slot${i}`,
-      data: stateData,
-      ts: Date.now(),
-      thumb,
-      saveName: null,
-      slotIdx: i,
+      id: `${currentRomName}::slot${i}`, data: stateData, ts: Date.now(),
+      thumb, saveName: null, slotIdx: i,
     });
     showStateToast(`Slot ${i} saved`);
-    buildSaveSlots();
-    refreshCacheLoadSub();
-  } catch(e) { showStateToast(`Slot ${i} save failed`,'error'); toast('Quick-save failed', 'error'); }
+    buildSaveSlots(); refreshCacheLoadSub();
+  } catch(e) { toast('Quick-save failed', 'error'); }
 }
 
 async function quickLoadSlot(i) {
-  if (!currentRomName || !ejsReady) {
-    showStateToast('Not ready','warn');
+
+  if (!currentRomName || !ejsReady)
     return;
-  }
+
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-    if (!meta || !meta.data || (meta.data.byteLength === 0 && meta.data.length === 0)) {
-      showStateToast(`Slot ${i} is empty`, 'error');
-      toast(`Slot ${i} is empty`, 'error', 1800);
+
+    const meta = await dbGet(
+      S_STATES,
+      `${currentRomName}::slot${i}`
+    );
+
+    // EMPTY SLOT FIX
+    if (
+      !meta ||
+      !meta.data ||
+      (
+        meta.data.byteLength === 0 &&
+        meta.data.length === 0
+      )
+    ) {
+
+      toast(
+        `Error: Slot ${i} is empty`,
+        'error'
+      );
+
+      showStateToast(
+        `Slot ${i} empty`
+      );
+
       return;
     }
+
     const ok = applyStateData(meta.data);
+
     if (!ok) {
-      showStateToast(`Slot ${i} load failed`, 'error');
-      toast('Could not apply state', 'error');
+
+      toast(
+        'Could not apply state',
+        'error'
+      );
+
       return;
     }
-    if (isPaused) updatePauseUI(false);
-    showStateToast(`Slot ${i} loaded`);
+
+    if (isPaused)
+      updatePauseUI(false);
+
+    showStateToast(
+      `Slot ${i} loaded`
+    );
+
   } catch(e) {
-    showStateToast(`Slot ${i} load failed`,'error');
-    toast('Quick-load failed', 'error');
+
+    toast(
+      'Quick-load failed',
+      'error'
+    );
   }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   IMPORT STATE FILE (.state) — applies LIVE
+   IMPORT STATE FILE (.state) — applies LIVE, no restart
+   This is the "snapshot" / "save state" file format.
+   EJS state data is an ArrayBuffer. We try loadState() directly.
 ══════════════════════════════════════════════════════════════ */
 $('sb-import-state').addEventListener('click', () => {
   if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
@@ -2609,19 +2496,23 @@ $('sb-import-state').addEventListener('click', () => {
 $('state-input').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
   if (!f) return;
+  // Determine if this is a state file or a battery save
   const ext = extOf(f.name);
-  if (ext !== '.state') {
-    toast('Only .state files are supported', 'error');
-    return;
-  }
+
+if (ext !== '.state') {
+  toast('Only .state files are supported', 'error');
+  return;
+}
+  // Treat as state snapshot
   if (!ejsReady) { toast('Emulator not ready', 'warn'); return; }
   try {
     const buf = await f.arrayBuffer();
     const ok = applyStateData(buf);
-    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
+    if (!ok) { toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast('State restored');
     toast('State file loaded — continuing from snapshot ✓', 'success');
+    // Also save to slot 1 so it's in the library
     if (db && currentRomName) {
       const thumb = captureThumbnail();
       await dbPut(S_STATES, { id:`${currentRomName}::slot1`, data:buf, ts:Date.now(), thumb, saveName:'Imported state', slotIdx:1 });
@@ -2632,6 +2523,7 @@ $('state-input').addEventListener('change', async e => {
   }
 });
 
+/* Export current state as .state file */
 $('sb-export-state').addEventListener('click', async () => {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Wait for game to start','warn'); return; }
@@ -2642,23 +2534,42 @@ $('sb-export-state').addEventListener('click', async () => {
   toast('State file exported ✓','success');
 });
 
+
+
 /* ══════════════════════════════════════════════════════════════
    SCREENSHOT
 ══════════════════════════════════════════════════════════════ */
 async function takeScreenshot() {
   try {
     const canvas = document.querySelector('#game canvas');
-    if (!canvas) { toast('No game screen found', 'error'); return; }
+
+    if (!canvas) {
+      toast('No game screen found', 'error');
+      return;
+    }
+
     const flash = $('ss-flash');
     flash.classList.remove('pop');
     flash.offsetHeight;
     flash.classList.add('pop');
+
     canvas.toBlob(blob => {
-      if (!blob) { toast('Screenshot failed', 'error'); return; }
-      download(blob, `${currentDisplay || 'screenshot'}_${Date.now()}.png`);
+      if (!blob) {
+        toast('Screenshot failed', 'error');
+        return;
+      }
+
+      download(
+        blob,
+        `${currentDisplay || 'screenshot'}_${Date.now()}.png`
+      );
+
       toast('Screenshot saved ✓', 'success', 1800);
     });
-  } catch (e) { toast('Screenshot failed', 'error'); }
+
+  } catch (e) {
+    toast('Screenshot failed', 'error');
+  }
 }
 $('btn-screenshot').addEventListener('click', takeScreenshot);
 $('sb-screenshot').addEventListener('click', takeScreenshot);
@@ -2692,38 +2603,45 @@ $('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle
 
 /* ══════════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS
-   Backtick + 1–6 → quick-save slot
-   Ctrl    + 1–6 → quick-load slot
-   Ctrl    + Del → open delete picker
 ══════════════════════════════════════════════════════════════ */
-let backtickHeld = false;
+// Track ` key
+window.backtickHeld = false;
 
 document.addEventListener('keydown', async e => {
-  if (e.key === '`') backtickHeld = true;
-  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
 
-  const inEmu    = $('emu-screen').classList.contains('active');
-  const keysOpen = $('keys-overlay').classList.contains('visible');
-
-  // Ctrl + Delete = Open delete save picker
+  // Ctrl + ` = Delete Save Menu
   if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+
     e.preventDefault();
-    if (!inEmu || !currentRomName) return;
-    const pick = await showDeleteSlotPicker();
-    if (!pick) return;
-    const confirmed = await showConfirmDelete(pick.label);
-    if (!confirmed) return;
-    if (pick.slot === 0) {
-      try {
-        await dbDel(S_STATES, `${currentRomName}::slot0`);
-        toast('Autosave deleted','info');
-        buildSaveSlots();
-      } catch(e2) { toast('Delete failed','error'); }
-    } else {
-      await deleteSlot(pick.slot);
+
+    if (!currentRomName) {
+      toast('No game loaded', 'error');
+      return;
     }
+
+    const pick = await showDeleteSlotPicker();
+
+    if (pick == null) return;
+
+    await deleteSlot(pick);
+
     return;
   }
+
+  // Normal backtick hold for saving
+  if (e.key === '`') {
+    window.backtickHeld = true;
+  }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === '`') {
+    window.backtickHeld = false;
+  }
+});
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const inEmu    = $('emu-screen').classList.contains('active');
+  const keysOpen = $('keys-overlay').classList.contains('visible');
 
   if (e.key === 'Escape') {
     if (keysOpen) { $('keys-overlay').classList.remove('visible'); return; }
@@ -2731,20 +2649,26 @@ document.addEventListener('keydown', async e => {
   }
   if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
   if (!inEmu || keysOpen) return;
+// ` + 1-6 = quick save
+// Ctrl + 1-6 = quick load
+if (/^[1-6]$/.test(e.key)) {
 
-  // Backtick + 1–6 = quick-save (check backtick held before this keydown)
-  if (backtickHeld && /^[1-6]$/.test(e.key)) {
+  const slot = parseInt(e.key, 10);
+
+  // Ctrl + number = LOAD
+  if (e.ctrlKey || e.metaKey) {
     e.preventDefault();
-    quickSaveSlot(parseInt(e.key, 10));
+    quickLoadSlot(slot);
     return;
   }
 
-  // Ctrl + 1–6 = quick-load
-  if ((e.ctrlKey || e.metaKey) && /^[1-6]$/.test(e.key)) {
+  // ` key held + number = SAVE
+  if (window.backtickHeld) {
     e.preventDefault();
-    quickLoadSlot(parseInt(e.key, 10));
+    quickSaveSlot(slot);
     return;
   }
+}
 
   switch (e.key) {
     case 'm': case 'M': $('sb-mute').click(); break;
@@ -2754,10 +2678,6 @@ document.addEventListener('keydown', async e => {
     case 'Tab': e.preventDefault(); setSidebar(!sidebarOpen); break;
     case 'c': case 'C': takeScreenshot(); break;
   }
-});
-
-document.addEventListener('keyup', e => {
-  if (e.key === '`') backtickHeld = false;
 });
 
 $('keys-overlay').addEventListener('click', e => {
