@@ -1,2 +1,2 @@
 # SwiftGBA
-**SwiftGBA** is a fast, lightweight web-based Game Boy Advance emulator built for desktop browsers. Play GBA games instantly with smooth performance, responsive controls, save support, fullscreen mode, and a clean, simple interface no downloads required. This is an expansive version of rustygba.com.
+**SwiftGBA** is a fast, lightweight web-based Game Boy Advance emulator built for desktop browsers. Play GBA games instantly with smooth performance, responsive controls, save support, fullscreen mode, and a clean, simple interface no downloads required. Based heavily off of RustyGBA and uses EmulatorJS
