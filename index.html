@@ -439,14 +439,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   position:fixed;inset:0;z-index:600;
   background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
   display:flex;align-items:center;justify-content:center;
-  animation:fade-in .18s ease forwards;
+  animation:fade-in .32s cubic-bezier(.22,1,.36,1) forwards;
 }
 @keyframes fade-in{0%{opacity:0}to{opacity:1}}
 .modal-box{
   background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));
   border:1px solid var(--border-mid);border-radius:var(--radius-xl);
   padding:var(--sp5);min-width:340px;max-width:92vw;
-  animation:modal-in .2s var(--ease-back) forwards;
+  animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;
   box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.035);
 }
 @keyframes modal-in{0%{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -733,14 +733,37 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slots::-webkit-scrollbar{width:3px}
 .save-slots::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
 .save-slot{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:var(--radius-md);
-  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));
-  border:1px solid rgba(255,255,255,.07);
-  box-shadow:0 4px 16px rgba(0,0,0,.18);
-  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
-  position:relative;overflow:hidden;
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding:10px 12px;
+  border-radius:var(--radius-md);
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255,255,255,05),
+      rgba(255,255,255,018)
+    );
+
+  border:1px solid rgba(255,255,255,07);
+
+  box-shadow:0 4px 16px rgba(0,0,0,18);
+
+  transition:
+    transform .42s cubic-bezier(.22,1,.36,1),
+    border-color .32s ease,
+    box-shadow .32s ease,
+    background .32s ease;
+
+  position:relative;
+  overflow:hidden;
+
   justify-content:space-between;
+
+  will-change:transform;
+  transform:translateZ(0);
 }
 .save-slot::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(0,196,248,.035),transparent);transition:opacity .2s ease}
 .save-slot:hover::before{opacity:1}
@@ -834,7 +857,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));
   border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);
   padding:var(--sp5);min-width:320px;max-width:88vw;
-  animation:modal-in .2s var(--ease-back) forwards;
+  animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;
   box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 0 1px rgba(232,64,87,.08),0 0 40px rgba(232,64,87,.06);
 }
 .delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
@@ -1151,7 +1174,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <span class="key-chip">` + 1–6</span><span class="key-desc">Quick-save slot 1–6</span>
       <span class="key-chip">Ctrl + 1–6</span><span class="key-desc">Quick-load slot 1–6</span>
       <span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave (every 45s)</span>
-      <span class="key-chip">Ctrl + Del</span><span class="key-desc">Open delete slot picker</span>
+      <span class="key-chip">Ctrl + `</span><span class="key-desc">Open delete save picker</span>
     </div>
   </div>
 </div>
@@ -1827,7 +1850,7 @@ async function _doLaunchROM(file) {
   refreshCacheLoadSub();
   startPlaytimeTracking();
   showLoadIndicator('Loading core…');
-  startEmulator(currentRomUrl, displayName);
+  lator(currentRomUrl, displayName);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1839,16 +1862,24 @@ async function _doLaunchROM(file) {
    - Use a short delay so DOM settles after emu-screen becomes active
 ══════════════════════════════════════════════════════════════ */
 function startEmulator(romURL, displayName) {
+
   $('game').innerHTML = '';
 
-  // Remove any previous loader scripts and EJS globals
+  // cleanup old emulator
   document.querySelectorAll('script[data-ejs-loader]').forEach(s => s.remove());
-  const ejsGlobals = Object.keys(window).filter(k => k.startsWith('EJS_'));
-  ejsGlobals.forEach(k => { try { delete window[k]; } catch(e) { window[k] = undefined; } });
+
+  Object.keys(window)
+    .filter(k => k.startsWith('EJS_'))
+    .forEach(k => {
+      try { delete window[k]; } catch(e) { window[k] = undefined; }
+    });
+
   ejsReady = false;
   window.EJS_emulator = undefined;
 
-  // Set all EJS config globals BEFORE loading the script
+  // ─────────────────────────────
+  // STEP 1: SET GLOBALS IMMEDIATELY (IMPORTANT FIX)
+  // ─────────────────────────────
   window.EJS_player          = '#game';
   window.EJS_gameUrl         = romURL;
   window.EJS_core            = 'mgba';
@@ -1860,56 +1891,55 @@ function startEmulator(romURL, displayName) {
   window.EJS_volume          = 1;
   window.EJS_defaultControls = true;
 
-  // Hide EJS built-in UI buttons (must be an object, not array)
   window.EJS_Buttons = {
-    playPause:       false,
-    restart:         false,
-    mute:            false,
-    settings:        false,
-    fullscreen:      false,
-    saveState:       false,
-    loadState:       false,
-    screenRecord:    false,
-    gamepad:         false,
-    cheat:           false,
-    volume:          false,
-    saveSaveFiles:   false,
-    loadSavFiles:    false,
-    quickSave:       false,
-    quickLoad:       false,
+    playPause:false, restart:false, mute:false,
+    settings:false, fullscreen:false,
+    saveState:false, loadState:false,
+    screenRecord:false, gamepad:false,
+    cheat:false, volume:false,
+    saveSaveFiles:false, loadSavFiles:false,
+    quickSave:false, quickLoad:false
   };
 
   window.EJS_onGameStart = () => {
-    tryUnlockAudio();
     ejsReady = true;
+    tryUnlockAudio();
     buildSaveSlots();
     hideLoadIndicator();
     updateToolbarPill(false);
+
     setTimeout(() => {
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       if (isMuted) applyMuteToEmu(true);
       scheduleAudioPolling();
       startAutosave();
-    }, 300);
+    }, 200);
   };
 
   window.EJS_onLoadError = (err) => {
+    console.error(err);
     hideLoadIndicator();
-    toast('ROM failed to load — check the file and try again', 'error', 6000);
-    console.error('EJS load error:', err);
+    toast('ROM failed to load', 'error', 5000);
   };
 
-  // Inject loader after a tick so DOM is ready
+  // ─────────────────────────────
+  // STEP 2: LIGHT PRELOAD (NON-BLOCKING)
+  // ─────────────────────────────
+  showLoadIndicator('Loading core…');
+
+  // DO NOT block EmulatorJS init (important fix)
   setTimeout(() => {
     const s = document.createElement('script');
-    s.setAttribute('data-ejs-loader', '1');
+    s.dataset.ejsLoader = '1';
     s.src = EJS_CDN + 'loader.js?t=' + Date.now();
+
     s.onerror = () => {
       hideLoadIndicator();
-      toast('Failed to load EmulatorJS — check your connection', 'error', 6000);
+      toast('Failed to load EmulatorJS core', 'error', 5000);
     };
+
     document.body.appendChild(s);
-  }, 80);
+  }, 50);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2675,8 +2705,8 @@ document.addEventListener('keydown', async e => {
   const inEmu    = $('emu-screen').classList.contains('active');
   const keysOpen = $('keys-overlay').classList.contains('visible');
 
-  // Ctrl + Delete = open delete slot picker
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Delete') {
+  // Ctrl + Delete = Open delete save picker
+  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
     e.preventDefault();
     if (!inEmu || !currentRomName) return;
     const pick = await showDeleteSlotPicker();
