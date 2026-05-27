@@ -1021,98 +1021,166 @@ function download(blob, name) {
 function getEmu() { return window.EJS_emulator || null; }
 
 /* ══════════════════════════════════════════════════════════════
-   AUDIO UNLOCK
-   Browser autoplay policy suspends AudioContext until a user gesture.
-   Strategy:
-   1. Try every known property path where EJS/mgba exposes AudioContext.
-   2. Also scan window for any AudioContext instance (EmulatorJS sometimes
-      stores it as a top-level global like Module.SDL2 or similar).
-   3. Call changeVolume / setVolume to ensure EJS's own gain node is at 1.
-   4. Retry via a short polling loop after boot (context may not exist yet).
-   5. Re-run on every user interaction.
+   AUDIO SYSTEM
+   ──────────────────────────────────────────────────────────────
+   Root cause: EmulatorJS/RetroArch creates an AudioContext deep
+   inside the Emscripten/SDL2 layer AFTER the page loads, so it
+   starts in "suspended" state due to browser autoplay policy.
+   There is no single reliable API — the context may be at:
+     • emu.gameManager.Module.SDL2.audioContext  (mgba/RetroArch)
+     • emu.gameManager.Module.SDL2.audioWebContext
+     • emu.gameManager.audioContext
+     • emu.gameManager.audio.context
+     • emu.Module.SDL2.audioContext
+   We use every strategy simultaneously:
+   1. Intercept window.EJS_emulator assignment with defineProperty.
+   2. Hook the EJS "start" event once the instance exists.
+   3. Aggressively poll all known paths every 500ms for 30 seconds.
+   4. Walk ALL window globals looking for any AudioContext instance.
+   5. Resume on every user interaction (click/key/touch/pointer).
+   6. Set EJS volume via the official `volume` property setter.
 ══════════════════════════════════════════════════════════════ */
 let _audioUnlocked = false;
 let _audioRetryTimer = null;
+let _ejsInstance = null;  // set the moment EJS assigns window.EJS_emulator
 
-function tryUnlockAudio() {
-  const emu = getEmu();
-  const vol = isMuted ? 0 : 1;
+/* ── Step 1: intercept the exact moment EJS_emulator is assigned ── */
+function interceptEJSEmulator() {
+  let _val = window.EJS_emulator;
+  try { Object.defineProperty(window, 'EJS_emulator', {
+    configurable: true,
+    enumerable:   true,
+    get() { return _val; },
+    set(v) {
+      _val = v;
+      if (v) {
+        _ejsInstance = v;
+        // Hook EJS "start" event (fires when game is actually running)
+        try {
+          if (typeof v.on === 'function') {
+            v.on('start', () => {
+              setTimeout(() => { resumeAllAudioContexts(); setEJSVolume(); }, 300);
+              setTimeout(() => { resumeAllAudioContexts(); setEJSVolume(); }, 1200);
+              setTimeout(() => { resumeAllAudioContexts(); setEJSVolume(); }, 3000);
+            });
+          }
+        } catch(e) {}
+      }
+    }
+  }); } catch(e) { /* already defined — ok */ }
+}
+interceptEJSEmulator();
 
-  // --- 1. Try every known AudioContext path ---
-  const candidates = [];
-  if (emu) {
-    // Direct paths seen in various EJS builds
-    [
-      emu.audioContext,
-      emu.gameManager && emu.gameManager.audioContext,
-      emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
-      emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
-    ].forEach(ac => { if (ac instanceof AudioContext) candidates.push(ac); });
+/* ── Collect every AudioContext reachable from any path ── */
+function collectAudioContexts() {
+  const seen = new Set();
+  function add(ac) {
+    if (ac && (ac instanceof AudioContext || (ac.constructor && ac.constructor.name === 'AudioContext'))) {
+      seen.add(ac);
+    }
   }
 
-  // --- 2. Scan window globals for any AudioContext ---
+  const emu = _ejsInstance || getEmu();
+  if (emu) {
+    // All known paths in all EJS versions
+    try { add(emu.audioContext); } catch(e) {}
+    try { add(emu.gameManager?.audioContext); } catch(e) {}
+    try { add(emu.gameManager?.audio?.context); } catch(e) {}
+    try { add(emu.gameManager?.Module?.SDL2?.audioContext); } catch(e) {}
+    try { add(emu.gameManager?.Module?.SDL2?.audioWebContext); } catch(e) {}
+    try { add(emu.Module?.SDL2?.audioContext); } catch(e) {}
+    try { add(emu.Module?.SDL2?.audioWebContext); } catch(e) {}
+    // Emscripten sometimes exposes it on the Module directly
+    try { add(emu.gameManager?.Module?.audioContext); } catch(e) {}
+    try { add(emu.Module?.audioContext); } catch(e) {}
+  }
+
+  // Walk ALL window globals — catches any renamed/nested context
   try {
-    for (const k of Object.keys(window)) {
+    const keys = Object.keys(window);
+    for (let i = 0; i < keys.length; i++) {
       try {
-        const v = window[k];
-        if (v instanceof AudioContext && !candidates.includes(v)) candidates.push(v);
-        // Some builds nest it one level deep
-        if (v && typeof v === 'object') {
-          const sub = v.audioContext || v._audioCtx;
-          if (sub instanceof AudioContext && !candidates.includes(sub)) candidates.push(sub);
+        const v = window[keys[i]];
+        if (!v || typeof v !== 'object') continue;
+        add(v);
+        // One level deep
+        const sub1 = ['audioContext','_audioCtx','ctx','context','SDL2'];
+        for (const s of sub1) {
+          try { add(v[s]); } catch(e) {}
+          try { add(v[s]?.audioContext); } catch(e) {}
+          try { add(v[s]?.audioWebContext); } catch(e) {}
         }
       } catch(e) {}
     }
   } catch(e) {}
 
-  let foundSuspended = false;
-  candidates.forEach(ac => {
-    try {
-      if (ac.state === 'suspended') { ac.resume().catch(() => {}); foundSuspended = true; }
-    } catch(e) {}
-  });
-
-  // If we found nothing yet, schedule a retry
-  if (candidates.length === 0 && !_audioUnlocked) {
-    clearTimeout(_audioRetryTimer);
-    _audioRetryTimer = setTimeout(tryUnlockAudio, 800);
-    return;
-  }
-
-  // --- 3. Set volume via EJS API ---
-  if (emu) {
-    try {
-      if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
-      else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
-        emu.gameManager.setVolume(vol);
-    } catch(e) {}
-    // Also try EJS volume node directly
-    try {
-      if (emu.gameManager && emu.gameManager.volumeNode) {
-        emu.gameManager.volumeNode.gain.value = vol;
-      }
-    } catch(e) {}
-  }
-
-  if (!foundSuspended && candidates.length > 0) _audioUnlocked = true;
+  return [...seen];
 }
 
-// Poll for 10 seconds after game start to catch late-created AudioContexts
+/* ── Resume all suspended AudioContexts ── */
+function resumeAllAudioContexts() {
+  const contexts = collectAudioContexts();
+  let resumedAny = false;
+  contexts.forEach(ac => {
+    try {
+      if (ac.state === 'suspended') {
+        ac.resume().catch(() => {});
+        resumedAny = true;
+      }
+    } catch(e) {}
+  });
+  return { total: contexts.length, resumed: resumedAny };
+}
+
+/* ── Set EJS volume to 1 via every known setter ── */
+function setEJSVolume() {
+  if (isMuted) return;
+  const emu = _ejsInstance || getEmu();
+  if (!emu) return;
+  // Official EJS volume property (number 0–1)
+  try { emu.volume = 1; } catch(e) {}
+  // GameManager volume methods
+  try { emu.gameManager?.setVolume?.(1); } catch(e) {}
+  // Gain node
+  try {
+    if (emu.gameManager?.volumeNode?.gain)
+      emu.gameManager.volumeNode.gain.value = 1;
+  } catch(e) {}
+  // SDL2 audio gain (RetroArch/Emscripten)
+  try {
+    const sdl = emu.gameManager?.Module?.SDL2 || emu.Module?.SDL2;
+    if (sdl?.gainNode?.gain) sdl.gainNode.gain.value = 1;
+  } catch(e) {}
+}
+
+/* ── Main entry point called after game start ── */
+function tryUnlockAudio() {
+  resumeAllAudioContexts();
+  setEJSVolume();
+}
+
+/* ── Poll for up to 30 seconds after game start ── */
 function scheduleAudioPolling() {
   _audioUnlocked = false;
   clearTimeout(_audioRetryTimer);
   let polls = 0;
   function poll() {
-    if (_audioUnlocked || polls++ > 12) return;
-    tryUnlockAudio();
-    _audioRetryTimer = setTimeout(poll, 800);
+    if (polls++ > 60) return;  // 30 seconds at 500ms
+    const result = resumeAllAudioContexts();
+    setEJSVolume();
+    // Keep polling even after finding contexts (they may re-suspend)
+    if (polls <= 20 || result.total === 0) {
+      _audioRetryTimer = setTimeout(poll, 500);
+    }
   }
   poll();
 }
 
-// Resume audio on any user interaction while emulator is running
-['click','keydown','touchstart','pointerdown'].forEach(ev => {
-  document.addEventListener(ev, () => { if (ejsReady) tryUnlockAudio(); }, { passive:true });
+/* ── Resume on EVERY user interaction while emulator is running ── */
+['click','keydown','keyup','touchstart','touchend','pointerdown','mousedown'].forEach(ev => {
+  document.addEventListener(ev, () => {
+    if (ejsReady) { resumeAllAudioContexts(); setEJSVolume(); }
+  }, { passive: true, capture: true });
 });
 
 /* ══════════════════════════════════════════════════════════════
@@ -1469,7 +1537,7 @@ async function launchROM(file) {
 
   // Reset emulator state
   isPaused = false; isMuted = false; ejsReady = false;
-  _audioUnlocked = false; clearTimeout(_audioRetryTimer);
+  _ejsInstance = null; _audioUnlocked = false; clearTimeout(_audioRetryTimer);
   currentSpeedIdx = 2; isFastForward = false; isSlowMotion = false;
   window.EJS_emulator = undefined;
   updatePauseUI(false);
@@ -1502,7 +1570,10 @@ function startEmulator(romURL, displayName) {
     try { delete window[k]; } catch(e) { window[k] = undefined; }
   });
   ejsReady = false;
-  window.EJS_emulator = undefined;
+  _ejsInstance = null;
+  // Re-arm the EJS_emulator property interceptor so we catch the new instance
+  try { delete window.EJS_emulator; } catch(e) {}
+  interceptEJSEmulator();
 
   // 2. Set all globals before loader runs
   window.EJS_player           = '#game';
@@ -1526,16 +1597,17 @@ function startEmulator(romURL, displayName) {
   // 3. Game-start callback
   window.EJS_onGameStart = () => {
     ejsReady = true;
+    _ejsInstance = getEmu(); // capture instance immediately
     buildSaveSlots();
     hideLoadIndicator();
     setTimeout(() => {
       // Re-apply any speed or mute set before boot
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       if (isMuted) applyMuteToEmu(true);
-      // Attempt to unlock audio — poll for up to ~10s to catch late-created contexts
+      // Start aggressive audio polling — polls every 500ms for 30 seconds
       scheduleAudioPolling();
       startAutosave();
-    }, 200);
+    }, 100);
   };
 
   // 4. Append loader (slight delay for DOM to settle)
@@ -1691,18 +1763,26 @@ function updateMuteUI(muted) {
 }
 
 function applyMuteToEmu(muted) {
-  const emu = getEmu();
+  const emu = _ejsInstance || getEmu();
   if (!emu) return;
+  const vol = muted ? 0 : 1;
   try {
-    // If unmuting, make sure the AudioContext is running
-    if (!muted && emu.gameManager) {
-      const ac = emu.gameManager.audioContext;
-      if (ac && ac.state === 'suspended') ac.resume().catch(() => {});
-    }
-    const vol = muted ? 0 : 1;
-    if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
-    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
-      emu.gameManager.setVolume(vol);
+    // If unmuting, resume all suspended AudioContexts first
+    if (!muted) { resumeAllAudioContexts(); }
+    // Official EJS volume property
+    try { emu.volume = vol; } catch(e) {}
+    // GameManager methods
+    try { emu.gameManager?.setVolume?.(vol); } catch(e) {}
+    // Gain node
+    try {
+      if (emu.gameManager?.volumeNode?.gain)
+        emu.gameManager.volumeNode.gain.value = vol;
+    } catch(e) {}
+    // SDL2 gain node
+    try {
+      const sdl = emu.gameManager?.Module?.SDL2 || emu.Module?.SDL2;
+      if (sdl?.gainNode?.gain) sdl.gainNode.gain.value = vol;
+    } catch(e) {}
   } catch(e) { console.warn('applyMute:', e); }
 }
 
