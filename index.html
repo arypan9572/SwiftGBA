@@ -48,121 +48,104 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #idle-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
-  cursor:pointer;transition:opacity .6s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;transition:opacity .5s ease;
   gap:var(--sp3);
-  background:#07090c;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,188,240,.12), transparent 25%),
+    radial-gradient(circle at 80% 30%, rgba(255,0,120,.08), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(255,255,255,.03), transparent 45%),
+    linear-gradient(180deg,#07090c 0%,#0d1117 45%,#151922 100%);
+  animation:bg-pan 18s ease-in-out infinite alternate;
   isolation:isolate;
 }
-#idle-screen.fade-out{opacity:0;pointer-events:none;transform:scale(1.02)}
+@keyframes bg-pan{from{background-position:0% 0%}to{background-position:100% 100%}}
+#idle-screen.fade-out{opacity:0;pointer-events:none}
 
-/* Deep space background */
-.landing-bg{
-  position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,188,240,.13) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 85% 60%, rgba(0,80,180,.1) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 50% at 10% 80%, rgba(100,0,200,.07) 0%, transparent 50%),
-    linear-gradient(180deg,#07090c 0%,#0b0f15 40%,#0d1219 100%);
-  animation:bg-breathe 12s ease-in-out infinite alternate;
-}
-@keyframes bg-breathe{
-  0%{opacity:.9}50%{opacity:1}100%{opacity:.85}
-}
-
-/* Animated grid */
-.landing-grid{
-  position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(0,188,240,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,188,240,.04) 1px,transparent 1px);
-  background-size:60px 60px;
-  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 30%,transparent 75%);
-  animation:grid-drift 20s linear infinite;
-}
-@keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
-
-/* Glow orbs */
-.landing-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);z-index:0}
-.landing-orb-1{width:500px;height:500px;top:-15%;left:-10%;background:rgba(0,188,240,.07);animation:orb1 18s ease-in-out infinite alternate}
-.landing-orb-2{width:400px;height:400px;bottom:-10%;right:-5%;background:rgba(80,0,220,.08);animation:orb2 14s ease-in-out infinite alternate}
-.landing-orb-3{width:300px;height:300px;top:40%;left:35%;background:rgba(0,188,240,.05);animation:orb3 10s ease-in-out infinite alternate}
-@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(5%,8%) scale(1.1)}}
-@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-6%,-5%) scale(1.15)}}
-@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.6}to{transform:translate(3%,-4%) scale(1.2);opacity:1}}
-
-/* Noise texture */
+/* Scanline overlay */
 #idle-screen::before{
-  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.022;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:256px 256px;
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);
+  animation:scanlines 8s linear infinite;
+}
+@keyframes scanlines{0%{background-position:0 0}100%{background-position:0 100px}}
+
+/* Vignette */
+#idle-screen::after{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.55) 100%);
 }
 
-/* Scanlines */
-#idle-screen::after{
-  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);
-  animation:scan-drift 6s linear infinite;
+/* Ambient overlay */
+.ambient-overlay{
+  position:absolute;inset:-20%;
+  background:
+          radial-gradient(circle at 20% 20%, rgba(0,188,240,.06), transparent 35%),
+    radial-gradient(circle at 80% 40%, rgba(255,0,120,.05), transparent 35%);
+  filter:blur(80px);
+  animation:ambientMove 20s ease-in-out infinite alternate;
+  pointer-events:none;
 }
-@keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
+@keyframes ambientMove{
+  from{transform:translate3d(-2%,0,0) scale(1)}
+  to{transform:translate3d(2%,-2%,0) scale(1.08)}
+}
 
 /* Particle canvas */
-#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
+#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.4}
 
 /* ── Showcase ── */
 .showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
-.showcase-bg{position:absolute;inset:0;transition:background 1s ease}
+.showcase-bg{position:absolute;inset:0;transition:background 0.8s ease}
 .showcase-pulse{
   position:absolute;inset:0;
-  background:radial-gradient(ellipse 55% 45% at 76% 38%,var(--game-color,rgba(0,188,240,.12)) 0%,transparent 65%);
-  animation:ambient-pulse 5s ease-in-out infinite;
-  transition:background 1s ease;
+  background:radial-gradient(ellipse 60% 50% at 75% 40%,var(--game-color,rgba(0,188,240,.15)) 0%,transparent 70%);
+  animation:ambient-pulse 4s ease-in-out infinite;
+  transition:background 0.8s ease;
 }
-@keyframes ambient-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes ambient-pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 .showcase-flash{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none}
-.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .5s ease-out forwards;pointer-events:none}
-@keyframes wipe-sweep{0%{transform:translate(-100%) rotate(12deg)}to{transform:translate(100%) rotate(12deg)}}
-.showcase-slash{position:absolute;top:-20%;right:18%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none;transition:border-color .8s ease}
-.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.035)}
-.showcase-slash::after{right:-14px;opacity:.35}
+.showcase-slash{position:absolute;top:-20%;right:18%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none;transition:border-color 0.6s ease}
+.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.04)}
+.showcase-slash::after{right:-12px;opacity:.4}
 
 /* Title block */
 .showcase-title{
-  position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:8px;z-index:3;
+  position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:6px;z-index:3;
+  text-shadow:0 4px 30px rgba(255,255,255,.08),0 0 25px rgba(0,188,240,.18);
+  letter-spacing:.04em;
 }
-.showcase-title.slam{animation:title-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
-.showcase-title.out{animation:title-exit .22s ease-in forwards}
-@keyframes title-slam{0%{opacity:0;transform:translateX(-70px) scale(1.08)}65%{opacity:1;transform:translateX(6px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-36px)}}
-.showcase-label{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:10px;letter-spacing:.22em;color:var(--text-ghost);text-transform:uppercase;font-family:var(--font-mono);
-}
-.showcase-label::before{content:'';width:16px;height:1px;background:var(--text-ghost);flex-shrink:0}
-.showcase-name{font-size:clamp(20px,2.6vw,34px);font-weight:600;color:#f0f2f6;line-height:1.1;max-width:340px;letter-spacing:-.01em}
-.showcase-genre{
-  display:inline-flex;align-items:center;gap:6px;margin-top:2px;
-  font-size:10px;font-family:var(--font-mono);color:rgba(0,188,240,.7);letter-spacing:.1em;
-}
-.showcase-underline{width:0;height:2px;border-radius:2px;margin-top:2px;animation:underline-grow .45s ease-out .18s forwards}
-@keyframes underline-grow{0%{width:0}to{width:56px}}
+.showcase-title.slam{animation:title-slam .5s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-title.out{animation:title-exit .25s ease-in forwards}
+@keyframes title-slam{0%{opacity:0;transform:translate(-80px) scale(1.1)}60%{opacity:1;transform:translate(8px) scale(1)}to{opacity:1;transform:translate(0) scale(1)}}
+@keyframes title-exit{0%{opacity:1;transform:translate(0)}to{opacity:0;transform:translate(-40px)}}
+.showcase-label{font-size:10px;letter-spacing:.2em;color:var(--text-ghost);text-transform:uppercase}
+.showcase-name{font-size:clamp(18px,2.5vw,32px);font-weight:600;color:#ffffffe6;line-height:1.1;text-shadow:0 2px 20px rgba(0,0,0,.6);max-width:320px}
+.showcase-region{font-size:10px;font-family:var(--font-mono);color:var(--text-ghost);letter-spacing:.1em;margin-top:2px}
+.showcase-underline{width:0;height:3px;border-radius:2px;margin-top:6px;animation:underline-grow .4s ease-out .2s forwards}
+@keyframes underline-grow{0%{width:0}to{width:60px}}
 
 /* Cover art */
-.showcase-art{position:absolute;right:7vw;top:18%;z-index:3}
-.showcase-art.slam{animation:art-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
-.showcase-art.out{animation:art-exit .22s ease-in forwards}
-@keyframes art-slam{0%{opacity:0;transform:translateX(110px) scale(.82) rotate(4deg)}55%{opacity:1;transform:translateX(-8px) scale(1.02) rotate(-.8deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
-@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(72px) scale(.9)}}
+.showcase-art{position:absolute;right:8vw;top:20%;z-index:3}
+.showcase-art.slam{animation:art-slam .5s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-art.out{animation:art-exit .25s ease-in forwards}
+@keyframes art-slam{0%{opacity:0;transform:translate(120px) scale(.8) rotate(3deg)}50%{opacity:1;transform:translate(-10px) scale(1.03) rotate(-1deg)}to{opacity:1;transform:translate(0) scale(1) rotate(0)}}
+@keyframes art-exit{0%{opacity:1;transform:translate(0) scale(1)}to{opacity:0;transform:translate(80px) scale(.9)}}
 .showcase-art-img{
-  width:clamp(130px,16vw,230px);height:auto;border-radius:10px;
-  filter:saturate(1.08) contrast(1.04);
-  box-shadow:0 24px 72px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+  width:clamp(140px,17vw,240px);height:auto;border-radius:8px;
+  filter:saturate(1.1) contrast(1.05);
+  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 40px rgba(0,188,240,.18);
   user-select:none;pointer-events:none;
-  transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s ease;
+  transition:transform .5s cubic-bezier(.22,1,.36,1),filter .4s ease,box-shadow .5s ease;
+}
+.showcase-art:hover .showcase-art-img{
+  transform:translateY(-10px) scale(1.045) rotate(-1deg);
+  filter:saturate(1.25) contrast(1.08);
+  box-shadow:0 50px 120px rgba(0,0,0,.65),0 0 70px rgba(0,188,240,.3);
 }
 .showcase-art-reflect{
-  position:absolute;top:100%;left:0;right:0;height:35%;
-  background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);
-  transform:scaleY(-1);filter:blur(3px);border-radius:10px;pointer-events:none;
+  position:absolute;top:100%;left:0;right:0;height:40%;
+  background:linear-gradient(to bottom,rgba(255,255,255,.06),transparent);
+  transform:scaleY(-1);filter:blur(2px);border-radius:8px;
 }
 
 /* ── GBA Shell ── */
@@ -170,180 +153,116 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   --gba-screen-left:29.4%;--gba-screen-top:22.2%;
   --gba-screen-width:40.6%;--gba-screen-height:45.1%;
   position:relative;display:flex;align-items:center;justify-content:center;
-  transform:translate(-5vw);z-index:3;
-  filter:drop-shadow(0 16px 56px rgba(0,0,0,.7));
-  animation:gba-float 6s ease-in-out infinite;
+  transform:translate(-6vw);z-index:3;
 }
-@keyframes gba-float{0%,100%{transform:translate(-5vw) translateY(0)}50%{transform:translate(-5vw) translateY(-8px)}}
-.gba-image{width:min(62vw,580px);height:auto;user-select:none;pointer-events:none}
+.gba-image{width:min(65vw,600px);height:auto;user-select:none;pointer-events:none;filter:drop-shadow(0 8px 40px rgba(0,0,0,.5))}
 .gba-screen-overlay{
   position:absolute;left:var(--gba-screen-left);top:var(--gba-screen-top);
   width:var(--gba-screen-width);height:var(--gba-screen-height);
-  z-index:1;overflow:hidden;border-radius:3px;
-  background:rgba(0,0,0,.25);
+  z-index:1;overflow:hidden;border-radius:2px;
 }
 .gba-screen-content{
   position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:var(--sp2);padding:0 6%;text-align:center;
-  animation:screen-fade-in 1.2s ease forwards;
+  align-items:center;justify-content:center;gap:var(--sp2);
+  padding:0 6%;text-align:center;animation:screen-fade-in 1s ease forwards;
 }
 @keyframes screen-fade-in{0%{opacity:0}to{opacity:1}}
-.gba-screen-text{
-  display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;
-  color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.4);
-}
-.gba-screen-hint{display:block;width:100%;font-size:clamp(8px,1vw,11px);color:#6b7280;margin-top:2px}
-.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7}
-.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;background:var(--text-ghost);transition:all .5s ease}
-.gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow)}
+.gba-screen-text{display:block;width:100%;font-size:clamp(12px,2vw,18px);font-weight:600;color:#c8ccd2;text-shadow:0 0 12px rgba(200,204,210,.5)}
+.gba-screen-hint{display:block;width:100%;font-size:clamp(9px,1.1vw,12px);color:#8b8f96}
+.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;background:var(--text-ghost);transition:all .4s ease}
+.gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 16px var(--led-green-glow)}
 
 /* ── Landing brand / controls ── */
-.landing-brand{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
-@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(12px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
-.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1}
-.landing-title .accent{color:var(--accent);letter-spacing:.04em}
+.landing-brand{display:flex;flex-direction:column;align-items:center;gap:var(--sp2);z-index:3;transform:translate(-6vw)}
+.landing-title{font-size:var(--2xl);font-weight:600;letter-spacing:-.02em;line-height:1}
+.landing-title .accent{color:var(--accent);letter-spacing:.06em}
 .landing-title .dot{color:var(--text-tertiary)}
-.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px}
-
-.landing-controls{
-  display:flex;align-items:center;gap:10px;font-size:var(--xs);color:var(--text-ghost);
-  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:480px;
-  animation:brand-in 1s .45s ease both;
-}
-.landing-key{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:2px 7px;border:1px solid rgba(255,255,255,.1);border-radius:4px;
-  background:rgba(255,255,255,.06);color:var(--text-tertiary);font-size:9px;
-  line-height:1.5;min-width:20px;font-family:var(--font-mono);
-  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
-}
-.landing-separator{width:1px;height:10px;background:var(--border-subtle);flex-shrink:0}
-.landing-disclaimer{
-  max-width:420px;text-align:center;font-size:var(--xs);line-height:1.7;
-  color:var(--text-ghost);z-index:3;transform:translate(-5vw);
-  animation:brand-in 1s .55s ease both;
-}
-#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 60px rgba(0,188,240,.55))}
-#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
+.landing-controls{display:flex;align-items:center;gap:var(--sp3);font-size:var(--xs);color:var(--text-ghost);z-index:3;transform:translate(-6vw);flex-wrap:wrap;justify-content:center;max-width:500px;text-align:center}
+.landing-key{display:inline-flex;align-items:center;justify-content:center;padding:2px 6px;border:1px solid var(--border-subtle);border-radius:4px;background:var(--bg-elevated);color:var(--text-tertiary);font-size:10px;line-height:1.4;min-width:20px}
+.landing-disclaimer{max-width:440px;text-align:center;font-size:var(--xs);line-height:1.6;color:var(--text-ghost);z-index:3;transform:translate(-6vw)}
+#idle-screen.drag-over .gba-image{filter:drop-shadow(0 8px 40px rgba(0,0,0,.5)) drop-shadow(0 0 80px rgba(0,188,240,.5))}
+#idle-screen.drag-over .gba-screen-text{color:var(--accent)}
 
 /* ── Continue Bar ── */
 #continue-bar{
   position:absolute;bottom:0;left:0;right:0;z-index:10;
-  padding:0 var(--sp5) var(--sp4);display:none;
+  background:linear-gradient(to top,var(--bg-base) 0%,rgba(15,17,20,.8) 60%,transparent 100%);
+  padding:var(--sp4) var(--sp5) var(--sp5);display:none;
 }
 #continue-bar.visible{display:block}
-#continue-bar::before{
-  content:'';display:block;height:60px;
-  background:linear-gradient(to bottom,transparent,rgba(7,9,12,.95));
-  pointer-events:none;margin-bottom:var(--sp3);
-}
-.continue-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:var(--sp3);
-}
 .continue-label{
-  display:flex;align-items:center;gap:var(--sp2);
-  font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;
-  color:var(--text-tertiary);font-family:var(--font-mono);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:var(--xs);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:var(--sp3);
 }
-.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0}
 .continue-label-count{
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
-  border-radius:20px;padding:1px 8px;font-size:9px;color:var(--text-ghost);
-  letter-spacing:0;text-transform:none;margin-left:4px;
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);
+  border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text-ghost);
+  letter-spacing:0;text-transform:none;
 }
-.continue-list{
-  display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;
-  padding-bottom:4px;align-items:stretch;
-}
+.continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .continue-list::-webkit-scrollbar{display:none}
 
-/* Cards — complete redesign */
+/* Cards */
 .continue-card{
   flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
-  background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.03) 100%);
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:14px;padding:10px 12px 10px 10px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:var(--sp2) var(--sp3) var(--sp2) var(--sp2);
   cursor:pointer;
-  min-width:210px;max-width:250px;position:relative;overflow:hidden;
-  backdrop-filter:blur(20px);
-  box-shadow:0 8px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);
-  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,border-color .3s ease,background .3s ease;
-  animation:card-slide-in .4s cubic-bezier(.22,1,.36,1) both;
+  min-width:220px;max-width:260px;position:relative;overflow:hidden;
+  backdrop-filter:blur(18px);
+  box-shadow:0 10px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.05);
+  transition:transform .28s cubic-bezier(.22,1,.36,1),box-shadow .28s ease,border-color .28s ease;
 }
-@keyframes card-slide-in{0%{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .continue-card:hover{
-  transform:translateY(-6px) scale(1.015);
-  border-color:rgba(0,188,240,.3);
-  background:linear-gradient(135deg,rgba(0,188,240,.1) 0%,rgba(255,255,255,.04) 100%);
-  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(0,188,240,.15),inset 0 1px 0 rgba(255,255,255,.1);
+  transform:translateY(-8px) scale(1.02);
+  border-color:rgba(0,188,240,.25);
+  box-shadow:0 25px 80px rgba(0,0,0,.45),0 0 50px rgba(0,188,240,.18);
+  z-index:4;
 }
-.continue-card::before{
-  content:'';position:absolute;inset:0;opacity:0;
-  background:linear-gradient(135deg,rgba(0,188,240,.08),transparent 60%);
-  transition:opacity .3s ease;pointer-events:none;
+.continue-card-shine{
+  position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 120deg at 50% 50%,transparent 0deg,rgba(0,188,240,.04) 60deg,transparent 120deg);
+  opacity:0;transition:opacity var(--fast);pointer-events:none;
 }
-.continue-card:hover::before{opacity:1}
+.continue-card:hover .continue-card-shine{opacity:1}
 .continue-card-art{
-  width:52px;height:52px;border-radius:10px;flex-shrink:0;overflow:hidden;
-  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-  position:relative;
-  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  width:48px;height:48px;border-radius:8px;flex-shrink:0;overflow:hidden;
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);
+  display:flex;align-items:center;justify-content:center;
 }
 .continue-card-art img{width:100%;height:100%;object-fit:cover;display:block}
-.continue-card-art-badge{
-  position:absolute;bottom:-2px;right:-2px;
-  background:var(--led-green);border-radius:50%;width:10px;height:10px;
-  border:2px solid #07090c;
-  box-shadow:0 0 6px var(--led-green-glow);
-  display:none;
-}
-.continue-card.recently-played .continue-card-art-badge{display:block}
 .continue-card-info{flex:1;min-width:0}
-.continue-card-name{
-  font-size:var(--sm);font-weight:600;color:var(--text-primary);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;
-}
-.continue-card-meta{
-  font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);
-  margin-top:3px;display:flex;align-items:center;gap:5px;
-}
-.continue-card-meta-dot{width:2px;height:2px;border-radius:50%;background:var(--text-ghost);flex-shrink:0}
-.continue-card-star{
-  position:absolute;top:6px;left:6px;font-size:8px;color:var(--warn);
-  display:none;text-shadow:0 0 8px rgba(245,158,11,.5);
-}
+.continue-card-name{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.continue-card-meta{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);margin-top:2px}
+.continue-card-star{position:absolute;top:6px;left:6px;font-size:9px;line-height:1;color:var(--warn);display:none}
 .continue-card.favorited .continue-card-star{display:block}
 .continue-card-play{
-  width:34px;height:34px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),#0098cc);
+  width:32px;height:32px;border-radius:50%;background:var(--accent);
   border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;color:#000;font-size:11px;font-weight:700;
-  box-shadow:0 4px 12px rgba(0,188,240,.35);
-  transition:transform .2s ease,box-shadow .2s ease;
+  flex-shrink:0;color:#000;font-size:12px;
+  transition:transform var(--fast),box-shadow var(--fast);
 }
-.continue-card:hover .continue-card-play{transform:scale(1.12);box-shadow:0 6px 20px rgba(0,188,240,.5)}
+.continue-card:hover .continue-card-play{transform:scale(1.1);box-shadow:0 0 16px var(--accent-glow)}
 .continue-card-menu{
-  position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
-  cursor:pointer;color:var(--text-ghost);font-size:12px;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity .2s ease,background .2s ease,color .2s ease;
+  position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;
+  background:transparent;border:none;cursor:pointer;color:var(--text-ghost);
+  font-size:11px;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity var(--fast),color var(--fast);
 }
 .continue-card:hover .continue-card-menu{opacity:1}
-.continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
+.continue-card-menu:hover{color:var(--text-primary)}
 
 /* ── Context dropdown ── */
 .ctx-menu{
-  position:fixed;z-index:500;
-  background:rgba(28,31,36,.95);backdrop-filter:blur(20px);
-  border:1px solid var(--border-mid);border-radius:12px;
-  padding:var(--sp2) 0;min-width:164px;
-  box-shadow:0 8px 32px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04);
+  position:fixed;z-index:500;background:var(--bg-panel);
+  border:1px solid var(--border-mid);border-radius:10px;
+  padding:var(--sp2) 0;min-width:160px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
   animation:ctx-in .15s var(--ease-spring) forwards;
 }
-@keyframes ctx-in{0%{opacity:0;transform:scale(.92) translateY(-4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes ctx-in{0%{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
 .ctx-item{
   display:flex;align-items:center;gap:var(--sp2);padding:8px 14px;
   font-size:var(--sm);color:var(--text-secondary);cursor:pointer;
@@ -351,81 +270,65 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 .ctx-item:hover{background:var(--bg-elevated);color:var(--text-primary)}
 .ctx-item.danger:hover{color:var(--error)}
-.ctx-item-icon{width:16px;text-align:center;font-size:12px;flex-shrink:0;opacity:.7}
-.ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
+.ctx-item-icon{width:16px;text-align:center;font-size:13px;flex-shrink:0}
+.ctx-sep{height:1px;background:var(--border-subtle);margin:var(--sp1) 0}
 
-/* ── Modals ── */
+/* ── Rename modal ── */
 .modal-overlay{
-  position:fixed;inset:0;z-index:600;
-  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
   animation:fade-in .2s ease forwards;
 }
 @keyframes fade-in{0%{opacity:0}to{opacity:1}}
 .modal-box{
-  background:linear-gradient(160deg,rgba(37,40,48,1),rgba(28,31,36,1));
-  border:1px solid var(--border-mid);
-  border-radius:18px;padding:var(--sp5);min-width:340px;max-width:92vw;
-  animation:modal-in .22s var(--ease-spring) forwards;
-  box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  background:var(--bg-panel);border:1px solid var(--border-mid);
+  border-radius:16px;padding:var(--sp5);min-width:320px;max-width:90vw;
+  animation:modal-in .2s var(--ease-spring) forwards;
 }
-@keyframes modal-in{0%{opacity:0;transform:scale(.9) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-title{font-size:var(--lg);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display);letter-spacing:-.01em}
-.modal-subtitle{font-size:var(--xs);color:var(--text-tertiary);margin-top:-12px;margin-bottom:var(--sp4);font-family:var(--font-mono);letter-spacing:.06em}
+@keyframes modal-in{0%{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-size:var(--lg);font-weight:600;margin-bottom:var(--sp4)}
 .modal-input{
   width:100%;background:var(--bg-input);border:1px solid var(--border-subtle);
   border-radius:8px;padding:10px var(--sp3);color:var(--text-primary);
-  font-size:var(--sm);font-family:var(--font-ui);outline:none;
-  transition:border-color var(--fast),box-shadow var(--fast);
+  font-size:var(--base);font-family:var(--font-ui);outline:none;
+  transition:border-color var(--fast);
 }
-.modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,188,240,.12)}
+.modal-input:focus{border-color:var(--accent)}
 .modal-actions{display:flex;gap:var(--sp2);margin-top:var(--sp4);justify-content:flex-end}
 .modal-btn{
   background:var(--bg-elevated);border:1px solid var(--border-subtle);
-  border-radius:8px;padding:8px 18px;font-size:var(--sm);
+  border-radius:8px;padding:8px 16px;font-size:var(--sm);
   color:var(--text-primary);cursor:pointer;font-family:var(--font-ui);
   transition:border-color var(--fast),background var(--fast);
 }
 .modal-btn:hover{border-color:var(--accent);background:var(--bg-input)}
 .modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
-.modal-btn.primary:hover{background:#00d4ff;border-color:#00d4ff}
-.modal-btn.danger{background:rgba(232,64,87,.12);border-color:rgba(232,64,87,.3);color:var(--error)}
-.modal-btn.danger:hover{background:rgba(232,64,87,.22);border-color:var(--error)}
+.modal-btn.primary:hover{background:#00d9ff;border-color:#00d9ff}
 
-/* Slot picker inside modals */
-.slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
+/* ── Slot picker modal ── */
+.slot-picker-grid{display:flex;flex-direction:column;gap:var(--sp2);margin-bottom:var(--sp4)}
 .slot-picker-item{
   display:flex;align-items:center;gap:var(--sp3);
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);
   border-radius:10px;padding:10px var(--sp3);cursor:pointer;
-  transition:border-color .18s ease,background .18s ease,transform .18s ease;
+  transition:border-color var(--fast),background var(--fast);
 }
-.slot-picker-item:hover{border-color:var(--accent);background:rgba(0,188,240,.08);transform:translateX(2px)}
-.slot-picker-item.has-data{border-color:rgba(0,188,240,.18);background:rgba(0,188,240,.05)}
-.slot-picker-item:active{transform:scale(.98)}
+.slot-picker-item:hover{border-color:var(--accent);background:var(--bg-input)}
 .slot-picker-thumb{
-  width:52px;height:40px;border-radius:7px;flex-shrink:0;overflow:hidden;
-  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.07);
+  width:52px;height:40px;border-radius:6px;flex-shrink:0;overflow:hidden;
+  background:var(--bg-panel);border:1px solid rgba(255,255,255,.07);
   display:flex;align-items:center;justify-content:center;font-size:16px;
-  position:relative;
 }
 .slot-picker-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
-.slot-picker-thumb-num{
-  position:absolute;bottom:2px;right:3px;
-  font-family:var(--font-mono);font-size:9px;font-weight:700;
-  color:rgba(0,188,240,.9);line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8);
-}
 .slot-picker-info{flex:1;min-width:0}
-.slot-picker-name{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot-picker-name{font-size:var(--sm);font-weight:600;color:var(--text-primary)}
 .slot-picker-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px}
 .slot-picker-badge{
-  font-size:9px;font-family:var(--font-mono);letter-spacing:.06em;flex-shrink:0;
-  padding:2px 8px;border-radius:20px;
+  font-size:9px;font-family:var(--font-mono);letter-spacing:.08em;
+  padding:2px 7px;border-radius:10px;flex-shrink:0;
 }
-.slot-picker-badge.filled{background:rgba(0,188,240,.12);color:var(--accent);border:1px solid rgba(0,188,240,.22)}
-.slot-picker-badge.empty{background:rgba(255,255,255,.05);color:var(--text-ghost);border:1px solid rgba(255,255,255,.07)}
-.modal-name-row{margin-top:var(--sp3)}
-.modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
+.slot-picker-badge.filled{background:rgba(0,188,240,.12);color:var(--accent);border:1px solid rgba(0,188,240,.25)}
+.slot-picker-badge.empty{background:rgba(255,255,255,.05);color:var(--text-ghost);border:1px solid rgba(255,255,255,.08)}
 
 /* ═══════════════════════════════════════════════════════════
    EMULATOR SCREEN
@@ -749,15 +652,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 <!-- File inputs live outside all click zones so they never bubble into idle-screen or emu-screen -->
 <input type="file" id="rom-input" accept=".gba,.zip,.GBA" style="display:none">
-<input type="file" id="sav-input" accept=".sav,.SAV,.srm,.SRM,.eep,.EEP,.fla,.FLA" style="display:none">
+<input type="file" id="sav-input" accept=".save,.SAVE" style="display:none">
 
 <!-- ══════════════ IDLE / LANDING ══════════════ -->
 <div id="idle-screen">
-  <div class="landing-bg"></div>
-  <div class="landing-grid"></div>
-  <div class="landing-orb landing-orb-1"></div>
-  <div class="landing-orb landing-orb-2"></div>
-  <div class="landing-orb landing-orb-3"></div>
+  <div class="ambient-overlay"></div>
 
   <canvas id="particles-canvas"></canvas>
 
@@ -769,7 +668,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="showcase-title slam" id="showcase-title">
       <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
       <h2 class="showcase-name font-display" id="showcase-name"></h2>
-      <div class="showcase-genre font-mono" id="showcase-region"></div>
+      <div class="showcase-region font-mono" id="showcase-region"></div>
       <div class="showcase-underline" id="showcase-underline"></div>
     </div>
     <div class="showcase-art slam" id="showcase-art">
@@ -781,7 +680,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="gba-shell">
     <div class="gba-screen-overlay">
       <div class="gba-screen-content">
-        <div class="gba-screen-drop-icon">🎮</div>
         <span class="gba-screen-text font-display">Drop ROM here</span>
         <span class="gba-screen-hint">or click anywhere to browse</span>
       </div>
@@ -792,33 +690,26 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
   <div class="landing-brand">
     <h1 class="landing-title font-display"><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
-    <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
   </div>
   <div class="landing-controls font-mono">
-    <span class="landing-key">Z</span> A
-    <div class="landing-separator"></div>
-    <span class="landing-key">X</span> B
-    <div class="landing-separator"></div>
+    <span class="landing-key">Z</span> A &nbsp;
+    <span class="landing-key">X</span> B &nbsp;
     <span class="landing-key">A</span> L &nbsp;
-    <span class="landing-key">S</span> R
-    <div class="landing-separator"></div>
-    <span class="landing-key">←↑↓→</span> D-Pad
-    <div class="landing-separator"></div>
-    <span class="landing-key">Enter</span> Start
-    <div class="landing-separator"></div>
+    <span class="landing-key">S</span> R &nbsp;
+    <span class="landing-key">←↑↓→</span> D-Pad &nbsp;
+    <span class="landing-key">Enter</span> Start &nbsp;
+    <span class="landing-key">⇧</span> Select &nbsp;
     <span class="landing-key">M</span> Mute
   </div>
   <div class="landing-disclaimer">
     Your ROM never leaves your device — everything runs locally in your browser.
+    You are responsible for owning any ROMs you load.
   </div>
 
   <div id="continue-bar">
-    <div class="continue-header">
-      <div class="continue-label">
-        <div class="continue-label-icon"></div>
-        <span>Continue Playing</span>
-        <span class="continue-label-count" id="continue-count">0 games</span>
-      </div>
+    <div class="continue-label">
+      <span>Continue Playing</span>
+      <span class="continue-label-count" id="continue-count">0 games</span>
     </div>
     <div class="continue-list" id="continue-list"></div>
   </div>
@@ -929,11 +820,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
         <div class="sidebar-section-title">Quick Save</div>
         <button class="sb-btn accent-btn" id="sb-cache-save">
           <span class="sb-btn-icon">💾</span>
-          <span class="sb-btn-text">Save State<span class="sb-btn-sub">Pick slot + name your save</span></span>
+          <span class="sb-btn-text">Save to Cache<span class="sb-btn-sub">Saves current state</span></span>
         </button>
         <button class="sb-btn" id="sb-cache-load">
           <span class="sb-btn-icon">📂</span>
-          <span class="sb-btn-text">Load State<span class="sb-btn-sub" id="cache-load-sub">Pick a slot to restore</span></span>
+          <span class="sb-btn-text">Load from Cache<span class="sb-btn-sub" id="cache-load-sub">No quick save yet</span></span>
         </button>
       </div>
 
@@ -942,7 +833,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
         <div class="sidebar-section-title">Battery Save (.sav)</div>
         <button class="sb-btn" id="sb-import-sav">
           <span class="sb-btn-icon">📥</span>
-          <span class="sb-btn-text">Import .sav File<span class="sb-btn-sub">Drag-and-drop also works</span></span>
+          <span class="sb-btn-text">Import .save State<span class="sb-btn-sub">Load a saved state file</span></span>
         </button>
         <button class="sb-btn" id="sb-export-save">
           <span class="sb-btn-icon">📤</span>
@@ -1012,6 +903,7 @@ const S_STATES    = 'states';
 const NUM_SLOTS   = 6;
 const AUTOSAVE_MS = 45000;
 const SAV_EXTS    = new Set(['.sav','.srm','.eep','.fla','.SAV','.SRM','.EEP','.FLA']);
+const STATE_EXTS  = new Set(['.save','.SAVE']);  // emulator state snapshot files
 const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
 const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
 
@@ -1430,24 +1322,18 @@ async function buildContinueBar() {
 
   for (const rom of roms) {
     const card = document.createElement('div');
-    const isRecent = rom.lastPlayed && (Date.now() - rom.lastPlayed) < 3600000;
-    card.className = 'continue-card' + (rom.favorite ? ' favorited' : '') + (isRecent ? ' recently-played' : '');
+    card.className = 'continue-card' + (rom.favorite ? ' favorited' : '');
     card.dataset.id = rom.id;
-    card.style.animationDelay = `${roms.indexOf(rom) * 60}ms`;
     const artSrc = rom.artDataUrl || generateArtCanvas(rom.displayName || rom.name, rom.color || colorFromName(rom.name));
     card.innerHTML = `
       <div class="continue-card-star">★</div>
+      <div class="continue-card-shine"></div>
       <div class="continue-card-art">
         <img src="${esc(artSrc)}" alt="" loading="lazy" onerror="this.style.display='none'">
-        <div class="continue-card-art-badge"></div>
       </div>
       <div class="continue-card-info">
         <div class="continue-card-name">${esc(rom.displayName || rom.name)}</div>
-        <div class="continue-card-meta">
-          <span>${timeAgo(rom.lastPlayed)}</span>
-          <div class="continue-card-meta-dot"></div>
-          <span>${fmtSize(rom.size)}</span>
-        </div>
+        <div class="continue-card-meta">${timeAgo(rom.lastPlayed)} · ${fmtSize(rom.size)}</div>
       </div>
       <button class="continue-card-play" title="Play">▶</button>
       <button class="continue-card-menu" title="Options">⋯</button>`;
@@ -1697,36 +1583,33 @@ function showLoadIndicator(text) { $('load-text').textContent = text; $('load-in
 function hideLoadIndicator()     { $('load-indicator').classList.remove('visible'); }
 
 /* ══════════════════════════════════════════════════════════════
-   AUTO-SAVE (silently saves to slot 1 every AUTOSAVE_MS)
+   AUTO-SAVE
 ══════════════════════════════════════════════════════════════ */
 function startAutosave() {
   clearInterval(autosaveTimer);
   autosaveTimer = setInterval(async () => {
-    if (!ejsReady || isPaused || !currentRomName || !db) return;
-    const emu = getEmu();
-    let stateData = null;
-    try { if (emu && emu.gameManager) stateData = emu.gameManager.saveState(); } catch(e) {}
-    if (!stateData) return;
-    let thumb = null;
-    try {
-      const canvas = document.querySelector('#game canvas');
-      if (canvas) {
-        const tc = document.createElement('canvas');
-        tc.width = 120; tc.height = 90;
-        tc.getContext('2d').drawImage(canvas, 0, 0, 120, 90);
-        thumb = tc.toDataURL('image/jpeg', 0.6);
-      }
-    } catch(e) {}
-    try {
-      await dbPut(S_STATES, {
-        id: `${currentRomName}::slot1`,
-        data: stateData, ts: Date.now(),
-        thumb, saveName: 'Auto-save', slotIdx: 1,
-      });
-      buildSaveSlots();
-      refreshCacheLoadSub();
-    } catch(e) {}
+    if (!ejsReady || isPaused) return;
+    await doQuickSave(true);
   }, AUTOSAVE_MS);
+}
+
+async function doQuickSave(silent = false) {
+  if (!currentRomName || !ejsReady) return;
+  const emu = getEmu();
+  let stateData = null;
+  if (emu && emu.gameManager) {
+    try { stateData = emu.gameManager.getState(); } catch(e) { console.warn('getState:', e); }
+  }
+  if (!stateData || !stateData.byteLength) {
+    if (!silent) toast('Emulator not ready — wait for game to start','warn');
+    return;
+  }
+  try {
+    if (!db) return;
+    await dbPut(S_META, { id:'quicksave_'+currentRomName, romName:currentRomName, data:stateData, ts:Date.now() });
+    if (!silent) { toast('Quick saved ✓','success'); }
+    refreshCacheLoadSub();
+  } catch(e) { if (!silent) toast('Cache save failed','error'); }
 }
 
 window.addEventListener('beforeunload', () => {
@@ -1975,14 +1858,17 @@ async function saveToSlot(i) {
   try { if (emu && emu.gameManager) stateData = emu.gameManager.getState(); } catch(e) {}
   if (!stateData || !stateData.byteLength) { toast('No state available — is the game running?','warn'); return; }
 
-  // Capture thumbnail from the game canvas
+  // Capture a thumbnail screenshot
   let thumb = null;
   try {
-    const canvas = document.querySelector('#game canvas');
-    if (canvas) {
+    if (emu && emu.gameManager && typeof emu.gameManager.screenshot === 'function') {
+      const imgUrl = await emu.gameManager.screenshot();
+      // Downscale to ~120x90 for storage
+      const img = new Image();
+      await new Promise(r => { img.onload = r; img.src = imgUrl; });
       const tc = document.createElement('canvas');
       tc.width = 120; tc.height = 90;
-      tc.getContext('2d').drawImage(canvas, 0, 0, 120, 90);
+      tc.getContext('2d').drawImage(img, 0, 0, 120, 90);
       thumb = tc.toDataURL('image/jpeg', 0.65);
     }
   } catch(e) {}
@@ -2012,193 +1898,39 @@ async function deleteSlot(i) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SLOT PICKER MODAL
-   Shows all NUM_SLOTS slots with thumbnails, timestamps, and names.
-   mode: 'save' | 'load'
-   Returns a Promise that resolves to { slotIndex, saveName } or null (cancelled).
-══════════════════════════════════════════════════════════════ */
-async function showSlotPicker(mode) {
-  return new Promise(async (resolve) => {
-    // Load all slot metadata first
-    const slots = [];
-    for (let i = 1; i <= NUM_SLOTS; i++) {
-      let meta = null;
-      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
-      slots.push({ i, meta });
-    }
-
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-
-    const isSave = mode === 'save';
-    const slotItems = slots.map(({ i, meta }) => {
-      const thumb = meta && meta.thumb
-        ? `<img src="${meta.thumb}" alt=""><span class="slot-picker-thumb-num">${i}</span>`
-        : `<span style="font-size:16px;opacity:.25">🎮</span><span class="slot-picker-thumb-num">${i}</span>`;
-      const badge = meta
-        ? `<span class="slot-picker-badge filled">FILLED</span>`
-        : `<span class="slot-picker-badge empty">EMPTY</span>`;
-      const label = meta ? (meta.saveName || `Slot ${i}`) : `Slot ${i}`;
-      const ts = meta ? timeAgo(meta.ts) : 'No save';
-      return `
-        <div class="slot-picker-item ${meta ? 'has-data' : ''}" data-slot="${i}">
-          <div class="slot-picker-thumb">${thumb}</div>
-          <div class="slot-picker-info">
-            <div class="slot-picker-name">${esc(label)}</div>
-            <div class="slot-picker-time">${ts}</div>
-          </div>
-          ${badge}
-        </div>`;
-    }).join('');
-
-    overlay.innerHTML = `
-      <div class="modal-box" style="min-width:380px">
-        <div class="modal-title font-display">${isSave ? 'Save to Slot' : 'Load from Slot'}</div>
-        <div class="modal-subtitle">${isSave ? 'Choose a slot — existing data will be overwritten' : 'Choose a slot to restore'}</div>
-        <div class="slot-picker-grid">${slotItems}</div>
-        ${isSave ? `
-        <div class="modal-name-row">
-          <label class="modal-name-label">SAVE NAME (OPTIONAL)</label>
-          <input class="modal-input" id="slot-name-input" type="text" placeholder="e.g. Before final boss" maxlength="60">
-        </div>` : ''}
-        <div class="modal-actions">
-          <button class="modal-btn" id="slot-cancel">Cancel</button>
-        </div>
-      </div>`;
-
-    document.body.appendChild(overlay);
-
-    let selectedSlot = null;
-
-    // Highlight on click and auto-confirm for load; for save require name then click save
-    overlay.querySelectorAll('.slot-picker-item').forEach(item => {
-      item.addEventListener('click', () => {
-        overlay.querySelectorAll('.slot-picker-item').forEach(el => el.style.outline = 'none');
-        item.style.outline = '2px solid var(--accent)';
-        item.style.outlineOffset = '-2px';
-        selectedSlot = parseInt(item.dataset.slot, 10);
-
-        if (!isSave) {
-          // For load mode: confirm immediately on click
-          const meta = slots.find(s => s.i === selectedSlot)?.meta;
-          if (!meta) { toast('That slot is empty', 'warn', 2000); return; }
-          overlay.remove();
-          resolve({ slotIndex: selectedSlot, saveName: null });
-        } else {
-          // For save mode: focus the name input
-          const nameInput = overlay.querySelector('#slot-name-input');
-          if (nameInput && !nameInput.value.trim()) {
-            nameInput.focus();
-          }
-          // Add/update confirm button
-          let confirmBtn = overlay.querySelector('#slot-confirm');
-          if (!confirmBtn) {
-            confirmBtn = document.createElement('button');
-            confirmBtn.id = 'slot-confirm';
-            confirmBtn.className = 'modal-btn primary';
-            confirmBtn.textContent = 'Save Here';
-            overlay.querySelector('.modal-actions').prepend(confirmBtn);
-            confirmBtn.addEventListener('click', () => {
-              if (!selectedSlot) return;
-              const name = overlay.querySelector('#slot-name-input')?.value.trim() || '';
-              overlay.remove();
-              resolve({ slotIndex: selectedSlot, saveName: name || null });
-            });
-          }
-        }
-      });
-    });
-
-    overlay.querySelector('#slot-cancel').addEventListener('click', () => {
-      overlay.remove(); resolve(null);
-    });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
-    overlay.querySelector('#slot-name-input')?.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && selectedSlot) overlay.querySelector('#slot-confirm')?.click();
-    });
-  });
-}
-
-/* ══════════════════════════════════════════════════════════════
-   QUICK SAVE / LOAD  (now slot-aware)
+   QUICK SAVE / LOAD
 ══════════════════════════════════════════════════════════════ */
 async function refreshCacheLoadSub() {
   if (!db || !currentRomName) return;
-  // Find the most recently saved slot for this ROM
   try {
-    let latest = null;
-    for (let i = 1; i <= NUM_SLOTS; i++) {
-      const entry = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-      if (entry && (!latest || entry.ts > latest.ts)) latest = entry;
-    }
-    $('cache-load-sub').textContent = latest
-      ? `Last: ${latest.saveName || `Slot ${latest.slotIdx||'?'}`} — ${timeAgo(latest.ts)}`
-      : 'No saves yet';
+    const entry = await dbGet(S_META, 'quicksave_' + currentRomName);
+    $('cache-load-sub').textContent = entry ? `Saved ${timeAgo(entry.ts)}` : 'No quick save yet';
   } catch(e) {}
 }
 
-$('sb-cache-save').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded', 'error'); return; }
-  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
-
-  const pick = await showSlotPicker('save');
-  if (!pick) return; // cancelled
-
-  const emu = getEmu();
-  let stateData = null;
-  try { if (emu && emu.gameManager) stateData = emu.gameManager.saveState(); } catch(e) {}
-  if (!stateData) { toast('Could not capture state — is the game running?', 'warn'); return; }
-
-  // Capture thumbnail
-  let thumb = null;
-  try {
-    const canvas = document.querySelector('#game canvas');
-    if (canvas) {
-      const tc = document.createElement('canvas');
-      tc.width = 120; tc.height = 90;
-      tc.getContext('2d').drawImage(canvas, 0, 0, 120, 90);
-      thumb = tc.toDataURL('image/jpeg', 0.65);
-    }
-  } catch(e) {}
-
-  try {
-    const key = `${currentRomName}::slot${pick.slotIndex}`;
-    await dbPut(S_STATES, {
-      id: key,
-      data: stateData,
-      ts: Date.now(),
-      thumb,
-      saveName: pick.saveName,
-      slotIdx: pick.slotIndex,
-    });
-    toast(`Saved to Slot ${pick.slotIndex}${pick.saveName ? ` — "${pick.saveName}"` : ''} ✓`, 'success');
-    buildSaveSlots();
-    refreshCacheLoadSub();
-  } catch(e) { toast('Save failed', 'error'); }
-});
+$('sb-cache-save').addEventListener('click', () => doQuickSave(false));
 
 $('sb-cache-load').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded', 'error'); return; }
-  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
-
-  const pick = await showSlotPicker('load');
-  if (!pick) return;
-
+  if (!currentRomName) { toast('No game loaded','error'); return; }
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${pick.slotIndex}`);
-    if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
+    const entry = await dbGet(S_META, 'quicksave_' + currentRomName);
+    if (!entry || !entry.data) { toast('No quick save found','error'); return; }
+    if (!entry.data.byteLength) {
+      toast('Quick save appears corrupted','error');
+      await dbDel(S_META, 'quicksave_' + currentRomName);
+      return;
+    }
     const emu = getEmu();
-    if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
-    emu.gameManager.loadState(meta.data);
+    if (!emu || !emu.gameManager) { toast('Emulator not ready','error'); return; }
+    emu.gameManager.loadState(entry.data);
     if (isPaused) updatePauseUI(false);
-    toast(`Loaded Slot ${pick.slotIndex}${meta.saveName ? ` — "${meta.saveName}"` : ''} ✓`, 'success');
-  } catch(e) { toast('Load failed', 'error'); }
+    toast(`Restored (${timeAgo(entry.ts)}) ✓`, 'success');
+  } catch(e) { toast('Cache load failed','error'); }
 });
 
 /* ══════════════════════════════════════════════════════════════
-   IMPORT .SAV / .SAVE FILE
-   .sav/.srm/.eep/.fla  → battery save  → write to FS, restart
-   .save                → state snapshot → loadState() directly, no restart
+   IMPORT .SAV FILE
+   Write directly into the Emscripten FS, flush IDBFS, then restart.
 ══════════════════════════════════════════════════════════════ */
 const SAV_DROP_ZONE = $('emu-wrap');
 SAV_DROP_ZONE.addEventListener('dragover', e => {
@@ -2229,56 +1961,34 @@ $('sav-input').addEventListener('change', e => {
 });
 
 async function importSavFile(file) {
-  const ext = extOf(file.name).toLowerCase();
-
-  // ── .save → emulator state snapshot: load directly, no restart ──
-  if (ext === '.save') {
-    if (!ejsReady) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
-    const emu = getEmu();
-    if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
-    try {
-      const buf = await file.arrayBuffer();
-      // EJS saveState/loadState uses ArrayBuffer or Uint8Array
-      emu.gameManager.loadState(buf);
-      if (isPaused) updatePauseUI(false);
-      toast('State loaded — continuing from snapshot ✓', 'success');
-    } catch(err) {
-      console.error('importSavFile (.save):', err);
-      toast('Failed to load state: ' + (err.message || 'unknown error'), 'error', 5000);
-    }
-    return;
-  }
-
-  // ── Battery save (.sav/.srm/.eep/.fla): write to FS, restart ──
-  if (!SAV_EXTS.has('.' + ext) && !SAV_EXTS.has(extOf(file.name))) {
-    toast(`Unsupported file type: ${extOf(file.name)}`, 'error'); return;
-  }
-  if (ROM_EXTS.has(extOf(file.name))) { toast('That looks like a ROM, not a save file', 'error'); return; }
-  if (!ejsReady) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
+  const ext = extOf(file.name);
+  if (ROM_EXTS.has(ext)) { toast('That looks like a ROM, not a save file','error'); return; }
+  if (!SAV_EXTS.has(ext)) { toast(`Unsupported save format: ${ext}`,'error'); return; }
+  if (!ejsReady) { toast('Emulator not ready — wait for game to start','warn'); return; }
   const emu = getEmu();
-  if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
+  if (!emu || !emu.gameManager) { toast('Emulator not ready','error'); return; }
   try {
     const u8 = new Uint8Array(await file.arrayBuffer());
     const EXPECTED = [8192, 32768, 65536, 131072];
     if (!EXPECTED.includes(u8.byteLength))
-      toast(`Unusual save size (${fmtSize(u8.byteLength)}) — importing anyway`, 'warn', 4000);
+      toast(`Warning: unusual save size (${fmtSize(u8.byteLength)}) — importing anyway`,'warn',4000);
     const gm = emu.gameManager;
     if (gm.FS && typeof gm.FS.writeFile === 'function') {
       try { gm.FS.mkdir('/home/web_user/retroarch/userdata/saves'); } catch(e) {}
       gm.FS.writeFile(`/home/web_user/retroarch/userdata/saves/${currentDisplay}.srm`, u8);
       if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles();
-      toast('.sav imported — restarting to apply…', 'success', 3000);
+      toast('.sav imported — restarting to apply…','success',3000);
       setTimeout(() => {
         try { gm.restart(); } catch(e) { startEmulator(currentRomUrl, currentDisplay); }
         updatePauseUI(false);
       }, 800);
     } else {
       if (db) await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
-      toast('.sav stored — will apply on next game load', 'warn', 4000);
+      toast('.sav stored — will apply on next game load','warn',4000);
     }
   } catch(err) {
-    console.error('importSavFile (.sav):', err);
-    toast('Failed to import: ' + (err.message || 'unknown error'), 'error', 5000);
+    console.error('importSavFile:', err);
+    toast('Failed to import .sav — ' + (err.message || 'unknown error'),'error',5000);
   }
 }
 
