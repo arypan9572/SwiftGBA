@@ -575,6 +575,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 4px 16px rgba(0,0,0,.18);
   transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
   position:relative;overflow:hidden;
+   justify-content: space-between;
 }
 .save-slot::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(0,196,248,.035),transparent);transition:opacity .2s ease}
 .save-slot:hover::before{opacity:1}
@@ -591,13 +592,44 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.save-slot-actions{display:flex;gap:4px;flex-shrink:0;align-items:center}
-.slot-btn{
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;
-  padding:5px 9px;font-size:10px;font-family:var(--font-mono);font-weight:700;letter-spacing:.04em;
-  color:var(--text-secondary);cursor:pointer;
-  transition:background .14s ease,border-color .14s ease,color .14s ease,transform .14s ease,box-shadow .14s ease;
-  line-height:1;
+.save-slot-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.slot-btn {
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  min-width: 52px;
+  height: 32px;
+  padding: 0 10px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  transition: 0.15s;
+}
+
+.slot-btn.del {
+  min-width: 32px;
+  background: rgba(255, 80, 80, 0.18);
+  color: #ff8080;
+}
+
+.slot-btn.del:hover {
+  background: rgba(255, 80, 80, 0.32);
 }
 .slot-btn:active{transform:scale(.9)!important}
 .slot-btn.sav{color:var(--accent);border-color:rgba(0,196,248,.22);background:rgba(0,196,248,.07)}
