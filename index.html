@@ -44,11 +44,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
   cursor:pointer;gap:var(--sp3);background:#06080b;isolation:isolate;
-  /* Fast, GPU-only transition — opacity + transform only */
-  transition:opacity .35s ease, transform .35s ease;
-  will-change:opacity, transform;
+  transition:opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
+  will-change:opacity,transform;
 }
-/* Simple fade+scale down — no massive scale(18) or drop-shadows, just a clean exit */
 #idle-screen.fade-out{
   opacity:0;
   transform:scale(1.04);
@@ -175,6 +173,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   position:absolute;left:var(--gba-screen-left);top:var(--gba-screen-top);
   width:var(--gba-screen-width);height:var(--gba-screen-height);
   z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.3);
+  transition:background .3s ease;
 }
 .gba-screen-overlay::before{
   content:'';position:absolute;inset:0;z-index:10;pointer-events:none;
@@ -186,11 +185,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:var(--sp2);padding:0 6%;text-align:center;
 }
-.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.4)}
+.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.4);transition:color .3s ease, text-shadow .3s ease}
 .gba-screen-hint{display:block;width:100%;font-size:clamp(8px,1vw,11px);color:#6b7280;margin-top:2px}
 .gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7;animation:icon-bounce 2.5s ease-in-out infinite}
 @keyframes icon-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;animation:led-idle-blink 4s ease-in-out infinite}
+.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;animation:led-idle-blink 4s ease-in-out infinite;transition:all .4s ease}
 .gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow);animation:none}
 @keyframes led-idle-blink{0%,88%,100%{background:rgba(0,232,90,.08);box-shadow:none}90%{background:rgba(0,232,90,.35);box-shadow:0 0 4px rgba(0,232,90,.4)}}
 
@@ -257,7 +256,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   min-width:215px;max-width:255px;position:relative;overflow:hidden;
   backdrop-filter:blur(20px);
   box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
-  transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease;
+  transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease,background var(--normal) ease;
   animation:card-slide-in .4s var(--ease-spring) both;
 }
 @keyframes card-slide-in{0%{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -272,9 +271,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-card-meta-dot{width:2px;height:2px;border-radius:50%;background:var(--text-ghost);flex-shrink:0}
 .continue-card-star{position:absolute;top:6px;left:6px;font-size:8px;color:var(--warn);display:none;text-shadow:0 0 8px rgba(245,158,11,.5)}
 .continue-card.favorited .continue-card-star{display:block}
-.continue-card-play{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0099cc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;font-size:11px;font-weight:700;box-shadow:0 4px 12px rgba(0,196,248,.35);transition:transform .18s ease,box-shadow .18s ease}
+.continue-card-play{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0099cc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;font-size:11px;font-weight:700;box-shadow:0 4px 12px rgba(0,196,248,.35);transition:transform .18s var(--ease-spring),box-shadow .18s ease}
 .continue-card:hover .continue-card-play{transform:scale(1.14);box-shadow:0 6px 22px rgba(0,196,248,.55)}
-.continue-card-menu{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:var(--text-ghost);font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast) ease}
+.continue-card-menu{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:var(--text-ghost);font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast) ease,background var(--fast) ease,color var(--fast) ease}
 .continue-card:hover .continue-card-menu{opacity:1}
 .continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
 
@@ -288,17 +287,18 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
 
 /* ── Modals ── */
-.modal-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;animation:fade-in .32s cubic-bezier(.22,1,.36,1) forwards}
+.modal-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;animation:fade-in .2s cubic-bezier(.22,1,.36,1) forwards}
 @keyframes fade-in{0%{opacity:0}to{opacity:1}}
-.modal-box{background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp5);min-width:340px;max-width:92vw;animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.65)}
+.modal-box{background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp5);min-width:340px;max-width:92vw;animation:modal-in .38s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.65)}
 @keyframes modal-in{0%{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .modal-title{font-size:var(--lg);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display);letter-spacing:-.01em}
 .modal-subtitle{font-size:var(--xs);color:var(--text-tertiary);margin-top:-12px;margin-bottom:var(--sp4);font-family:var(--font-mono);letter-spacing:.06em}
 .modal-input{width:100%;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:10px var(--sp3);color:var(--text-primary);font-size:var(--sm);font-family:var(--font-ui);outline:none;transition:border-color var(--fast),box-shadow var(--fast)}
 .modal-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,196,248,.1)}
 .modal-actions{display:flex;gap:var(--sp2);margin-top:var(--sp4);justify-content:flex-end}
-.modal-btn{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:8px 18px;font-size:var(--sm);color:var(--text-primary);cursor:pointer;font-family:var(--font-ui);transition:border-color var(--fast),background var(--fast)}
-.modal-btn:hover{border-color:var(--accent);background:var(--bg-input)}
+.modal-btn{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:8px 18px;font-size:var(--sm);color:var(--text-primary);cursor:pointer;font-family:var(--font-ui);transition:border-color var(--fast),background var(--fast),transform var(--fast)}
+.modal-btn:hover{border-color:var(--accent);background:var(--bg-input);transform:translateY(-1px)}
+.modal-btn:active{transform:scale(.97)}
 .modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
 .modal-btn.primary:hover{background:#00d5ff;border-color:#00d5ff}
 .modal-btn.danger{background:rgba(232,64,87,.1);border-color:rgba(232,64,87,.28);color:var(--error)}
@@ -306,8 +306,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 /* Slot picker */
 .slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
-.slot-picker-item{display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .18s ease}
-.slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(2px)}
+.slot-picker-item{display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;transition:border-color .2s ease,background .2s ease,transform .2s var(--ease-spring)}
+.slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(3px)}
+.slot-picker-item:active{transform:scale(.98)}
 .slot-picker-item.has-data{border-color:rgba(0,196,248,.18);background:rgba(0,196,248,.05)}
 .slot-picker-thumb{width:52px;height:40px;border-radius:7px;flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
 .slot-picker-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
@@ -320,17 +321,17 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .slot-picker-badge.empty{background:rgba(255,255,255,.04);color:var(--text-ghost);border:1px solid rgba(255,255,255,.07)}
 .modal-name-row{margin-top:var(--sp3)}
 .modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
-.slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(2px)}
+.slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(3px)}
 .slot-picker-item.danger-item:hover .slot-picker-name{color:var(--error)}
-.autosave-slot{border-color:rgba(0,196,248,.45);box-shadow:0 0 0 1px rgba(0,196,248,.08)}
+.autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
 
 /* ═══════════════════════════════════════════════════════════
    EMULATOR SCREEN
    ═══════════════════════════════════════════════════════════ */
 #emu-screen{
   display:none;position:fixed;inset:0;z-index:100;background:#000;
-  /* Fade-in for the emulator screen appearing */
-  opacity:0;transition:opacity .3s ease;
+  opacity:0;
+  transition:opacity .35s cubic-bezier(.4,0,.2,1);
 }
 #emu-screen.active{display:flex;flex-direction:column}
 #emu-screen.visible{opacity:1}
@@ -342,16 +343,17 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .toolbar-logo .dot{color:var(--text-tertiary)}
 .toolbar-center{display:flex;flex-direction:column;align-items:center;gap:1px}
 .toolbar-game-name{font-size:var(--sm);color:var(--text-secondary);font-family:var(--font-mono);letter-spacing:.04em;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.toolbar-status-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:var(--font-mono);color:var(--text-ghost);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;letter-spacing:.06em;transition:all var(--fast)}
-.toolbar-status-pill .pill-dot{width:5px;height:5px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all var(--fast)}
+.toolbar-status-pill{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:var(--font-mono);color:var(--text-ghost);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;letter-spacing:.06em;transition:all var(--normal) ease}
+.toolbar-status-pill .pill-dot{width:5px;height:5px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all var(--normal) ease}
 .toolbar-status-pill.running{color:rgba(0,232,90,.8);border-color:rgba(0,232,90,.2);background:rgba(0,232,90,.07)}
 .toolbar-status-pill.running .pill-dot{background:var(--led-green);box-shadow:0 0 4px var(--led-green-glow);animation:pill-pulse 2s ease-in-out infinite}
 .toolbar-status-pill.paused{color:rgba(245,158,11,.8);border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.07)}
 .toolbar-status-pill.paused .pill-dot{background:var(--warn)}
 @keyframes pill-pulse{0%,100%{opacity:.7}50%{opacity:1}}
 .toolbar-actions{display:flex;align-items:center;gap:2px}
-.toolbar-btn{background:none;border:none;color:var(--text-secondary);font-size:16px;padding:8px;cursor:pointer;border-radius:var(--radius-sm);transition:color var(--fast),background var(--fast);line-height:1;position:relative}
-.toolbar-btn:hover{color:var(--text-primary);background:var(--bg-elevated)}
+.toolbar-btn{background:none;border:none;color:var(--text-secondary);font-size:16px;padding:8px;cursor:pointer;border-radius:var(--radius-sm);transition:color var(--fast),background var(--fast),transform var(--fast);line-height:1;position:relative}
+.toolbar-btn:hover{color:var(--text-primary);background:var(--bg-elevated);transform:translateY(-1px)}
+.toolbar-btn:active{transform:scale(.92)}
 .toolbar-btn.active{color:var(--accent)}
 .toolbar-btn[title]:hover::after{content:attr(title);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(22,25,32,.97);border:1px solid var(--border-mid);border-radius:var(--radius-sm);padding:3px 8px;font-size:10px;font-family:var(--font-mono);color:var(--text-secondary);white-space:nowrap;pointer-events:none;z-index:20;animation:tooltip-in .12s ease}
 @keyframes tooltip-in{0%{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -359,23 +361,20 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 /* ── Emulator body ── */
 #emu-body{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
 
-/* ── CRITICAL: game wrapper needs explicit dimensions for EmulatorJS ── */
 #emu-wrap{
   flex:1;display:flex;align-items:center;justify-content:center;
   overflow:hidden;position:relative;background:#000;
   min-width:0;min-height:0;
 }
 
-/* ── CRITICAL: The #game div MUST have explicit 100% width/height ── */
 #game{
   width:100%;
   height:100%;
   position:relative;
-  /* EmulatorJS reads offsetWidth/offsetHeight — must be non-zero */
 }
 
 /* SAV drop overlay */
-#sav-drop-overlay{position:absolute;inset:0;z-index:20;background:rgba(0,196,248,.08);border:2px dashed var(--accent);display:none;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp3);font-size:var(--lg);color:var(--accent);backdrop-filter:blur(4px);font-family:var(--font-display)}
+#sav-drop-overlay{position:absolute;inset:0;z-index:20;background:rgba(0,196,248,.08);border:2px dashed var(--accent);display:none;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp3);font-size:var(--lg);color:var(--accent);backdrop-filter:blur(4px);font-family:var(--font-display);animation:fade-in .15s ease}
 #sav-drop-overlay.visible{display:flex}
 
 #ff-badge{position:absolute;top:var(--sp3);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);border:1px solid var(--accent);border-radius:20px;padding:4px 14px;font-size:var(--xs);font-family:var(--font-mono);color:var(--accent);letter-spacing:.12em;z-index:15;animation:ff-pop .2s var(--ease-spring);pointer-events:none;display:none;box-shadow:0 0 12px rgba(0,196,248,.25)}
@@ -412,7 +411,8 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow{transform:rotate(180deg)}
 
 .sidebar-game-header{padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--border-subtle);background:var(--bg-elevated);flex-shrink:0;display:flex;align-items:center;gap:var(--sp3)}
-.sb-cover-art{width:44px;height:44px;border-radius:var(--radius-md);flex-shrink:0;background:var(--bg-panel);border:1px solid var(--border-subtle);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sb-cover-art{width:44px;height:44px;border-radius:var(--radius-md);flex-shrink:0;background:var(--bg-panel);border:1px solid var(--border-subtle);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .3s var(--ease-spring)}
+.sb-cover-art:hover{transform:scale(1.06)}
 .sb-cover-art img{width:100%;height:100%;object-fit:cover}
 .sb-game-info{flex:1;min-width:0}
 .sidebar-game-title{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -423,10 +423,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sidebar-section-title{font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:var(--sp3);display:flex;align-items:center;gap:var(--sp2)}
 .sidebar-section-badge{background:rgba(0,196,248,.1);border:1px solid rgba(0,196,248,.2);color:var(--accent);border-radius:20px;padding:1px 7px;font-size:9px;letter-spacing:.04em;text-transform:none}
 
-.sb-btn{width:100%;display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);color:var(--text-primary);font-size:var(--sm);font-family:var(--font-ui);cursor:pointer;transition:border-color var(--fast),background var(--fast),transform var(--fast),box-shadow var(--fast);margin-bottom:var(--sp2);text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.04)}
+.sb-btn{width:100%;display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);color:var(--text-primary);font-size:var(--sm);font-family:var(--font-ui);cursor:pointer;transition:border-color var(--fast),background var(--fast),transform .2s var(--ease-spring),box-shadow var(--fast);margin-bottom:var(--sp2);text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.04)}
 .sb-btn:last-child{margin-bottom:0}
-.sb-btn:hover{border-color:var(--accent);background:rgba(0,196,248,.07);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25),0 0 12px rgba(0,196,248,.1)}
-.sb-btn:active{transform:scale(.98)!important;box-shadow:none}
+.sb-btn:hover{border-color:var(--accent);background:rgba(0,196,248,.07);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 14px rgba(0,196,248,.12)}
+.sb-btn:active{transform:scale(.97)!important;box-shadow:none}
 .sb-btn.accent-btn{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent)}
 .sb-btn.accent-btn:hover{background:rgba(0,196,248,.18);border-color:var(--accent)}
 .sb-btn.active-state{border-color:var(--led-green)!important;color:var(--led-green)!important;background:rgba(0,232,90,.07)!important}
@@ -437,31 +437,33 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn-sub{font-size:10px;color:var(--text-tertiary);display:block;margin-top:1px;font-family:var(--font-mono)}
 .sb-btn.active-state .sb-btn-sub{color:rgba(0,232,90,.55)}
 .sb-btn-arrow{color:var(--text-ghost);font-size:11px;flex-shrink:0;transition:transform var(--fast),color var(--fast)}
-.sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
+.sb-btn:hover .sb-btn-arrow{transform:translateX(3px);color:var(--accent)}
 .sb-btn.danger-btn:hover .sb-btn-arrow{color:var(--error)}
 
 .status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all .4s}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all .4s ease}
 .status-dot.on{background:var(--led-green);box-shadow:0 0 5px var(--led-green-glow);animation:status-pulse 2.5s ease-in-out infinite}
 .status-dot.paused{background:var(--warn);box-shadow:0 0 5px rgba(245,158,11,.4)}
 @keyframes status-pulse{0%,100%{box-shadow:0 0 4px var(--led-green-glow)}50%{box-shadow:0 0 10px var(--led-green-glow),0 0 18px rgba(0,232,90,.15)}}
 
 .speed-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp2)}
 .speed-label{font-size:var(--sm);color:var(--text-secondary)}
-.speed-val{font-family:var(--font-mono);font-size:var(--sm);color:var(--accent);min-width:40px;text-align:right}
+.speed-val{font-family:var(--font-mono);font-size:var(--sm);color:var(--accent);min-width:40px;text-align:right;transition:color .2s ease}
 .speed-slider{width:100%;height:4px;border-radius:2px;outline:none;border:none;appearance:none;cursor:pointer;margin-bottom:var(--sp3);background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--pct,33%),var(--bg-elevated) var(--pct,33%))}
-.speed-slider::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow);cursor:pointer;transition:transform .15s ease}
-.speed-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.speed-slider::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow);cursor:pointer;transition:transform .15s var(--ease-spring),box-shadow .15s ease}
+.speed-slider::-webkit-slider-thumb:hover{transform:scale(1.25);box-shadow:0 0 10px var(--accent-glow)}
 .speed-presets{display:flex;gap:6px}
-.speed-preset{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-sm);padding:5px 0;font-size:var(--xs);color:var(--text-secondary);cursor:pointer;text-align:center;font-family:var(--font-mono);transition:border-color var(--fast),color var(--fast),background var(--fast)}
+.speed-preset{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-sm);padding:5px 0;font-size:var(--xs);color:var(--text-secondary);cursor:pointer;text-align:center;font-family:var(--font-mono);transition:border-color var(--fast),color var(--fast),background var(--fast),transform .15s var(--ease-spring)}
+.speed-preset:hover{transform:translateY(-1px)}
+.speed-preset:active{transform:scale(.94)}
 .speed-preset:hover,.speed-preset.active{border-color:var(--accent);color:var(--accent);background:rgba(0,196,248,.08)}
 .speed-preset.ff-active{border-color:var(--warn)!important;color:var(--warn)!important;background:rgba(245,158,11,.08)!important}
 
 .save-slots{display:flex;flex-direction:column;gap:8px;width:100%;max-height:440px;overflow-y:auto;padding-right:2px;margin-top:4px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
 .save-slots::-webkit-scrollbar{width:3px}
 .save-slots::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
-.save-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-md);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);box-shadow:0 4px 16px rgba(0,0,0,.18);transition:transform .42s cubic-bezier(.22,1,.36,1),border-color .32s ease,box-shadow .32s ease;position:relative;overflow:hidden;justify-content:space-between;will-change:transform;transform:translateZ(0)}
-.save-slot:hover{transform:translateY(-2px);border-color:rgba(0,196,248,.22);box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 12px rgba(0,196,248,.09)}
+.save-slot{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-md);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);box-shadow:0 4px 16px rgba(0,0,0,.18);transition:transform .25s var(--ease-spring),border-color .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;justify-content:space-between;will-change:transform}
+.save-slot:hover{transform:translateY(-3px);border-color:rgba(0,196,248,.22);box-shadow:0 12px 32px rgba(0,0,0,.3),0 0 14px rgba(0,196,248,.1)}
 .save-slot.has-data{border-color:rgba(0,196,248,.18);background:linear-gradient(160deg,rgba(0,196,248,.07),rgba(255,255,255,.02))}
 .save-slot-thumb{width:52px;height:40px;border-radius:6px;flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative}
 .save-slot-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
@@ -472,14 +474,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
-.slot-btn{border:none;outline:none;cursor:pointer;min-width:52px;height:32px;padding:0 10px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);color:white;transition:.15s}
-.slot-btn:active{transform:scale(.9)!important}
+.slot-btn{border:none;outline:none;cursor:pointer;min-width:52px;height:32px;padding:0 10px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);color:white;transition:transform .18s var(--ease-spring),background .15s ease,box-shadow .15s ease,border-color .15s ease}
+.slot-btn:active{transform:scale(.88)!important}
 .slot-btn.sav{color:var(--accent);background:rgba(0,196,248,.07);border:1px solid rgba(0,196,248,.22)}
-.slot-btn.sav:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 0 10px rgba(0,196,248,.22);transform:translateY(-1px)}
+.slot-btn.sav:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 0 10px rgba(0,196,248,.22);transform:translateY(-2px)}
 .slot-btn.load{color:var(--led-green);background:rgba(0,232,90,.06);border:1px solid rgba(0,232,90,.22)}
-.slot-btn.load:hover{background:rgba(0,232,90,.18);border-color:var(--led-green);box-shadow:0 0 10px rgba(0,232,90,.22);transform:translateY(-1px)}
+.slot-btn.load:hover{background:rgba(0,232,90,.18);border-color:var(--led-green);box-shadow:0 0 10px rgba(0,232,90,.22);transform:translateY(-2px)}
 .slot-btn.del{min-width:32px;color:var(--text-ghost);background:rgba(255,80,80,.04);border:1px solid rgba(255,255,255,.06);padding:0 7px;font-size:11px}
-.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.45);background:rgba(232,64,87,.12);transform:translateY(-1px)}
+.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.45);background:rgba(232,64,87,.12);transform:translateY(-2px)}
 .save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
 .autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
 
@@ -524,7 +526,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 /* Confirm delete modal */
 .delete-confirm-overlay{position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;animation:fade-in .15s ease forwards}
-.delete-confirm-box{background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);padding:var(--sp5);min-width:320px;max-width:88vw;animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.delete-confirm-box{background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);padding:var(--sp5);min-width:320px;max-width:88vw;animation:modal-in .38s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.7)}
 .delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
 .delete-confirm-title{font-size:var(--lg);font-weight:600;font-family:var(--font-display);letter-spacing:-.01em;margin-bottom:8px;text-align:center;color:var(--text-primary)}
 .delete-confirm-desc{font-size:var(--sm);color:var(--text-secondary);text-align:center;line-height:1.6;margin-bottom:var(--sp5)}
@@ -536,6 +538,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
   .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
   #idle-screen.fade-out{transition:none}
+  #emu-screen{transition:none}
 }
 </style>
 </head>
@@ -654,11 +657,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
   <div id="emu-body">
     <div id="emu-wrap">
-      <!--
-        CRITICAL: #game must be a direct child of a container with explicit dimensions.
-        EmulatorJS uses offsetWidth/offsetHeight of #game to size the canvas.
-        width:100%;height:100% on #game + flex:1 on #emu-wrap ensures non-zero dimensions.
-      -->
       <div id="game"></div>
       <div id="sav-drop-overlay">
         <div>📁</div>
@@ -837,21 +835,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 <div id="toast-stack"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   SwiftGBA — Fixed Frontend v6
-   FIXES:
-   1. startEmulator() was called as lator() — typo fixed
-   2. #game div now has explicit width/height via CSS (required by EJS)
-   3. Transition: removed heavy zoom animation → clean opacity+scale fade
-      (GPU-only, no repaints, no heavy drop-shadow animations)
-   4. EJS globals set synchronously, loader appended synchronously
-   5. Old EJS scripts fully removed before each re-launch
-   6. EJS_Buttons uses object format (correct)
-   7. EJS_player uses element reference, not just selector string
-   8. Added EJS_gameTitle properly
-   9. Added retry/fallback if EJS_onGameStart never fires
-   10. Audio context unlock improved
-══════════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
 
@@ -1017,7 +1000,6 @@ function captureStateData() {
   if (!emu) return null;
   const gm = emu.gameManager;
   if (!gm) return null;
-  // Try multiple methods EJS exposes across versions
   for (const method of ['saveState', 'getState', 'quickSave']) {
     try {
       if (typeof gm[method] === 'function') {
@@ -1066,7 +1048,6 @@ function tryUnlockAudio() {
     if (emu.Module && emu.Module.SDL2) addAC(emu.Module.SDL2.audioContext);
   }
 
-  // Scan globals for AudioContexts
   try {
     for (const k of Object.keys(window)) {
       try {
@@ -1174,7 +1155,7 @@ async function fetchCoverArt(displayName, color) {
   function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  for (let i = 0; i < 80; i++) { // reduced count for better fps
+  for (let i = 0; i < 80; i++) {
     particles.push({
       x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
       r: Math.random() * 1.6 + 0.2,
@@ -1191,7 +1172,6 @@ async function fetchCoverArt(displayName, color) {
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      // shadowBlur is expensive — only apply to a fraction
       if (Math.random() > 0.97) {
         ctx.shadowBlur = 8;
         ctx.shadowColor = p.hue === 280 ? 'rgba(124,58,237,.3)' : 'rgba(0,196,248,.35)';
@@ -1428,19 +1408,21 @@ emuWrap.addEventListener('drop', async e => {
 
 /* ══════════════════════════════════════════════════════════════
    LAUNCH ROM
-   Fast fade transition: idle fades out, emu fades in.
-   GPU-only (opacity + transform) — no heavy animations.
+   ─ Idle fades out (GPU opacity+scale)
+   ─ Emu screen fades in after a brief stagger
+   ─ EJS boots with a 60ms delay (matches working v4 approach)
 ══════════════════════════════════════════════════════════════ */
 async function launchROM(file) {
   clearInterval(cycleTimer);
 
-  // 1. Fade out idle screen (GPU-only opacity+scale, ~350ms)
+  // 1. Start idle fade-out
   idleScreen.classList.add('fade-out');
 
-  // 2. Immediately prepare emulator screen (display:flex but opacity:0)
+  // 2. Show emulator screen (display:flex, still opacity:0 via CSS)
   const emuScreen = $('emu-screen');
   emuScreen.classList.add('active');
-  // Force a paint frame before setting opacity to ensure transition fires
+
+  // 3. On next paint, trigger opacity fade-in
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       emuScreen.classList.add('visible');
@@ -1449,12 +1431,12 @@ async function launchROM(file) {
 
   $('power-led').classList.add('on');
 
-  // 3. After fade out completes, hide idle completely (stops particle RAF)
+  // 4. Hide idle after transition completes (stops particle RAF loop)
   setTimeout(() => {
     idleScreen.classList.add('hidden');
-  }, 380);
+  }, 480);
 
-  // 4. Start emulator immediately (don't wait for animation)
+  // 5. Process ROM and boot emulator
   await _doLaunchROM(file);
 }
 
@@ -1504,33 +1486,30 @@ async function _doLaunchROM(file) {
   startPlaytimeTracking();
   showLoadIndicator('Loading core…');
 
-  // FIX: call the correct function name
   startEmulator(currentRomUrl, displayName);
 }
 
 /* ══════════════════════════════════════════════════════════════
-   EMULATORJS BOOT — Fixed & Robust
+   EMULATORJS BOOT
    
-   Root causes of EJS not initializing:
-   1. EJS_player div must have non-zero pixel dimensions when loader runs
-   2. All globals must be window properties set BEFORE loader.js appends
-   3. No setTimeout delays around loader.js appending
-   4. Old loader scripts must be fully removed
-   5. EJS_Buttons must be an object (not array) with false values
-   6. EJS_player can be a CSS selector string "#game" — that's fine
-   7. The #game div must have explicit CSS width/height (100%)
+   KEY FIX: The loader script is appended with a 60ms setTimeout.
+   This gives the browser time to fully paint and lay out #game
+   with its 100% width/height before EJS reads offsetWidth/Height.
+   Without this delay EJS may read 0×0 dimensions and fail to init.
+   
+   This matches the approach in the working v4 codebase.
 ══════════════════════════════════════════════════════════════ */
 function startEmulator(romURL, displayName) {
 
-  // ── Clean up any previous EJS instance ──
+  // Clean up any previous EJS instance
   $('game').innerHTML = '';
 
-  // Remove old loader scripts (they re-execute if not removed)
+  // Remove old loader scripts to prevent stale re-execution
   document.querySelectorAll('script[data-ejs-loader]').forEach(s => {
     try { document.body.removeChild(s); } catch(e) {}
   });
 
-  // Remove ALL old EJS globals to prevent stale state
+  // Remove old EJS globals
   const ejsGlobals = Object.keys(window).filter(k => k.startsWith('EJS_'));
   ejsGlobals.forEach(k => {
     try { delete window[k]; } catch(e) { window[k] = undefined; }
@@ -1539,10 +1518,9 @@ function startEmulator(romURL, displayName) {
   ejsReady = false;
   clearTimeout(ejsReadyWatchdog);
 
-  // ── SET ALL GLOBALS SYNCHRONOUSLY (critical order) ──
-  // These must exist before loader.js is appended to DOM
+  // Set all globals BEFORE the loader script is appended
   window.EJS_player          = '#game';
-  window.EJS_core            = 'mgba';          // Most compatible GBA core
+  window.EJS_core            = 'mgba';
   window.EJS_gameUrl         = romURL;
   window.EJS_pathtodata      = EJS_CDN;
   window.EJS_gameTitle       = displayName;
@@ -1551,9 +1529,10 @@ function startEmulator(romURL, displayName) {
   window.EJS_color           = '#00c4f8';
   window.EJS_volume          = 1;
   window.EJS_defaultControls = true;
-  window.EJS_DEBUG_XX        = false;           // Set true to debug EJS issues
+  window.EJS_fixedSaveInterval = 30000;
+  window.EJS_DEBUG_XX        = false;
 
-  // Hide all built-in UI buttons (must be object format)
+  // Hide all built-in EJS UI buttons
   window.EJS_Buttons = {
     playPause:    false,
     restart:      false,
@@ -1572,7 +1551,7 @@ function startEmulator(romURL, displayName) {
     quickLoad:    false,
   };
 
-  // ── CALLBACKS ──
+  // Callbacks
   window.EJS_onGameStart = () => {
     clearTimeout(ejsReadyWatchdog);
     ejsReady = true;
@@ -1581,8 +1560,6 @@ function startEmulator(romURL, displayName) {
     tryUnlockAudio();
     buildSaveSlots();
     refreshCacheLoadSub();
-
-    // Small delay to let EJS settle before applying speed/mute
     setTimeout(() => {
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       if (isMuted) applyMuteToEmu(true);
@@ -1598,30 +1575,29 @@ function startEmulator(romURL, displayName) {
     toast('ROM load failed — check console for details', 'error', 5000);
   };
 
-  // ── WATCHDOG: if EJS_onGameStart never fires after 30s, show warning ──
+  // Watchdog: warn if EJS never fires after 30s
   ejsReadyWatchdog = setTimeout(() => {
     if (!ejsReady) {
-      console.warn('[SwiftGBA] EJS_onGameStart never fired after 30s. Check network or ROM validity.');
+      console.warn('[SwiftGBA] EJS_onGameStart never fired after 30s.');
       toast('Game taking long to load — check your connection', 'warn', 4000);
     }
   }, 30000);
 
-  // ── APPEND LOADER ──
-  // Do NOT wrap in setTimeout — the game element needs to be visible
-  // and have dimensions BEFORE loader reads it
-  const s = document.createElement('script');
-  s.dataset.ejsLoader = '1';
-  // Cache-bust to avoid stale loader on re-launch
-  s.src = EJS_CDN + 'loader.js?cb=' + Date.now();
-
-  s.onerror = () => {
-    clearTimeout(ejsReadyWatchdog);
-    hideLoadIndicator();
-    toast('Failed to load EmulatorJS — check your internet connection', 'error', 6000);
-    console.error('[SwiftGBA] Failed to load EmulatorJS loader from CDN:', s.src);
-  };
-
-  document.body.appendChild(s);
+  // CRITICAL: Use setTimeout 60ms before appending the loader.
+  // This ensures #game has non-zero pixel dimensions when EJS reads them,
+  // which is required for the emulator canvas to initialize correctly.
+  setTimeout(() => {
+    const s = document.createElement('script');
+    s.dataset.ejsLoader = '1';
+    s.src = EJS_CDN + 'loader.js?t=' + Date.now();
+    s.onerror = () => {
+      clearTimeout(ejsReadyWatchdog);
+      hideLoadIndicator();
+      toast('Failed to load EmulatorJS — check your internet connection', 'error', 6000);
+      console.error('[SwiftGBA] Failed to load EmulatorJS loader:', s.src);
+    };
+    document.body.appendChild(s);
+  }, 60);
 }
 
 /* ══ LOADING INDICATOR ══ */
@@ -2151,7 +2127,7 @@ $('sb-cache-load').addEventListener('click', async () => {
   } catch(e) { toast('Load failed', 'error'); }
 });
 
-/* ══ QUICK SAVE/LOAD (` + 1–6) / (Ctrl+1–6) ══ */
+/* ══ QUICK SAVE/LOAD ══ */
 async function quickSaveSlot(i) {
   if (!currentRomName || !ejsReady) { showStateToast('Not ready', 'warn'); return; }
   const stateData = captureStateData();
