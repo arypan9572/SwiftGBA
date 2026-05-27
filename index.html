@@ -1677,7 +1677,7 @@ function startEmulator(romURL, displayName) {
   window.EJS_gameTitle     = displayName; // used by EJS for save file naming
   window.EJS_backgroundColor = '#000000';
   window.EJS_color         = '#00bcf0';
-  window.EJS_volume        = isMuted ? 0 : 0.8;
+  window.EJS_volume        = isMuted ? 0 : 1;
 
   // Periodic battery-save flush — 30s interval is reasonable for GBA saves
   // This calls saveSaveFiles() internally and fires EJS_onSaveUpdate
@@ -1708,6 +1708,36 @@ function startEmulator(romURL, displayName) {
       // Reapply speed/mute if changed before boot
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       applyMuteToEmu(isMuted);
+      const emu = getEmu();
+
+try {
+
+  // Force browser audio resume
+  if (emu?.gameManager?.audioContext?.state === 'suspended') {
+    await emu.gameManager.audioContext.resume();
+  }
+
+  // Force volume
+  if (typeof emu.changeVolume === 'function') {
+    emu.changeVolume(1);
+  }
+
+  if (emu?.gameManager?.setVolume) {
+    emu.gameManager.setVolume(1);
+  }
+
+  // Some EJS builds mute internally
+  if (emu?.gameManager?.audio) {
+    emu.gameManager.audio.muted = false;
+  }
+
+  console.log('Audio initialized');
+
+} catch(e) {
+
+  console.error('Audio init failed', e);
+
+}
       startAutosave();
     }, 150);
   };
