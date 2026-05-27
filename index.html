@@ -845,7 +845,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <div class="sidebar-section">
         <div class="sidebar-section-title">
           Save States
-          <span class="sidebar-section-badge" id="save-slots-badge">6 slots</span>
+          <span class="sidebar-section-badge" id="save-slots-badge">7 slots</span>
         </div>
         <div class="save-slots" id="save-slots">
           <div class="save-slot-empty">Load a game first</div>
@@ -877,7 +877,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
  <button class="sb-btn accent-btn" id="sb-import-state">
 
- <span class="sb-btn-icon">📂</span>
+ <span class="sb-btn-icon">📂⚙</span>
 
  <span class="sb-btn-text">
  Load Manual State
@@ -917,7 +917,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           <span class="sb-btn-arrow">›</span>
         </button>
         <button class="sb-btn" id="sb-load-new">
-          <span class="sb-btn-icon">📁</span>
+          <span class="sb-btn-icon">📥</span>
           <span class="sb-btn-text">Load New ROM<span class="sb-btn-sub">Open file picker</span></span>
           <span class="sb-btn-arrow">›</span>
         </button>
@@ -943,8 +943,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <span class="key-chip">F</span><span class="key-desc">Fullscreen</span>
       <span class="key-chip">C</span><span class="key-desc">Screenshot</span>
       <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar</span>
-      <span class="key-chip">1–6</span><span class="key-desc">Quick-save slot 1–6</span>
-      <span class="key-chip">Ctrl+1–6</span><span class="key-desc">Quick-load slot 1–6</span>
+      <span class="key-chip">Alt+1–6</span><span class="key-desc">Quick-save slot 1–6</span>
+<span class="key-chip">Ctrl+1–6</span><span class="key-desc">Quick-load slot 1–6</span>
+<span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave</span>
       <span class="key-chip">?</span><span class="key-desc">This overlay</span>
       <span class="key-chip">Esc</span><span class="key-desc">Close overlay</span>
     </div>
@@ -977,7 +978,7 @@ const DB_VER      = 1;
 const S_ROMS      = 'roms';
 const S_META      = 'meta';
 const S_STATES    = 'states';
-const NUM_SLOTS   = 6;
+const NUM_SLOTS   = 7;
 const AUTOSAVE_MS = 45000;
 const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
 const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
@@ -1657,23 +1658,33 @@ function updateToolbarPill(paused) {
 ══════════════════════════════════════════════════════════════ */
 function startAutosave() {
   clearInterval(autosaveTimer);
+
   autosaveTimer = setInterval(async () => {
+
     if (!ejsReady || isPaused || !currentRomName || !db) return;
+
     const stateData = captureStateData();
     if (!stateData) return;
+
     const thumb = captureThumbnail();
+
     try {
-     await dbPut(S_STATES, {
-  id: `${currentRomName}::autosave`,
-  data: stateData,
-  ts: Date.now(),
-  thumb,
-  saveName: 'Auto-save',
-  slotIdx: 1,
-});
+
+      await dbPut(S_STATES, {
+        id: `${currentRomName}::slot0`,
+        data: stateData,
+        ts: Date.now(),
+        thumb,
+        saveName: 'Slot 0 - Auto',
+        slotIdx: 0,
+        auto: true,
+      });
+
       buildSaveSlots();
       refreshCacheLoadSub();
+
     } catch(e) {}
+
   }, AUTOSAVE_MS);
 }
 
@@ -1849,14 +1860,15 @@ async function buildSaveSlots() {
   let filledCount = 0;
 
 /* ═════════════════════════════════════════════
-   AUTOSAVE CARD
+   SLOT 0 — AUTOSAVE
 ═════════════════════════════════════════════ */
+
 let autoMeta = null;
 
 try {
   autoMeta = await dbGet(
     S_STATES,
-    `${currentRomName}::autosave`
+    `${currentRomName}::slot0`
   );
 } catch(e) {}
 
@@ -1868,41 +1880,46 @@ if (autoMeta) {
     'save-slot has-data autosave-slot';
 
   const thumbHtml = autoMeta.thumb
-    ? `<img src="${autoMeta.thumb}" alt="Autosave">`
+    ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
     : `<span class="save-slot-thumb-empty">💾</span>`;
 
   autoEl.innerHTML = `
     <div class="save-slot-left">
+
       <div class="save-slot-thumb">
         ${thumbHtml}
-        <span class="save-slot-thumb-num">A</span>
+        <span class="save-slot-thumb-num">0</span>
       </div>
 
       <div class="save-slot-info">
+
         <div class="save-slot-name">
-          Auto Save
+          Slot 0 - Auto
         </div>
 
         <div class="save-slot-time">
           ${timeAgo(autoMeta.ts)}
         </div>
+
       </div>
     </div>
 
     <div class="save-slot-actions">
+
       <button
         class="slot-btn load"
-        title="Load autosave"
+        title="Load Slot 0"
       >
         LOAD
       </button>
 
       <button
         class="slot-btn del"
-        title="Delete autosave"
+        title="Delete Slot 0"
       >
         ✕
       </button>
+
     </div>
   `;
 
@@ -1914,7 +1931,7 @@ if (autoMeta) {
 
       if (!ok) {
         toast(
-          'Could not load autosave',
+          'Could not load Slot 0',
           'error'
         );
         return;
@@ -1923,10 +1940,10 @@ if (autoMeta) {
       if (isPaused)
         updatePauseUI(false);
 
-      showStateToast('Autosave loaded');
+      showStateToast('Slot 0 loaded');
 
       toast(
-        'Autosave restored ✓',
+        'Slot 0 restored ✓',
         'success'
       );
     });
@@ -1939,11 +1956,11 @@ if (autoMeta) {
 
         await dbDel(
           S_STATES,
-          `${currentRomName}::autosave`
+          `${currentRomName}::slot0`
         );
 
         toast(
-          'Autosave deleted',
+          'Slot 0 deleted',
           'info'
         );
 
@@ -2200,15 +2217,65 @@ async function quickSaveSlot(i) {
 }
 
 async function quickLoadSlot(i) {
-  if (!currentRomName || !ejsReady) return;
+
+  if (!currentRomName || !ejsReady)
+    return;
+
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-    if (!meta || !meta.data) { toast(`Slot ${i} is empty`, 'warn'); return; }
+
+    const meta = await dbGet(
+      S_STATES,
+      `${currentRomName}::slot${i}`
+    );
+
+    // EMPTY SLOT FIX
+    if (
+      !meta ||
+      !meta.data ||
+      (
+        meta.data.byteLength === 0 &&
+        meta.data.length === 0
+      )
+    ) {
+
+      toast(
+        `Error: Slot ${i} is empty`,
+        'error'
+      );
+
+      showStateToast(
+        `Slot ${i} empty`
+      );
+
+      return;
+    }
+
     const ok = applyStateData(meta.data);
-    if (!ok) { toast('Could not apply state', 'error'); return; }
-    if (isPaused) updatePauseUI(false);
-    showStateToast(`Slot ${i} loaded`);
-  } catch(e) { toast('Quick-load failed', 'error'); }
+
+    if (!ok) {
+
+      toast(
+        'Could not apply state',
+        'error'
+      );
+
+      return;
+    }
+
+    if (isPaused)
+      updatePauseUI(false);
+
+    showStateToast(
+      `Slot ${i} loaded`
+    );
+
+  } catch(e) {
+
+    toast(
+      'Quick-load failed',
+      'error'
+    );
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2345,15 +2412,33 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
   if (!inEmu || keysOpen) return;
+// ALT+1-6 = quick-save
+// CTRL+1-6 = quick-load
 
-  // Digit keys 1-6: quick-save (no modifier) / quick-load (Ctrl)
-  if (/^[1-6]$/.test(e.key) && !e.altKey && !e.shiftKey) {
+if (/^[1-6]$/.test(e.key)) {
+
+  const slot = parseInt(e.key, 10);
+
+  // QUICK SAVE
+  if (e.altKey) {
+
     e.preventDefault();
-    const slot = parseInt(e.key, 10);
-    if (e.ctrlKey || e.metaKey) quickLoadSlot(slot);
-    else quickSaveSlot(slot);
+
+    quickSaveSlot(slot);
+
     return;
   }
+
+  // QUICK LOAD
+  if (e.ctrlKey || e.metaKey) {
+
+    e.preventDefault();
+
+    quickLoadSlot(slot);
+
+    return;
+  }
+}
 
   switch (e.key) {
     case 'm': case 'M': $('sb-mute').click(); break;
