@@ -1311,6 +1311,30 @@ function tryUnlockAudio() {
   if (!foundSuspended && candidates.length > 0) _audioUnlocked = true;
 }
 
+function forceResumeAllAudioContexts() {
+  // Re-create a user-gesture-linked AudioContext to unlock audio pipeline
+  try {
+    const unlockCtx = new AudioContext();
+    const buf = unlockCtx.createBuffer(1, 1, 22050);
+    const src = unlockCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(unlockCtx.destination);
+    src.start(0);
+    unlockCtx.resume().then(() => unlockCtx.close()).catch(() => {});
+  } catch(e) {}
+  // Resume any existing suspended contexts
+  const emu = getEmu();
+  const toResume = new Set();
+  if (emu) {
+    [emu.audioContext,
+     emu.gameManager && emu.gameManager.audioContext,
+     emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
+     emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
+    ].forEach(ac => { if (ac instanceof AudioContext) toResume.add(ac); });
+  }
+  toResume.forEach(ac => ac.resume().catch(() => {}));
+}
+
 function scheduleAudioPolling() {
   _audioUnlocked = false;
   clearTimeout(_audioRetryTimer);
@@ -1648,6 +1672,8 @@ idleScreen.addEventListener('drop', e => {
 });
 idleScreen.addEventListener('click', e => {
   if (e.target.closest('#continue-bar') || e.target.closest('#ctx-menu')) return;
+  // Pre-warm AudioContext on the user click that opens the file picker
+  try { const ac = new AudioContext(); ac.resume().then(() => ac.close()); } catch(e2) {}
   $('rom-input').click();
 });
 $('rom-input').addEventListener('change', e => {
@@ -1775,7 +1801,6 @@ function startEmulator(romURL, displayName) {
   );
 
   window.EJS_onGameStart = () => {
-    tryUnlockAudio();
     ejsReady = true;
     buildSaveSlots();
     hideLoadIndicator();
@@ -1785,7 +1810,9 @@ function startEmulator(romURL, displayName) {
       if (isMuted) applyMuteToEmu(true);
       scheduleAudioPolling();
       startAutosave();
-    }, 200);
+      // Force resume all AudioContexts on game start
+      forceResumeAllAudioContexts();
+    }, 400);
   };
 
   setTimeout(() => {
