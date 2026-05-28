@@ -1312,27 +1312,63 @@ function tryUnlockAudio() {
 }
 
 function forceResumeAllAudioContexts() {
-  // Re-create a user-gesture-linked AudioContext to unlock audio pipeline
+  // Silently play a zero-length buffer to satisfy autoplay policy
   try {
-    const unlockCtx = new AudioContext();
-    const buf = unlockCtx.createBuffer(1, 1, 22050);
-    const src = unlockCtx.createBufferSource();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
     src.buffer = buf;
-    src.connect(unlockCtx.destination);
+    src.connect(ctx.destination);
     src.start(0);
-    unlockCtx.resume().then(() => unlockCtx.close()).catch(() => {});
+    src.onended = () => { try { ctx.close(); } catch(e) {} };
   } catch(e) {}
-  // Resume any existing suspended contexts
-  const emu = getEmu();
-  const toResume = new Set();
-  if (emu) {
-    [emu.audioContext,
-     emu.gameManager && emu.gameManager.audioContext,
-     emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
-     emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
-    ].forEach(ac => { if (ac instanceof AudioContext) toResume.add(ac); });
+
+  // Resume every AudioContext we can find — poll window properties
+  const seen = new Set();
+  function resumeAC(ac) {
+    if (!ac || !(ac instanceof AudioContext) || seen.has(ac)) return;
+    seen.add(ac);
+    if (ac.state !== 'running') ac.resume().catch(() => {});
   }
-  toResume.forEach(ac => ac.resume().catch(() => {}));
+
+  const emu = getEmu();
+  if (emu) {
+    resumeAC(emu.audioContext);
+    if (emu.gameManager) {
+      resumeAC(emu.gameManager.audioContext);
+      if (emu.gameManager.audio) resumeAC(emu.gameManager.audio.context);
+    }
+    if (emu.Module) {
+      if (emu.Module.SDL2) resumeAC(emu.Module.SDL2.audioContext);
+      // EmulatorJS sometimes stores it here
+      if (emu.Module.audioContext) resumeAC(emu.Module.audioContext);
+    }
+  }
+
+  // Brute-force scan window for any AudioContext
+  try {
+    Object.keys(window).forEach(k => {
+      try {
+        const v = window[k];
+        if (!v) return;
+        resumeAC(v);
+        if (typeof v === 'object') {
+          resumeAC(v.audioContext);
+          resumeAC(v._audioCtx);
+          resumeAC(v.context);
+          if (v.gameManager) resumeAC(v.gameManager.audioContext);
+        }
+      } catch(_) {}
+    });
+  } catch(_) {}
+
+  // Also set volume directly on whatever we find
+  const vol = isMuted ? 0 : 1;
+  if (emu) {
+    try { if (typeof emu.changeVolume === 'function') emu.changeVolume(vol); } catch(_) {}
+    try { if (emu.gameManager?.setVolume) emu.gameManager.setVolume(vol); } catch(_) {}
+    try { if (emu.gameManager?.volumeNode) emu.gameManager.volumeNode.gain.value = vol; } catch(_) {}
+  }
 }
 
 function scheduleAudioPolling() {
@@ -1768,6 +1804,8 @@ async function launchROM(file) {
   refreshCacheLoadSub();
   startPlaytimeTracking();
   showLoadIndicator('Loading core…');
+  // Store the gesture timestamp so we can reference it later
+  window._lastUserGestureTime = Date.now();
   startEmulator(currentRomUrl, displayName);
 }
 
@@ -1808,11 +1846,16 @@ function startEmulator(romURL, displayName) {
     setTimeout(() => {
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
       if (isMuted) applyMuteToEmu(true);
-      scheduleAudioPolling();
       startAutosave();
-      // Force resume all AudioContexts on game start
       forceResumeAllAudioContexts();
     }, 400);
+    // Keep retrying audio unlock every second for 15 seconds
+    let audioAttempts = 0;
+    const audioInterval = setInterval(() => {
+      forceResumeAllAudioContexts();
+      tryUnlockAudio();
+      if (++audioAttempts >= 15) clearInterval(audioInterval);
+    }, 1000);
   };
 
   setTimeout(() => {
