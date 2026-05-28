@@ -8,16 +8,9 @@
 <title>SwiftGBA</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <style>
-/* ═══════════════════════════════════════════════════════════
-   FONTS
-   ═══════════════════════════════════════════════════════════ */
 @font-face{font-family:Clash Display;src:url(https://rustygba.com/fonts/ClashDisplay-Semibold.woff2)format("woff2");font-weight:600;font-style:normal;font-display:swap}
 @font-face{font-family:Satoshi;src:url(https://rustygba.com/fonts/Satoshi-Variable.woff2)format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
 @font-face{font-family:Departure Mono;src:url(https://rustygba.com/fonts/DepartureMono-Regular.woff2)format("woff2");font-weight:400;font-style:normal;font-display:swap}
-
-/* ═══════════════════════════════════════════════════════════
-   DESIGN TOKENS
-   ═══════════════════════════════════════════════════════════ */
 :root{
   --bg-deep:#08090d;--bg-base:#0e1018;--bg-panel:#161920;
   --bg-elevated:#1e2128;--bg-input:#23262e;
@@ -42,10 +35,6 @@
 html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-ui);font-size:var(--base);line-height:1.5;-webkit-font-smoothing:antialiased}
 .font-display{font-family:var(--font-display)}
 .font-mono{font-family:var(--font-mono)}
-
-/* ═══════════════════════════════════════════════════════════
-   IDLE / LANDING
-   ═══════════════════════════════════════════════════════════ */
 #idle-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
@@ -55,7 +44,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 #idle-screen.fade-out{opacity:0;transform:scale(1.04);pointer-events:none;}
 #idle-screen.hidden{ display:none; }
-
 .landing-bg{
   position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
@@ -66,7 +54,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   animation:bg-breathe 14s ease-in-out infinite alternate;
 }
 @keyframes bg-breathe{0%{opacity:.88}50%{opacity:1}100%{opacity:.82}}
-
 .landing-grid{
   position:absolute;inset:0;z-index:0;pointer-events:none;
   background-image:
@@ -79,7 +66,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   animation:grid-drift 28s linear infinite;
 }
 @keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(56px)}}
-
 .landing-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
 .landing-orb-1{width:600px;height:600px;top:-20%;left:-14%;background:radial-gradient(circle,rgba(0,196,248,.1) 0%,transparent 70%);filter:blur(80px);animation:orb1 20s ease-in-out infinite alternate}
 .landing-orb-2{width:500px;height:500px;bottom:-14%;right:-8%;background:radial-gradient(circle,rgba(100,0,230,.11) 0%,transparent 70%);filter:blur(70px);animation:orb2 16s ease-in-out infinite alternate}
@@ -87,7 +73,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(6%,10%) scale(1.12)}}
 @keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-7%,-6%) scale(1.18)}}
 @keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.5}to{transform:translate(4%,-5%) scale(1.25);opacity:1}}
-
 #idle-screen::before{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.032;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -99,7 +84,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   animation:scan-drift 6s linear infinite;
 }
 @keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
-
 .landing-sweep{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 .landing-sweep::after{
   content:'';position:absolute;left:0;right:0;height:3px;
@@ -108,13 +92,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 0 20px rgba(0,196,248,.3);
 }
 @keyframes sweep-line{0%{top:-10%;opacity:0}10%{opacity:1}90%{opacity:.3}100%{top:110%;opacity:0}}
-
 .corner-bracket{position:absolute;z-index:3;pointer-events:none;width:40px;height:40px;opacity:.18}
 .corner-bracket.tl{top:20px;left:20px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
 .corner-bracket.tr{top:20px;right:20px;border-top:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
 .corner-bracket.bl{bottom:20px;left:20px;border-bottom:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
 .corner-bracket.br{bottom:20px;right:20px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
-
 .hex-deco{position:absolute;z-index:2;pointer-events:none;font-family:var(--font-mono);font-size:9px;color:rgba(0,196,248,.12);letter-spacing:.1em;user-select:none}
 .hex-deco.d1{top:12%;left:8%;animation:hex-float1 11s ease-in-out infinite}
 .hex-deco.d2{top:22%;right:5%;animation:hex-float2 14s ease-in-out infinite}
@@ -122,9 +104,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .hex-deco.d4{bottom:18%;right:9%;animation:hex-float2 13s ease-in-out infinite 1s}
 @keyframes hex-float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes hex-float2{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
-
 #particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
-
 .showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
 .showcase-bg{position:absolute;inset:0;transition:background 1.2s ease}
 .showcase-pulse{
@@ -141,7 +121,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .showcase-slash::after{right:-14px;opacity:.3}
 .showcase-slash2{position:absolute;top:-20%;right:22%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none}
 .showcase-slash2::before{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.02)}
-
 .showcase-title{position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:8px;z-index:3}
 .showcase-title.slam{animation:title-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-title.out{animation:title-exit .22s ease-in forwards}
@@ -153,7 +132,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .showcase-genre{display:inline-flex;align-items:center;gap:6px;margin-top:2px;font-size:10px;font-family:var(--font-mono);color:rgba(0,196,248,.7);letter-spacing:.1em}
 .showcase-underline{width:0;height:2px;border-radius:2px;margin-top:2px;animation:underline-grow .45s ease-out .18s forwards}
 @keyframes underline-grow{0%{width:0}to{width:56px}}
-
 .showcase-art{position:absolute;right:7vw;top:18%;z-index:3}
 .showcase-art.slam{animation:art-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-art.out{animation:art-exit .22s ease-in forwards}
@@ -162,7 +140,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.1) contrast(1.05);box-shadow:0 24px 72px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06),0 0 60px rgba(0,196,248,.08);user-select:none;pointer-events:none}
 .showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(4px);border-radius:10px;pointer-events:none}
 .showcase-art-glow{position:absolute;inset:-20px;border-radius:20px;background:radial-gradient(circle,var(--art-glow,rgba(0,196,248,.15)) 0%,transparent 70%);filter:blur(20px);z-index:-1;transition:background 1.2s ease}
-
 .gba-shell{
   --gba-screen-left:29.4%;--gba-screen-top:22.2%;
   --gba-screen-width:40.6%;--gba-screen-height:45.1%;
@@ -200,11 +177,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;animation:led-idle-blink 4s ease-in-out infinite}
 .gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow);animation:none}
 @keyframes led-idle-blink{0%,88%,100%{background:rgba(0,232,90,.08);box-shadow:none}90%{background:rgba(0,232,90,.35);box-shadow:0 0 4px rgba(0,232,90,.4)}}
-
 #idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 70px rgba(0,196,248,.7))}
 #idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
 #idle-screen.drag-over .gba-screen-overlay{background:rgba(0,196,248,.08)}
-
 .landing-brand{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
 @keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(14px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
 .landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1;position:relative}
@@ -219,7 +194,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 .landing-version-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:rgba(0,196,248,.5);animation:badge-dot-blink 2s ease-in-out infinite}
 @keyframes badge-dot-blink{0%,100%{opacity:.4}50%{opacity:1}}
-
 .landing-controls{
   display:flex;align-items:center;gap:10px;font-size:var(--xs);color:var(--text-ghost);
   z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:500px;
@@ -243,7 +217,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   letter-spacing:.08em;transform:translate(-5vw);animation:brand-in 1s .6s ease both;
 }
 .landing-privacy::before{content:'🔒';font-size:10px}
-
 #continue-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 var(--sp5) var(--sp4);display:none}
 #continue-bar.visible{display:block}
 #continue-bar::before{content:'';display:block;height:80px;background:linear-gradient(to bottom,transparent,rgba(6,8,11,.97));pointer-events:none;margin-bottom:var(--sp3)}
@@ -253,7 +226,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-label-count{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;font-size:9px;color:var(--text-ghost);letter-spacing:0;text-transform:none;margin-left:4px}
 .continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .continue-list::-webkit-scrollbar{display:none}
-
 .continue-card{
   flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
   background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,.03) 100%);
@@ -284,7 +256,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-card-menu{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:var(--text-ghost);font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast) ease,background var(--fast) ease,color var(--fast) ease}
 .continue-card:hover .continue-card-menu{opacity:1}
 .continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
-
 .ctx-menu{
   position:fixed;z-index:500;
   background:rgba(22,25,32,.97);backdrop-filter:blur(24px);
@@ -299,7 +270,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .ctx-item.danger:hover{color:var(--error)}
 .ctx-item-icon{width:16px;text-align:center;font-size:12px;flex-shrink:0;opacity:.7}
 .ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
-
 .modal-overlay{
   position:fixed;inset:0;z-index:600;
   background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
@@ -336,7 +306,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .modal-btn.primary:hover{background:#00d5ff;border-color:#00d5ff}
 .modal-btn.danger{background:rgba(232,64,87,.1);border-color:rgba(232,64,87,.28);color:var(--error)}
 .modal-btn.danger:hover{background:rgba(232,64,87,.2);border-color:var(--error)}
-
 .slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
 .slot-picker-item{display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .18s ease}
 .slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(2px)}
@@ -356,17 +325,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(2px)}
 .slot-picker-item.danger-item:hover .slot-picker-name{color:var(--error)}
 .autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
-
-/* ═══════════════════════════════════════════════════════════
-   EMULATOR SCREEN
-   ═══════════════════════════════════════════════════════════ */
 #emu-screen{
   display:none;position:fixed;inset:0;z-index:100;background:#000;
   opacity:0;transition:opacity .3s ease;
 }
 #emu-screen.active{display:flex;flex-direction:column}
 #emu-screen.visible{opacity:1}
-
 #emu-toolbar{
   display:flex;align-items:center;justify-content:space-between;
   height:var(--toolbar-h);padding:0 var(--sp5);
@@ -410,21 +374,13 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   animation:tooltip-in .12s ease;
 }
 @keyframes tooltip-in{0%{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
 #emu-body{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
-
 #emu-wrap{
   flex:1;display:flex;align-items:center;justify-content:center;
   overflow:hidden;position:relative;background:#000;
   min-width:0;min-height:0;
 }
-
-#game{
-  width:100%;
-  height:100%;
-  position:relative;
-}
-
+#game{width:100%;height:100%;position:relative;}
 #sav-drop-overlay{
   position:absolute;inset:0;z-index:20;
   background:rgba(0,196,248,.08);border:2px dashed var(--accent);
@@ -433,7 +389,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   backdrop-filter:blur(4px);font-family:var(--font-display);
 }
 #sav-drop-overlay.visible{display:flex}
-
 #ff-badge{
   position:absolute;top:var(--sp3);left:50%;transform:translateX(-50%);
   background:rgba(0,0,0,.82);border:1px solid var(--accent);border-radius:20px;
@@ -444,11 +399,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 #ff-badge.visible{display:block}
 @keyframes ff-pop{0%{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
-
 #ss-flash{position:absolute;inset:0;z-index:30;background:#fff;pointer-events:none;opacity:0}
 #ss-flash.pop{animation:ss-flash .4s ease forwards}
 @keyframes ss-flash{0%{opacity:.85}to{opacity:0}}
-
 #state-toast{
   position:absolute;top:var(--sp3);right:var(--sp4);z-index:25;
   background:rgba(0,0,0,.88);border:1px solid rgba(0,232,90,.4);border-radius:var(--radius-md);
@@ -461,13 +414,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #state-toast.warn-toast{border-color:rgba(245,158,11,.4);color:var(--warn)}
 #state-toast.visible{display:flex}
 @keyframes state-toast-in{0%{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-
 .ejs_menu_bar,.ejs_buttons_container,.ejs_bottom_bar,
 .ejs-bar-menu,.ejs-top-bar,.ejs_control_bar,
 #ejs_controls_bar,.ejs-bar,
 .ejs_ui_container>.ejs_menu,
 .ejs_volume_slider,.ejs_netplay{display:none!important;height:0!important;overflow:hidden!important}
-
 #sidebar-tab{
   position:relative;width:20px;flex-shrink:0;
   background:var(--bg-panel);border-left:1px solid var(--border-subtle);
@@ -477,7 +428,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 #sidebar-tab:hover{background:var(--bg-elevated);color:var(--text-primary)}
 #sidebar-tab .tab-arrow{transition:transform var(--normal) var(--ease-spring);line-height:1}
-
 #sidebar{
   width:var(--sidebar-w);flex-shrink:0;
   background:var(--bg-panel);border-left:1px solid var(--border-subtle);
@@ -487,8 +437,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 #emu-body.sidebar-collapsed #sidebar{width:0;opacity:0;pointer-events:none;border-left:none}
 #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow{transform:rotate(180deg)}
-
-/* Sidebar tab nav (from index 3) */
 .sidebar-tab-nav{
   display:flex;flex-shrink:0;
   border-bottom:1px solid var(--border-subtle);
@@ -505,7 +453,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 .sidebar-tab-btn:hover{color:var(--text-secondary);background:rgba(255,255,255,.03)}
 .sidebar-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-
 .sidebar-panel{
   flex:1;overflow-y:auto;overflow-x:hidden;
   scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;
@@ -514,7 +461,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sidebar-panel.active{display:flex}
 .sidebar-panel::-webkit-scrollbar{width:4px}
 .sidebar-panel::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
-
 .sidebar-game-header{
   padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--border-subtle);
   background:var(--bg-elevated);flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
@@ -528,7 +474,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-game-info{flex:1;min-width:0}
 .sidebar-game-title{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sidebar-game-size{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);margin-top:2px}
-
 .sidebar-section{padding:var(--sp4);border-bottom:1px solid var(--border-subtle)}
 .sidebar-section:last-child{border-bottom:none}
 .sidebar-section-title{
@@ -541,7 +486,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   color:var(--accent);border-radius:20px;padding:1px 7px;
   font-size:9px;letter-spacing:.04em;text-transform:none;
 }
-
 .sb-btn{
   width:100%;display:flex;align-items:center;gap:var(--sp3);
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
@@ -566,13 +510,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn-arrow{color:var(--text-ghost);font-size:11px;flex-shrink:0;transition:transform var(--fast),color var(--fast)}
 .sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
 .sb-btn.danger-btn:hover .sb-btn-arrow{color:var(--error)}
-
 .status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all .4s}
 .status-dot.on{background:var(--led-green);box-shadow:0 0 5px var(--led-green-glow);animation:status-pulse 2.5s ease-in-out infinite}
 .status-dot.paused{background:var(--warn);box-shadow:0 0 5px rgba(245,158,11,.4)}
 @keyframes status-pulse{0%,100%{box-shadow:0 0 4px var(--led-green-glow)}50%{box-shadow:0 0 10px var(--led-green-glow),0 0 18px rgba(0,232,90,.15)}}
-
 .speed-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp2)}
 .speed-label{font-size:var(--sm);color:var(--text-secondary)}
 .speed-val{font-family:var(--font-mono);font-size:var(--sm);color:var(--accent);min-width:40px;text-align:right}
@@ -592,7 +534,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 .speed-preset:hover,.speed-preset.active{border-color:var(--accent);color:var(--accent);background:rgba(0,196,248,.08)}
 .speed-preset.ff-active{border-color:var(--warn)!important;color:var(--warn)!important;background:rgba(245,158,11,.08)!important}
-
 .save-slots{
   display:flex;flex-direction:column;gap:8px;
   width:100%;max-height:440px;overflow-y:auto;
@@ -616,17 +557,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot:hover::before{opacity:1}
 .save-slot:hover{transform:translateY(-2px);border-color:rgba(0,196,248,.22);box-shadow:0 10px 28px rgba(0,0,0,.28),0 0 12px rgba(0,196,248,.09)}
 .save-slot.has-data{border-color:rgba(0,196,248,.18);background:linear-gradient(160deg,rgba(0,196,248,.07),rgba(255,255,255,.02))}
-
 .save-slot-thumb{width:52px;height:40px;border-radius:6px;flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative}
 .save-slot-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
 .save-slot-thumb-empty{font-size:18px;opacity:.2;line-height:1}
 .save-slot-thumb-num{position:absolute;bottom:2px;right:3px;font-family:var(--font-mono);font-size:9px;font-weight:700;color:rgba(0,196,248,.9);line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
-
 .save-slot-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .save-slot-info{flex:1;min-width:0}
 .save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
 .save-slot-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .slot-btn{
   border:none;outline:none;cursor:pointer;
@@ -645,16 +583,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.45);background:rgba(232,64,87,.12);transform:translateY(-1px)}
 .save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
 .autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
-
 .playtime-display{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);color:var(--text-ghost);font-family:var(--font-mono);margin-top:var(--sp2)}
-
 .sb-divider{height:1px;background:var(--border-subtle);margin:var(--sp2) 0}
-
 #rom-input,#sav-input,#state-input{display:none!important;position:fixed;left:-9999px}
-
-/* ═══════════════════════════════════════════════════════════
-   SETTINGS PANEL STYLES (from index 3)
-   ═══════════════════════════════════════════════════════════ */
 .setting-row{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
@@ -677,7 +608,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 1px 4px rgba(0,0,0,.4);
 }
 .toggle-switch input:checked + .toggle-track::after{transform:translateX(16px)}
-
 .ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
 .ctrl-bind{
   display:flex;align-items:center;justify-content:space-between;
@@ -714,10 +644,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   transition:border-color var(--fast);
 }
 .setting-select:focus,.setting-select:hover{border-color:var(--accent)}
-
-/* ═══════════════════════════════════════════════════════════
-   CONFIRM DELETE MODAL
-   ═══════════════════════════════════════════════════════════ */
 .delete-confirm-overlay{position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;animation:fade-in .15s ease forwards}
 .delete-confirm-box{background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);padding:var(--sp5);min-width:320px;max-width:88vw;animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.7)}
 .delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
@@ -725,10 +651,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .delete-confirm-desc{font-size:var(--sm);color:var(--text-secondary);text-align:center;line-height:1.6;margin-bottom:var(--sp5)}
 .delete-confirm-actions{display:flex;gap:var(--sp2)}
 .delete-confirm-actions .modal-btn{flex:1;justify-content:center;display:flex}
-
-/* ═══════════════════════════════════════════════════════════
-   KEYBOARD SHORTCUT OVERLAY
-   ═══════════════════════════════════════════════════════════ */
 #keys-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;animation:fade-in .18s ease}
 #keys-overlay.visible{display:flex}
 .keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:360px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
@@ -737,10 +659,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .keys-grid{display:grid;grid-template-columns:auto 1fr;gap:var(--sp2) var(--sp4)}
 .key-chip{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--border-mid);border-radius:4px;background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);color:var(--text-secondary);white-space:nowrap}
 .key-desc{font-size:var(--sm);color:var(--text-secondary);align-self:center}
-
-/* ═══════════════════════════════════════════════════════════
-   TOAST STACK
-   ═══════════════════════════════════════════════════════════ */
 #toast-stack{position:fixed;bottom:var(--sp5);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:var(--sp2);z-index:700;pointer-events:none;align-items:center}
 .toast{padding:8px 16px;border-radius:var(--radius-md);font-size:var(--sm);font-family:var(--font-mono);animation:toast-in .2s var(--ease-spring) forwards;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.success{background:rgba(0,232,90,.13);border:1px solid var(--led-green);color:var(--led-green)}
@@ -750,17 +668,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes toast-in{0%{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toast-out{0%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.88)}}
 .toast.out{animation:toast-out .18s ease forwards}
-
-/* ═══════════════════════════════════════════════════════════
-   LOADING INDICATOR
-   ═══════════════════════════════════════════════════════════ */
 #load-indicator{position:absolute;bottom:var(--sp4);left:50%;transform:translateX(-50%);display:none;align-items:center;gap:var(--sp2);font-size:var(--xs);font-family:var(--font-mono);color:var(--text-tertiary);z-index:20}
 #load-indicator.visible{display:flex}
 .load-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:load-bounce 1.2s ease-in-out infinite}
 .load-dot:nth-child(2){animation-delay:.2s}
 .load-dot:nth-child(3){animation-delay:.4s}
 @keyframes load-bounce{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.8);opacity:1}}
-
 @media(prefers-reduced-motion:reduce){
   .showcase-wipe,.showcase-flash{display:none}
   .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
@@ -775,7 +688,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 <input type="file" id="state-input" accept=".state,.STATE" style="display:none">
 <input type="file" id="sav-input" accept=".sav,.SAV,.srm,.SRM,.eep,.EEP,.fla,.FLA" style="display:none">
 
-<!-- ══════════════ IDLE / LANDING ══════════════ -->
 <div id="idle-screen">
   <div class="landing-bg"></div>
   <div class="landing-grid"></div>
@@ -783,19 +695,15 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="landing-orb landing-orb-2"></div>
   <div class="landing-orb landing-orb-3"></div>
   <div class="landing-sweep"></div>
-
   <div class="corner-bracket tl"></div>
   <div class="corner-bracket tr"></div>
   <div class="corner-bracket bl"></div>
   <div class="corner-bracket br"></div>
-
   <div class="hex-deco d1">0x0800<br>GBA_ROM<br>0x03FF</div>
   <div class="hex-deco d2">ARM7TDMI<br>16.78MHz<br>0xC000</div>
   <div class="hex-deco d3">EWRAM<br>256KB<br>0x0200</div>
   <div class="hex-deco d4">VRAM<br>96KB<br>0x06FF</div>
-
   <canvas id="particles-canvas"></canvas>
-
   <div class="showcase">
     <div class="showcase-bg"    id="showcase-bg"></div>
     <div class="showcase-pulse" id="showcase-pulse"></div>
@@ -814,7 +722,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <div class="showcase-art-reflect"></div>
     </div>
   </div>
-
   <div class="gba-shell" id="gba-shell">
     <div class="gba-screen-overlay">
       <div class="gba-screen-content">
@@ -826,7 +733,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <img src="https://rustygba.com/gba.webp" alt="Game Boy Advance" class="gba-image" draggable="false"/>
     <div class="gba-power-led" id="power-led"></div>
   </div>
-
   <div class="landing-brand">
     <h1 class="landing-title font-display" data-text="SwiftGBA."><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
     <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
@@ -850,7 +756,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="landing-disclaimer">
     Your ROM never leaves your device — everything runs locally in your browser.
   </div>
-
   <div id="continue-bar">
     <div class="continue-header">
       <div class="continue-label">
@@ -863,7 +768,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   </div>
 </div>
 
-<!-- ══════════════ EMULATOR ══════════════ -->
 <div id="emu-screen">
   <div id="emu-toolbar">
     <span class="toolbar-logo font-display">Swift<span class="accent">GBA</span><span class="dot">.</span></span>
@@ -908,15 +812,13 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     </div>
 
     <div id="sidebar">
-      <!-- Tab nav -->
       <div class="sidebar-tab-nav">
         <button class="sidebar-tab-btn active" data-panel="game">Game</button>
         <button class="sidebar-tab-btn" data-panel="settings">Settings</button>
       </div>
 
-      <!-- ══ GAME PANEL ══ -->
+      <!-- GAME PANEL -->
       <div class="sidebar-panel active" id="panel-game">
-
         <div class="sidebar-game-header">
           <div class="sb-cover-art" id="sb-cover-art"><span id="sb-cover-fallback">🎮</span></div>
           <div class="sb-game-info">
@@ -924,8 +826,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <div class="sidebar-game-size"  id="sb-game-size">—</div>
           </div>
         </div>
-
-        <!-- Status -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Status</div>
           <div class="status-row">
@@ -934,8 +834,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           </div>
           <div class="playtime-display" id="playtime-display">⏱ 0h 0m</div>
         </div>
-
-        <!-- Controls -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Controls</div>
           <button class="sb-btn" id="sb-pause">
@@ -948,19 +846,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <span class="sb-btn-text">Restart Game<span class="sb-btn-sub">Soft reset</span></span>
             <span class="sb-btn-arrow">›</span>
           </button>
-          <button class="sb-btn" id="sb-mute">
-            <span class="sb-btn-icon">🔊</span>
-            <span class="sb-btn-text">Toggle Mute<span class="sb-btn-sub">Keyboard: M</span></span>
-            <span class="sb-btn-arrow">›</span>
-          </button>
           <button class="sb-btn" id="sb-screenshot">
             <span class="sb-btn-icon">📷</span>
             <span class="sb-btn-text">Screenshot<span class="sb-btn-sub">Keyboard: C</span></span>
             <span class="sb-btn-arrow">›</span>
           </button>
         </div>
-
-        <!-- Speed -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Speed</div>
           <div class="speed-row">
@@ -976,8 +867,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <button class="speed-preset"        data-speed="4">4×</button>
           </div>
         </div>
-
-        <!-- Save States -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">
             Save States
@@ -987,8 +876,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <div class="save-slot-empty">Load a game first</div>
           </div>
         </div>
-
-        <!-- Cache Save -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Cache Save</div>
           <button class="sb-btn accent-btn" id="sb-cache-save">
@@ -1007,8 +894,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <span class="sb-btn-arrow">›</span>
           </button>
         </div>
-
-        <!-- Snapshot System -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Snapshot System</div>
           <button class="sb-btn accent-btn" id="sb-import-state">
@@ -1022,23 +907,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <span class="sb-btn-arrow">›</span>
           </button>
         </div>
-
-        <!-- Battery Save -->
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Battery Save (.sav)</div>
-          <button class="sb-btn" id="sb-import-sav">
-            <span class="sb-btn-icon">📥</span>
-            <span class="sb-btn-text">Import .sav File<span class="sb-btn-sub">Drag-and-drop also works</span></span>
-            <span class="sb-btn-arrow">›</span>
-          </button>
-          <button class="sb-btn" id="sb-export-save">
-            <span class="sb-btn-icon">📤</span>
-            <span class="sb-btn-text">Export .sav File<span class="sb-btn-sub">Download battery save</span></span>
-            <span class="sb-btn-arrow">›</span>
-          </button>
-        </div>
-
-        <!-- ROM -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">ROM</div>
           <button class="sb-btn" id="sb-export-rom">
@@ -1052,13 +920,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <span class="sb-btn-arrow">›</span>
           </button>
         </div>
-
       </div><!-- /panel-game -->
 
-      <!-- ══ SETTINGS PANEL ══ -->
+      <!-- SETTINGS PANEL -->
       <div class="sidebar-panel" id="panel-settings">
-
-        <!-- Audio & Display -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Audio &amp; Display</div>
           <div class="setting-row">
@@ -1100,8 +965,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             </label>
           </div>
         </div>
-
-        <!-- Emulation -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Emulation</div>
           <div class="setting-row">
@@ -1139,18 +1002,14 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             </label>
           </div>
         </div>
-
-        <!-- Control Bindings -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Control Bindings</div>
           <p style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:var(--sp3);line-height:1.6">
-            Click a key badge then press the key you want to assign.
+            Click a key badge then press the key to assign. Changes apply on next game load/restart.
           </p>
           <div class="ctrl-grid" id="ctrl-grid"></div>
           <button class="ctrl-reset-btn" id="ctrl-reset">↺ Reset to Defaults</button>
         </div>
-
-        <!-- Appearance -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Appearance</div>
           <div class="setting-row">
@@ -1164,8 +1023,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             </select>
           </div>
         </div>
-
-        <!-- About -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">About</div>
           <div style="font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);line-height:1.8">
@@ -1174,21 +1031,16 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
             <div style="margin-top:6px;color:var(--text-ghost)">Your ROMs never leave your device.</div>
           </div>
         </div>
-
       </div><!-- /panel-settings -->
-
     </div><!-- /sidebar -->
   </div><!-- /emu-body -->
 </div><!-- /emu-screen -->
 
-<!-- Keyboard shortcuts overlay -->
 <div id="keys-overlay">
   <div class="keys-box">
     <div class="keys-title font-display">Keyboard Shortcuts</div>
     <div class="keys-section">GBA Controls</div>
-    <div class="keys-grid" id="keys-grid-gba">
-      <!-- populated dynamically to reflect bindings -->
-    </div>
+    <div class="keys-grid" id="keys-grid-gba"></div>
     <div class="keys-section">Emulator</div>
     <div class="keys-grid">
       <span class="key-chip">Space / P</span><span class="key-desc">Pause / Resume</span>
@@ -1213,94 +1065,102 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 <div id="toast-stack"></div>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   SwiftGBA v5.0 — Merged (index1 base + index3 features)
-   NEW IN v5:
-   ✦ AudioContext constructor patch (intercepts EJS audio at creation time)
-   ✦ Settings panel: volume, pixel filter, control bindings, autosave interval,
-     FF hold, FF badge, fullscreen-on-start, sidebar default
-   ✦ Remappable controls with live key-binding UI
-   ✦ Battery save import/export (.sav files)
-   ✦ Fast-forward hold (Tab)
-   ✦ Settings persist to localStorage (settings only — saves use cache/manual .state)
-   ✦ All index1 features preserved: 7 slots + autosave slot 0, confirm-delete,
-     snapshot system, toolbar pill, landing animations, etc.
-══════════════════════════════════════════════════════════════ */
+/* SwiftGBA v5.1 */
 (() => {
 'use strict';
 
-/* ══════════════════════════════════════════════════════════════
-   CONSTANTS
-══════════════════════════════════════════════════════════════ */
-const DB_NAME     = 'SwiftGBA_v3';
-const DB_VER      = 1;
-const S_ROMS      = 'roms';
-const S_META      = 'meta';
-const S_STATES    = 'states';
-const NUM_SLOTS   = 7;
-const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
-const SAV_EXTS    = new Set(['.sav','.srm','.eep','.fla','.SAV','.SRM','.EEP','.FLA']);
-const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
+const DB_NAME   = 'SwiftGBA_v3';
+const DB_VER    = 1;
+const S_ROMS    = 'roms';
+const S_META    = 'meta';
+const S_STATES  = 'states';
+const NUM_SLOTS = 7;
+const EJS_CDN   = 'https://cdn.emulatorjs.org/stable/data/';
+const SAV_EXTS  = new Set(['.sav','.srm','.eep','.fla','.SAV','.SRM','.EEP','.FLA']);
+const ROM_EXTS  = new Set(['.gba','.zip','.GBA']);
 
 const SPEED_STEPS = [
   { val:0.25, label:'¼×' },
   { val:0.5,  label:'½×' },
-  { val:1,    label:'1×' }, // index 2 — default
+  { val:1,    label:'1×' },
   { val:2,    label:'2×' },
   { val:3,    label:'3×' },
   { val:4,    label:'4×' },
   { val:6,    label:'6×' },
 ];
 
-/* ── Default control bindings ── */
-const DEFAULT_BINDINGS = {
-  'A Button':   'KeyZ',
-  'B Button':   'KeyX',
-  'L Shoulder': 'KeyA',
-  'R Shoulder': 'KeyS',
-  'Start':      'Enter',
-  'Select':     'ShiftLeft',
-  'D-Up':       'ArrowUp',
-  'D-Down':     'ArrowDown',
-  'D-Left':     'ArrowLeft',
-  'D-Right':    'ArrowRight',
+/* ── EJS slot indices for GBA buttons (from EmulatorJS control-mapping docs) ── */
+const EJS_ACTION_MAP = {
+  'A Button':    8,
+  'B Button':    0,
+  'L Shoulder': 10,
+  'R Shoulder': 11,
+  'Start':       3,
+  'Select':      2,
+  'D-Up':        4,
+  'D-Down':      5,
+  'D-Left':      6,
+  'D-Right':     7,
 };
 
-function keyLabel(code) {
-  const map = {
-    'KeyZ':'Z','KeyX':'X','KeyA':'A','KeyS':'S','KeyQ':'Q','KeyW':'W',
-    'KeyE':'E','KeyR':'R','KeyD':'D','KeyF':'F','KeyC':'C','KeyV':'V',
-    'Space':'SPC','Enter':'ENT','ShiftLeft':'⇧L','ShiftRight':'⇧R',
-    'ControlLeft':'CTRL','AltLeft':'ALT','Tab':'TAB','Escape':'ESC',
-    'ArrowUp':'↑','ArrowDown':'↓','ArrowLeft':'←','ArrowRight':'→',
-    'Digit1':'1','Digit2':'2','Digit3':'3','Digit4':'4','Digit5':'5',
-    'Digit6':'6','Digit7':'7','Digit8':'8','Digit9':'9','Digit0':'0',
-    'KeyB':'B','KeyG':'G','KeyH':'H','KeyI':'I','KeyJ':'J','KeyK':'K',
-    'KeyL':'L','KeyM':'M','KeyN':'N','KeyO':'O','KeyP':'P','KeyT':'T',
-    'KeyU':'U','KeyY':'Y','Numpad0':'N0','Numpad1':'N1','Numpad2':'N2',
-    'Numpad3':'N3','Numpad4':'N4','Numpad5':'N5','Numpad6':'N6',
-    'Numpad7':'N7','Numpad8':'N8','Numpad9':'N9',
-    'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5',
-  };
-  return map[code] || code.replace('Key','').replace('Arrow','').substring(0,5);
+/* ── Default bindings stored as EJS key values (event.key format, EJS-normalised) ── */
+const DEFAULT_BINDINGS = {
+  'A Button':   'z',
+  'B Button':   'x',
+  'L Shoulder': 'a',
+  'R Shoulder': 's',
+  'Start':      'enter',
+  'Select':     'Shift',
+  'D-Up':       'up arrow',
+  'D-Down':     'down arrow',
+  'D-Left':     'left arrow',
+  'D-Right':    'right arrow',
+};
+
+/* Convert a KeyboardEvent to the EJS key string EJS expects */
+function toEJSKey(e) {
+  const k = e.key;
+  if (k === 'ArrowUp')    return 'up arrow';
+  if (k === 'ArrowDown')  return 'down arrow';
+  if (k === 'ArrowLeft')  return 'left arrow';
+  if (k === 'ArrowRight') return 'right arrow';
+  if (k === ' ')          return 'space';
+  if (k === 'Enter')      return 'enter';
+  if (k === 'Tab')        return 'tab';
+  if (k === 'Escape')     return 'escape';
+  if (k === 'Backspace')  return 'backspace';
+  if (k === 'Control')    return 'control';
+  if (k === 'Alt')        return 'alt';
+  if (k === 'CapsLock')   return 'CapsLock';
+  if (k.length === 1)     return k.toLowerCase();
+  return k;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   AUDIO FIX — Patch AudioContext constructor at page load
-   
-   Root cause on hosted sites: Chrome suspends AudioContexts not
-   created within a synchronous user-gesture call stack. EJS creates
-   its AudioContext during WASM boot, which is async (well after the
-   click fires). By the time we could call resume() on it, we no
-   longer have a user-gesture stack.
-   
-   Fix: Replace window.AudioContext with a wrapper that:
-   1. Captures every instance as it's created
-   2. Immediately calls resume() (works when called within user-gesture stack)
-   3. Re-resumes all tracked contexts on every subsequent user gesture
-══════════════════════════════════════════════════════════════ */
-const _trackedContexts = new Set();
+/* Build the EJS_defaultControls object from current ctrlBindings */
+function buildEJSDefaultControls() {
+  const c = {0:{},1:{},2:{},3:{}};
+  Object.entries(ctrlBindings).forEach(([action, ejsKey]) => {
+    const idx = EJS_ACTION_MAP[action];
+    if (idx !== undefined) c[0][idx] = { value: ejsKey };
+  });
+  return c;
+}
 
+/* Display label for an EJS key value */
+function keyLabel(ejsKey) {
+  const map = {
+    'up arrow':'↑','down arrow':'↓','left arrow':'←','right arrow':'→',
+    'enter':'ENT','Shift':'⇧','shift':'⇧','space':'SPC',
+    'tab':'TAB','escape':'ESC','control':'CTRL','alt':'ALT',
+    'backspace':'⌫','delete':'DEL','CapsLock':'CAPS',
+  };
+  if (map[ejsKey]) return map[ejsKey];
+  if (ejsKey.length === 1) return ejsKey.toUpperCase();
+  return ejsKey.substring(0, 5).toUpperCase();
+}
+
+/* ══ AudioContext patch ══ */
+const _trackedContexts = new Set();
 (function patchAudioContext() {
   const OrigAC = window.AudioContext || window.webkitAudioContext;
   if (!OrigAC) return;
@@ -1322,7 +1182,6 @@ function resumeAllContexts() {
   _trackedContexts.forEach(ctx => {
     try { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); } catch(e) {}
   });
-  // Also scan window globals for any contexts we may have missed
   try {
     for (const k of Object.keys(window)) {
       try {
@@ -1336,7 +1195,6 @@ function resumeAllContexts() {
   } catch(e) {}
 }
 
-// Resume on every user gesture while emulator is running
 ['click','keydown','touchstart','pointerdown'].forEach(ev => {
   document.addEventListener(ev, () => {
     resumeAllContexts();
@@ -1344,7 +1202,6 @@ function resumeAllContexts() {
   }, { passive:true });
 });
 
-// Polling loop after game boot to aggressively resume any suspended contexts
 let _audioPollTimer = null;
 function startAudioPolling() {
   clearInterval(_audioPollTimer);
@@ -1356,9 +1213,7 @@ function startAudioPolling() {
   }, 500);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════════════════ */
+/* ══ STATE ══ */
 let db             = null;
 let ejsReady       = false;
 let currentRomName = '';
@@ -1381,7 +1236,6 @@ let listeningFor   = null;
 let ffHoldActive   = false;
 let backtickHeld   = false;
 
-/* Settings */
 let settingSound            = true;
 let settingVolume           = 100;
 let settingFilter           = 'pixelated';
@@ -1391,9 +1245,7 @@ let settingFFBadge          = true;
 let settingSidebarDefault   = 'open';
 let autosaveMs              = 45000;
 
-/* ══════════════════════════════════════════════════════════════
-   SETTINGS PERSISTENCE (localStorage — settings only)
-══════════════════════════════════════════════════════════════ */
+/* ══ SETTINGS PERSISTENCE ══ */
 function saveSettings() {
   try {
     localStorage.setItem('swiftgba_settings', JSON.stringify({
@@ -1422,15 +1274,10 @@ function loadSettings() {
   } catch(e) {}
 }
 
-/* ══════════════════════════════════════════════════════════════
-   DOM HELPERS
-══════════════════════════════════════════════════════════════ */
 const $  = id => document.getElementById(id);
 const qs = s  => document.querySelector(s);
 
-/* ══════════════════════════════════════════════════════════════
-   INDEXEDDB
-══════════════════════════════════════════════════════════════ */
+/* ══ INDEXEDDB ══ */
 function openDB() {
   return new Promise((res, rej) => {
     const req = indexedDB.open(DB_NAME, DB_VER);
@@ -1447,87 +1294,69 @@ function openDB() {
 function dbPut(store, val) {
   return new Promise((res, rej) => {
     const r = db.transaction(store, 'readwrite').objectStore(store).put(val);
-    r.onsuccess = () => res();
-    r.onerror   = e => rej(e.target.error);
+    r.onsuccess = () => res(); r.onerror = e => rej(e.target.error);
   });
 }
 function dbGet(store, key) {
   return new Promise((res, rej) => {
     const r = db.transaction(store, 'readonly').objectStore(store).get(key);
-    r.onsuccess = e => res(e.target.result);
-    r.onerror   = e => rej(e.target.error);
+    r.onsuccess = e => res(e.target.result); r.onerror = e => rej(e.target.error);
   });
 }
 function dbDel(store, key) {
   return new Promise((res, rej) => {
     const r = db.transaction(store, 'readwrite').objectStore(store).delete(key);
-    r.onsuccess = () => res();
-    r.onerror   = e => rej(e.target.error);
+    r.onsuccess = () => res(); r.onerror = e => rej(e.target.error);
   });
 }
 function dbAll(store) {
   return new Promise((res, rej) => {
     const r = db.transaction(store, 'readonly').objectStore(store).getAll();
-    r.onsuccess = e => res(e.target.result);
-    r.onerror   = e => rej(e.target.error);
+    r.onsuccess = e => res(e.target.result); r.onerror = e => rej(e.target.error);
   });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════════════════════ */
+/* ══ TOAST ══ */
 function toast(msg, type='info', dur=2800) {
   const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
+  el.className = `toast ${type}`; el.textContent = msg;
   $('toast-stack').appendChild(el);
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, dur);
 }
-
 let _stateToastTimer = null;
 function showStateToast(msg, type='success') {
   clearTimeout(_stateToastTimer);
-  const el       = $('state-toast');
-  const iconEl   = $('state-toast-icon');
-  const textEl   = $('state-toast-text');
+  const el = $('state-toast'), iconEl = $('state-toast-icon'), textEl = $('state-toast-text');
   el.classList.remove('error-toast','warn-toast');
-  if (type === 'error')     { el.classList.add('error-toast'); iconEl.textContent = '✕'; }
-  else if (type === 'warn') { el.classList.add('warn-toast');  iconEl.textContent = '⚠'; }
-  else                      { iconEl.textContent = '●'; }
-  textEl.textContent = msg;
-  el.classList.add('visible');
+  if (type==='error') { el.classList.add('error-toast'); iconEl.textContent='✕'; }
+  else if (type==='warn') { el.classList.add('warn-toast'); iconEl.textContent='⚠'; }
+  else { iconEl.textContent='●'; }
+  textEl.textContent = msg; el.classList.add('visible');
   _stateToastTimer = setTimeout(() => el.classList.remove('visible'), 2400);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   UTILITIES
-══════════════════════════════════════════════════════════════ */
+/* ══ UTILITIES ══ */
 function timeAgo(ts) {
   if (!ts) return 'never';
-  const d = Date.now() - ts, m = Math.floor(d / 60000);
-  if (m < 1) return 'just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
+  const d = Date.now()-ts, m = Math.floor(d/60000);
+  if (m<1) return 'just now'; if (m<60) return `${m}m ago`;
+  const h = Math.floor(m/60); if (h<24) return `${h}h ago`;
+  return `${Math.floor(h/24)}d ago`;
 }
 function fmtSize(b) {
   if (!b) return '';
-  if (b < 1048576) return `${(b/1024).toFixed(0)} KB`;
+  if (b<1048576) return `${(b/1024).toFixed(0)} KB`;
   return `${(b/1048576).toFixed(1)} MB`;
 }
 function fmtPlaytime(ms) {
   if (!ms) return '0h 0m';
-  const tot = Math.floor(ms / 60000);
+  const tot = Math.floor(ms/60000);
   return `${Math.floor(tot/60)}h ${tot%60}m`;
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function extOf(name) {
-  const m = name.match(/(\.[^.]+)$/);
-  return m ? m[1].toLowerCase() : '';
-}
+function extOf(name) { const m = name.match(/(\.[^.]+)$/); return m ? m[1].toLowerCase() : ''; }
 function savName(romName) { return romName.replace(/\.[^.]+$/, '.srm'); }
 function download(blob, name) {
   const url = URL.createObjectURL(blob);
@@ -1542,161 +1371,120 @@ function captureThumbnail() {
     const canvas = document.querySelector('#game canvas');
     if (!canvas) return null;
     const tc = document.createElement('canvas');
-    tc.width = 120; tc.height = 90;
-    tc.getContext('2d').drawImage(canvas, 0, 0, 120, 90);
-    return tc.toDataURL('image/jpeg', 0.65);
+    tc.width=120; tc.height=90;
+    tc.getContext('2d').drawImage(canvas,0,0,120,90);
+    return tc.toDataURL('image/jpeg',0.65);
   } catch(e) { return null; }
 }
-
 function captureStateData() {
-  const emu = getEmu();
-  if (!emu || !emu.gameManager) return null;
+  const emu = getEmu(); if (!emu || !emu.gameManager) return null;
   const gm = emu.gameManager;
-  for (const method of ['saveState', 'getState', 'quickSave']) {
+  for (const method of ['saveState','getState','quickSave']) {
     try {
-      if (typeof gm[method] === 'function') {
+      if (typeof gm[method]==='function') {
         const s = gm[method]();
-        if (s && (s.byteLength || s.length)) return s;
+        if (s && (s.byteLength||s.length)) return s;
       }
     } catch(e) {}
   }
   return null;
 }
-
 function applyStateData(data) {
-  const emu = getEmu();
-  if (!emu || !emu.gameManager) return false;
+  const emu = getEmu(); if (!emu || !emu.gameManager) return false;
   const gm = emu.gameManager;
-  for (const method of ['loadState', 'quickLoad']) {
+  for (const method of ['loadState','quickLoad']) {
     try {
-      if (typeof gm[method] === 'function') {
+      if (typeof gm[method]==='function') {
         const fixedData = data instanceof Uint8Array ? data : new Uint8Array(data);
-        gm[method](fixedData);
-        return true;
+        gm[method](fixedData); return true;
       }
     } catch(e) {}
   }
   return false;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   VOLUME / MUTE APPLICATION
-══════════════════════════════════════════════════════════════ */
+/* ══ VOLUME / MUTE ══ */
 function applyVolumeToEmu() {
-  const emu = getEmu();
-  if (!emu) return;
-  const vol = (isMuted || !settingSound) ? 0 : settingVolume / 100;
+  const emu = getEmu(); if (!emu) return;
+  const vol = (isMuted || !settingSound) ? 0 : settingVolume/100;
   try {
-    if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
-    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
-      emu.gameManager.setVolume(vol);
-    if (emu.gameManager && emu.gameManager.volumeNode)
-      emu.gameManager.volumeNode.gain.value = vol;
+    if (typeof emu.changeVolume==='function') emu.changeVolume(vol);
+    else if (emu.gameManager && typeof emu.gameManager.setVolume==='function') emu.gameManager.setVolume(vol);
+    if (emu.gameManager && emu.gameManager.volumeNode) emu.gameManager.volumeNode.gain.value = vol;
   } catch(e) {}
   _trackedContexts.forEach(ctx => {
     try { if (ctx.masterGain) ctx.masterGain.gain.value = vol; } catch(e) {}
   });
 }
-
 function applyPixelFilter() {
   const canvas = qs('#game canvas');
-  if (canvas) canvas.style.imageRendering = settingFilter === 'pixelated' ? 'pixelated' : 'auto';
+  if (canvas) canvas.style.imageRendering = settingFilter==='pixelated' ? 'pixelated' : 'auto';
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ROM NAME CLEANER
-══════════════════════════════════════════════════════════════ */
+/* ══ ROM NAME CLEANER ══ */
 function cleanRomName(filename) {
   let name = filename.replace(/\.[^.]+$/, '');
-  const regionMap = { 'USA':'🇺🇸', 'Europe':'🇪🇺', 'Japan':'🇯🇵', 'World':'🌎', 'Australia':'🇦🇺' };
-  const regions = Object.keys(regionMap).filter(r => name.includes(r)).map(r => regionMap[r]);
-  name = name
-    .replace(/\s*\([^)]*\)/g, '').replace(/\s*\[[^\]]*\]/g, '').replace(/\s*\{[^}]*\}/g, '')
-    .replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
-  return { displayName: name || filename, region: regions.join(' ') };
+  const regionMap = { 'USA':'🇺🇸','Europe':'🇪🇺','Japan':'🇯🇵','World':'🌎','Australia':'🇦🇺' };
+  const regions = Object.keys(regionMap).filter(r=>name.includes(r)).map(r=>regionMap[r]);
+  name = name.replace(/\s*\([^)]*\)/g,'').replace(/\s*\[[^\]]*\]/g,'').replace(/\s*\{[^}]*\}/g,'')
+             .replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
+  return { displayName: name||filename, region: regions.join(' ') };
 }
 
-/* ══════════════════════════════════════════════════════════════
-   GAME COLOR
-══════════════════════════════════════════════════════════════ */
-const PALETTE = [
-  '#2E7D32','#C62828','#AD1457','#1565C0','#E53935',
-  '#E65100','#F9A825','#4A148C','#B71C1C','#00838F',
-  '#558B2F','#4527A0','#0277BD','#E64A19','#37474F',
-];
+/* ══ GAME COLOR ══ */
+const PALETTE = ['#2E7D32','#C62828','#AD1457','#1565C0','#E53935','#E65100','#F9A825','#4A148C','#B71C1C','#00838F','#558B2F','#4527A0','#0277BD','#E64A19','#37474F'];
 function colorFromName(name) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return PALETTE[h % PALETTE.length];
+  let h = 0; for (let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+  return PALETTE[h%PALETTE.length];
 }
 
-/* ══════════════════════════════════════════════════════════════
-   COVER ART
-══════════════════════════════════════════════════════════════ */
+/* ══ COVER ART ══ */
 function generateArtCanvas(displayName, color) {
   const canvas = document.createElement('canvas');
-  canvas.width = 160; canvas.height = 160;
+  canvas.width=160; canvas.height=160;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = color + '22'; ctx.fillRect(0, 0, 160, 160);
-  ctx.strokeStyle = color + '66'; ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, 158, 158);
+  ctx.fillStyle=color+'22'; ctx.fillRect(0,0,160,160);
+  ctx.strokeStyle=color+'66'; ctx.lineWidth=2; ctx.strokeRect(1,1,158,158);
   const words = displayName.trim().split(/\s+/);
-  const initials = words.length >= 2 ? words[0][0] + words[1][0] : displayName.slice(0, 2);
-  ctx.fillStyle = color;
-  ctx.font = 'bold 64px system-ui';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(initials.toUpperCase(), 80, 80);
+  const initials = words.length>=2 ? words[0][0]+words[1][0] : displayName.slice(0,2);
+  ctx.fillStyle=color; ctx.font='bold 64px system-ui';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(initials.toUpperCase(),80,80);
   return canvas.toDataURL('image/png');
 }
 async function fetchCoverArt(displayName, color) {
   return generateArtCanvas(displayName, color);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PARTICLES
-══════════════════════════════════════════════════════════════ */
+/* ══ PARTICLES ══ */
 (function initParticles() {
-  const canvas = $('particles-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W, H;
+  const canvas = $('particles-canvas'); if (!canvas) return;
+  const ctx = canvas.getContext('2d'); let W,H;
   const particles = [];
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-  for (let i = 0; i < 80; i++) {
-    particles.push({
-      x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.6 + 0.2,
-      vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
-      alpha: Math.random() * 0.45 + 0.08,
-      hue: Math.random() > 0.85 ? 280 : 195,
-    });
+  function resize() { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for (let i=0;i<80;i++) {
+    particles.push({ x:Math.random()*window.innerWidth, y:Math.random()*window.innerHeight,
+      r:Math.random()*1.6+0.2, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+      alpha:Math.random()*.45+.08, hue:Math.random()>.85?280:195 });
   }
   function frame() {
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0,0,W,H);
     particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      if (Math.random() > 0.97) {
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = p.hue === 280 ? 'rgba(124,58,237,.3)' : 'rgba(0,196,248,.35)';
-      } else { ctx.shadowBlur = 0; }
-      ctx.fillStyle = p.hue === 280 ? `rgba(124,58,237,${p.alpha})` : `rgba(0,196,248,${p.alpha})`;
-      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.x<0) p.x=W; if (p.x>W) p.x=0; if (p.y<0) p.y=H; if (p.y>H) p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      if (Math.random()>.97) { ctx.shadowBlur=8; ctx.shadowColor=p.hue===280?'rgba(124,58,237,.3)':'rgba(0,196,248,.35)'; }
+      else ctx.shadowBlur=0;
+      ctx.fillStyle=p.hue===280?`rgba(124,58,237,${p.alpha})`:`rgba(0,196,248,${p.alpha})`; ctx.fill();
     });
-    const idle = $('idle-screen');
-    if (idle && !idle.classList.contains('hidden')) requestAnimationFrame(frame);
+    const idle=$('idle-screen');
+    if (idle&&!idle.classList.contains('hidden')) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 })();
 
-/* ══════════════════════════════════════════════════════════════
-   SHOWCASE CYCLE
-══════════════════════════════════════════════════════════════ */
+/* ══ SHOWCASE CYCLE ══ */
 const GAMES = [
   { name:"Pokemon Emerald",             img:"https://rustygba.com/games/pokemon-emerald.webp",            color:"#2E7D32", region:"🇺🇸 🇪🇺" },
   { name:"Pokemon FireRed",             img:"https://rustygba.com/games/pokemon-firered.webp",            color:"#C62828", region:"🇺🇸 🇪🇺" },
@@ -1709,105 +1497,79 @@ const GAMES = [
   { name:"Castlevania: Aria of Sorrow", img:"https://rustygba.com/games/castlevania-aria-of-sorrow.webp", color:"#4A148C", region:"🇺🇸 🇪🇺" },
   { name:"Fire Emblem",                 img:"https://rustygba.com/games/fire-emblem.webp",                color:"#B71C1C", region:"🇺🇸 🇪🇺" },
 ];
-
-let showcaseIdx = 0, cycleTimer = null;
-const $sBg     = $('showcase-bg'),
-      $sPulse  = $('showcase-pulse'),
-      $sFlash  = $('showcase-flash'),
-      $sSlash  = $('showcase-slash'),
-      $sTitle  = $('showcase-title'),
-      $sName   = $('showcase-name'),
-      $sRegion = $('showcase-region'),
-      $sUl     = $('showcase-underline'),
-      $sArt    = $('showcase-art'),
-      $sImg    = $('showcase-img'),
-      $sGlow   = $('showcase-art-glow');
+let showcaseIdx=0, cycleTimer=null;
+const $sBg=$('showcase-bg'),$sPulse=$('showcase-pulse'),$sFlash=$('showcase-flash'),
+      $sSlash=$('showcase-slash'),$sTitle=$('showcase-title'),$sName=$('showcase-name'),
+      $sRegion=$('showcase-region'),$sUl=$('showcase-underline'),$sArt=$('showcase-art'),
+      $sImg=$('showcase-img'),$sGlow=$('showcase-art-glow');
 
 function applyShowcase(g, animate) {
-  $sName.textContent = g.name; $sRegion.textContent = g.region || '';
-  $sImg.src = g.img; $sImg.alt = g.name;
-  $sBg.style.background = `radial-gradient(ellipse at 80% 40%,${g.color}28 0%,transparent 55%),var(--bg-deep)`;
-  $sPulse.style.setProperty('--game-color', g.color + '28');
-  $sFlash.style.background = g.color;
-  $sSlash.style.borderColor = `${g.color}20`;
-  $sUl.style.background = g.color;
-  if ($sGlow) $sGlow.style.setProperty('--art-glow', g.color + '25');
+  $sName.textContent=g.name; $sRegion.textContent=g.region||'';
+  $sImg.src=g.img; $sImg.alt=g.name;
+  $sBg.style.background=`radial-gradient(ellipse at 80% 40%,${g.color}28 0%,transparent 55%),var(--bg-deep)`;
+  $sPulse.style.setProperty('--game-color',g.color+'28');
+  $sFlash.style.background=g.color;
+  $sSlash.style.borderColor=`${g.color}20`;
+  $sUl.style.background=g.color;
+  if ($sGlow) $sGlow.style.setProperty('--art-glow',g.color+'25');
   if (animate) {
-    const old = qs('.showcase-wipe'); if (old) old.remove();
-    const w = document.createElement('div'); w.className = 'showcase-wipe';
-    w.style.background = `linear-gradient(to right,transparent,${g.color}18,transparent)`;
-    $sBg.parentElement.insertBefore(w, $sBg.nextSibling);
-    w.addEventListener('animationend', () => w.remove(), { once:true });
-    $sFlash.style.animation = 'none'; $sFlash.offsetHeight; $sFlash.style.animation = '';
-    [$sTitle, $sArt].forEach(el => { el.classList.remove('slam','out'); el.offsetHeight; el.classList.add('slam'); });
-    $sUl.style.animation = 'none'; $sUl.offsetHeight; $sUl.style.animation = '';
+    const old=qs('.showcase-wipe'); if (old) old.remove();
+    const w=document.createElement('div'); w.className='showcase-wipe';
+    w.style.background=`linear-gradient(to right,transparent,${g.color}18,transparent)`;
+    $sBg.parentElement.insertBefore(w,$sBg.nextSibling);
+    w.addEventListener('animationend',()=>w.remove(),{once:true});
+    $sFlash.style.animation='none'; $sFlash.offsetHeight; $sFlash.style.animation='';
+    [$sTitle,$sArt].forEach(el=>{el.classList.remove('slam','out');el.offsetHeight;el.classList.add('slam');});
+    $sUl.style.animation='none'; $sUl.offsetHeight; $sUl.style.animation='';
   }
 }
 function cycleNext() {
   $sTitle.classList.remove('slam'); $sTitle.classList.add('out');
   $sArt.classList.remove('slam'); $sArt.classList.add('out');
-  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 260);
+  setTimeout(()=>{showcaseIdx=(showcaseIdx+1)%GAMES.length;applyShowcase(GAMES[showcaseIdx],true);},260);
 }
-applyShowcase(GAMES[0], false);
-setTimeout(() => applyShowcase(GAMES[0], true), 200);
-cycleTimer = setInterval(cycleNext, 3800);
+applyShowcase(GAMES[0],false);
+setTimeout(()=>applyShowcase(GAMES[0],true),200);
+cycleTimer=setInterval(cycleNext,3800);
 
-/* ══════════════════════════════════════════════════════════════
-   SIDEBAR PANEL TABS
-══════════════════════════════════════════════════════════════ */
+/* ══ SIDEBAR PANEL TABS ══ */
 document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.sidebar-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sidebar-tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.sidebar-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
-    $('panel-' + btn.dataset.panel).classList.add('active');
+    $('panel-'+btn.dataset.panel).classList.add('active');
   });
 });
 
-/* ══════════════════════════════════════════════════════════════
-   SETTINGS UI
-══════════════════════════════════════════════════════════════ */
+/* ══ SETTINGS UI ══ */
 function initSettingsUI() {
-  $('setting-sound').checked = settingSound;
-  $('setting-volume').value  = settingVolume;
-  $('volume-sub-label').textContent = settingVolume + '%';
-  $('setting-filter').value  = settingFilter;
+  $('setting-sound').checked       = settingSound;
+  $('setting-volume').value        = settingVolume;
+  $('volume-sub-label').textContent= settingVolume+'%';
+  $('setting-filter').value        = settingFilter;
   $('setting-fullscreen-start').checked = settingFullscreenStart;
-  $('setting-ff-hold').checked   = settingFFHold;
-  $('setting-ff-badge').checked  = settingFFBadge;
-  $('setting-autosave').value    = String(autosaveMs);
+  $('setting-ff-hold').checked     = settingFFHold;
+  $('setting-ff-badge').checked    = settingFFBadge;
+  $('setting-autosave').value      = String(autosaveMs);
   $('setting-sidebar-default').value = settingSidebarDefault;
 
-  $('setting-sound').addEventListener('change', e => {
-    settingSound = e.target.checked; saveSettings(); applyVolumeToEmu();
-  });
-  $('setting-volume').addEventListener('input', e => {
-    settingVolume = parseInt(e.target.value);
-    $('volume-sub-label').textContent = settingVolume + '%';
+  $('setting-sound').addEventListener('change',e=>{settingSound=e.target.checked;saveSettings();applyVolumeToEmu();});
+  $('setting-volume').addEventListener('input',e=>{
+    settingVolume=parseInt(e.target.value);
+    $('volume-sub-label').textContent=settingVolume+'%';
     saveSettings(); applyVolumeToEmu();
   });
-  $('setting-filter').addEventListener('change', e => {
-    settingFilter = e.target.value; applyPixelFilter(); saveSettings();
-  });
-  $('setting-fullscreen-start').addEventListener('change', e => {
-    settingFullscreenStart = e.target.checked; saveSettings();
-  });
-  $('setting-ff-hold').addEventListener('change', e => {
-    settingFFHold = e.target.checked; saveSettings();
-  });
-  $('setting-ff-badge').addEventListener('change', e => {
-    settingFFBadge = e.target.checked;
+  $('setting-filter').addEventListener('change',e=>{settingFilter=e.target.value;applyPixelFilter();saveSettings();});
+  $('setting-fullscreen-start').addEventListener('change',e=>{settingFullscreenStart=e.target.checked;saveSettings();});
+  $('setting-ff-hold').addEventListener('change',e=>{settingFFHold=e.target.checked;saveSettings();});
+  $('setting-ff-badge').addEventListener('change',e=>{
+    settingFFBadge=e.target.checked;
     if (!settingFFBadge) $('ff-badge').classList.remove('visible');
     saveSettings();
   });
-  $('setting-autosave').addEventListener('change', e => {
-    autosaveMs = parseInt(e.target.value);
-    saveSettings();
-    if (ejsReady) startAutosave();
-  });
-  $('setting-sidebar-default').addEventListener('change', e => {
-    settingSidebarDefault = e.target.value; saveSettings();
-  });
+  $('setting-autosave').addEventListener('change',e=>{autosaveMs=parseInt(e.target.value);saveSettings();if(ejsReady)startAutosave();});
+  $('setting-sidebar-default').addEventListener('change',e=>{settingSidebarDefault=e.target.value;saveSettings();});
 
   buildCtrlGrid();
   buildKeysGBAGrid();
@@ -1815,95 +1577,81 @@ function initSettingsUI() {
 
 /* ── Control binding grid ── */
 function buildCtrlGrid() {
-  const grid = $('ctrl-grid');
-  grid.innerHTML = '';
-  Object.entries(ctrlBindings).forEach(([action, code]) => {
-    const cell = document.createElement('div');
-    cell.className = 'ctrl-bind';
-    cell.innerHTML = `
-      <span class="ctrl-bind-label">${esc(action)}</span>
-      <button class="ctrl-bind-key" data-action="${esc(action)}">${esc(keyLabel(code))}</button>`;
+  const grid=$('ctrl-grid'); grid.innerHTML='';
+  Object.entries(ctrlBindings).forEach(([action,ejsKey])=>{
+    const cell=document.createElement('div'); cell.className='ctrl-bind';
+    cell.innerHTML=`<span class="ctrl-bind-label">${esc(action)}</span><button class="ctrl-bind-key" data-action="${esc(action)}">${esc(keyLabel(ejsKey))}</button>`;
     grid.appendChild(cell);
   });
-  grid.querySelectorAll('.ctrl-bind-key').forEach(btn => {
-    btn.addEventListener('click', () => startListening(btn.dataset.action, btn));
+  grid.querySelectorAll('.ctrl-bind-key').forEach(btn=>{
+    btn.addEventListener('click',()=>startListening(btn.dataset.action,btn));
   });
 }
-
 function buildKeysGBAGrid() {
-  const grid = $('keys-grid-gba');
-  if (!grid) return;
-  grid.innerHTML = '';
-  Object.entries(ctrlBindings).forEach(([action, code]) => {
-    grid.innerHTML += `<span class="key-chip">${esc(keyLabel(code))}</span><span class="key-desc">${esc(action)}</span>`;
+  const grid=$('keys-grid-gba'); if (!grid) return; grid.innerHTML='';
+  Object.entries(ctrlBindings).forEach(([action,ejsKey])=>{
+    grid.innerHTML+=`<span class="key-chip">${esc(keyLabel(ejsKey))}</span><span class="key-desc">${esc(action)}</span>`;
   });
 }
-
 function startListening(action, btn) {
   if (listeningFor) cancelListening();
   listeningFor = action;
-  btn.classList.add('listening');
-  btn.textContent = '…';
+  btn.classList.add('listening'); btn.textContent='…';
   function onKey(e) {
     e.preventDefault(); e.stopPropagation();
-    const code = e.code;
-    if (code === 'Escape') { cancelListening(); return; }
-    ctrlBindings[action] = code;
+    if (e.key==='Escape') { cancelListening(); return; }
+    const ejsKey = toEJSKey(e);
+    ctrlBindings[action] = ejsKey;
     btn.classList.remove('listening');
-    btn.textContent = keyLabel(code);
+    btn.textContent = keyLabel(ejsKey);
     listeningFor = null;
     document.removeEventListener('keydown', onKey, true);
     saveSettings();
     buildKeysGBAGrid();
-    toast(`${action} → ${keyLabel(code)}`, 'success', 1600);
+    toast(`${action} → ${keyLabel(ejsKey)} · Restart game to apply`, 'success', 2400);
   }
   document.addEventListener('keydown', onKey, true);
-  listeningFor = { action, cancel: () => { document.removeEventListener('keydown', onKey, true); } };
+  listeningFor = { action, cancel: ()=>{ document.removeEventListener('keydown',onKey,true); } };
 }
 function cancelListening() {
   if (listeningFor && listeningFor.cancel) listeningFor.cancel();
-  listeningFor = null;
-  buildCtrlGrid();
+  listeningFor=null; buildCtrlGrid();
 }
-
-$('ctrl-reset').addEventListener('click', () => {
-  ctrlBindings = { ...DEFAULT_BINDINGS };
+$('ctrl-reset').addEventListener('click',()=>{
+  ctrlBindings={...DEFAULT_BINDINGS};
   saveSettings(); buildCtrlGrid(); buildKeysGBAGrid();
-  toast('Controls reset to defaults', 'info', 1800);
+  toast('Controls reset to defaults · Restart game to apply','info',2000);
 });
 
-/* ══════════════════════════════════════════════════════════════
-   CONTINUE BAR
-══════════════════════════════════════════════════════════════ */
+/* ══ CONTINUE BAR ══ */
 async function buildContinueBar() {
   if (!db) return;
-  const list = $('continue-list'), bar = $('continue-bar');
-  list.innerHTML = '';
-  let roms = [];
-  try { roms = await dbAll(S_ROMS); } catch(e) {}
+  const list=$('continue-list'), bar=$('continue-bar');
+  list.innerHTML='';
+  let roms=[];
+  try { roms=await dbAll(S_ROMS); } catch(e) {}
   if (!roms.length) { bar.classList.remove('visible'); return; }
-  roms.sort((a, b) => {
-    if (a.favorite && !b.favorite) return -1;
-    if (!a.favorite && b.favorite) return 1;
-    return (b.lastPlayed||0) - (a.lastPlayed||0);
+  roms.sort((a,b)=>{
+    if (a.favorite&&!b.favorite) return -1; if (!a.favorite&&b.favorite) return 1;
+    return (b.lastPlayed||0)-(a.lastPlayed||0);
   });
-  $('continue-count').textContent = `${roms.length} game${roms.length!==1?'s':''}`;
+  $('continue-count').textContent=`${roms.length} game${roms.length!==1?'s':''}`;
   bar.classList.add('visible');
   for (const rom of roms) {
-    const card = document.createElement('div');
-    const isRecent = rom.lastPlayed && (Date.now() - rom.lastPlayed) < 3600000;
-    card.className = 'continue-card' + (rom.favorite ? ' favorited' : '') + (isRecent ? ' recently-played' : '');
-    card.dataset.id = rom.id;
-    card.style.animationDelay = `${roms.indexOf(rom) * 60}ms`;
-    const artSrc = rom.artDataUrl || generateArtCanvas(rom.displayName || rom.name, rom.color || colorFromName(rom.name));
-    card.innerHTML = `
+    const card=document.createElement('div');
+    const isRecent=rom.lastPlayed&&(Date.now()-rom.lastPlayed)<3600000;
+    card.className='continue-card'+(rom.favorite?' favorited':'')+(isRecent?' recently-played':'');
+    card.dataset.id=rom.id;
+    card.style.animationDelay=`${roms.indexOf(rom)*60}ms`;
+    const artSrc=rom.artDataUrl||generateArtCanvas(rom.displayName||rom.name,rom.color||colorFromName(rom.name));
+    card.innerHTML=`
       <div class="continue-card-star">★</div>
       <div class="continue-card-art">
         <img src="${esc(artSrc)}" alt="" loading="lazy" onerror="this.style.display='none'">
         <div class="continue-card-art-badge"></div>
       </div>
       <div class="continue-card-info">
-        <div class="continue-card-name">${esc(rom.displayName || rom.name)}</div>
+        <div class="continue-card-name">${esc(rom.displayName||rom.name)}</div>
         <div class="continue-card-meta">
           <span>${timeAgo(rom.lastPlayed)}</span>
           <div class="continue-card-meta-dot"></div>
@@ -1912,127 +1660,119 @@ async function buildContinueBar() {
       </div>
       <button class="continue-card-play" title="Play">▶</button>
       <button class="continue-card-menu" title="Options">⋯</button>`;
-    card.querySelector('.continue-card-play').addEventListener('click', e => { e.stopPropagation(); loadRomFromCache(rom.id); });
-    card.querySelector('.continue-card-menu').addEventListener('click', e => { e.stopPropagation(); showCardCtxMenu(e, rom); });
-    card.addEventListener('click', () => loadRomFromCache(rom.id));
+    card.querySelector('.continue-card-play').addEventListener('click',e=>{e.stopPropagation();loadRomFromCache(rom.id);});
+    card.querySelector('.continue-card-menu').addEventListener('click',e=>{e.stopPropagation();showCardCtxMenu(e,rom);});
+    card.addEventListener('click',()=>loadRomFromCache(rom.id));
     list.appendChild(card);
   }
 }
 
 function showCardCtxMenu(e, rom) {
   closeCtxMenu();
-  const menu = $('ctx-menu');
-  menu.innerHTML = `
+  const menu=$('ctx-menu');
+  menu.innerHTML=`
     <div class="ctx-item" data-action="play"><span class="ctx-item-icon">▶</span>Play</div>
     <div class="ctx-item" data-action="rename"><span class="ctx-item-icon">✏</span>Rename</div>
     <div class="ctx-item" data-action="fav"><span class="ctx-item-icon">${rom.favorite?'★':'☆'}</span>${rom.favorite?'Unfavorite':'Favorite'}</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item danger" data-action="remove"><span class="ctx-item-icon">✕</span>Remove from library</div>`;
-  menu.style.display = 'block';
-  const bx = e.target.getBoundingClientRect();
-  let top = bx.bottom + 4, left = bx.left;
-  if (left + 160 > window.innerWidth) left = window.innerWidth - 168;
-  if (top  + 150 > window.innerHeight) top  = bx.top - 154;
-  menu.style.top = top + 'px'; menu.style.left = left + 'px';
-  menu.querySelectorAll('.ctx-item').forEach(item => {
-    item.addEventListener('click', async () => {
+  menu.style.display='block';
+  const bx=e.target.getBoundingClientRect();
+  let top=bx.bottom+4, left=bx.left;
+  if (left+160>window.innerWidth) left=window.innerWidth-168;
+  if (top+150>window.innerHeight) top=bx.top-154;
+  menu.style.top=top+'px'; menu.style.left=left+'px';
+  menu.querySelectorAll('.ctx-item').forEach(item=>{
+    item.addEventListener('click',async()=>{
       closeCtxMenu();
-      const action = item.dataset.action;
-      if (action === 'play')   { loadRomFromCache(rom.id); }
-      else if (action === 'rename') { showRenameModal(rom); }
-      else if (action === 'fav') {
-        rom.favorite = !rom.favorite;
-        try { await dbPut(S_ROMS, rom); buildContinueBar(); } catch(e2) {}
+      const action=item.dataset.action;
+      if (action==='play') loadRomFromCache(rom.id);
+      else if (action==='rename') showRenameModal(rom);
+      else if (action==='fav') {
+        rom.favorite=!rom.favorite;
+        try { await dbPut(S_ROMS,rom); buildContinueBar(); } catch(e2) {}
       }
-      else if (action === 'remove') {
-        try { await dbDel(S_ROMS, rom.id); buildContinueBar(); toast('Removed from library','info',1800); } catch(e2) {}
+      else if (action==='remove') {
+        try { await dbDel(S_ROMS,rom.id); buildContinueBar(); toast('Removed from library','info',1800); } catch(e2) {}
       }
     });
   });
 }
-function closeCtxMenu() {
-  const menu = $('ctx-menu'); menu.style.display = 'none'; menu.innerHTML = '';
-}
-document.addEventListener('click', e => {
-  if (!e.target.closest('#ctx-menu') && !e.target.classList.contains('continue-card-menu')) closeCtxMenu();
+function closeCtxMenu() { const menu=$('ctx-menu'); menu.style.display='none'; menu.innerHTML=''; }
+document.addEventListener('click',e=>{
+  if (!e.target.closest('#ctx-menu')&&!e.target.classList.contains('continue-card-menu')) closeCtxMenu();
 });
 
 function showRenameModal(rom) {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.innerHTML = `
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML=`
     <div class="modal-box">
       <div class="modal-title font-display">Rename Game</div>
-      <input class="modal-input" id="rename-input" type="text" value="${esc(rom.displayName || rom.name)}" maxlength="100">
+      <input class="modal-input" id="rename-input" type="text" value="${esc(rom.displayName||rom.name)}" maxlength="100">
       <div class="modal-actions">
         <button class="modal-btn" id="rename-cancel">Cancel</button>
         <button class="modal-btn primary" id="rename-ok">Rename</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  const input = overlay.querySelector('#rename-input');
-  input.focus(); input.select();
-  overlay.querySelector('#rename-cancel').addEventListener('click', () => overlay.remove());
-  overlay.querySelector('#rename-ok').addEventListener('click', async () => {
-    const val = input.value.trim();
-    if (val) { rom.displayName = val; try { await dbPut(S_ROMS, rom); buildContinueBar(); toast('Renamed ✓','success',1800); } catch(e) {} }
+  const input=overlay.querySelector('#rename-input'); input.focus(); input.select();
+  overlay.querySelector('#rename-cancel').addEventListener('click',()=>overlay.remove());
+  overlay.querySelector('#rename-ok').addEventListener('click',async()=>{
+    const val=input.value.trim();
+    if (val) { rom.displayName=val; try { await dbPut(S_ROMS,rom); buildContinueBar(); toast('Renamed ✓','success',1800); } catch(e) {} }
     overlay.remove();
   });
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') overlay.querySelector('#rename-ok').click(); if (e.key === 'Escape') overlay.remove(); });
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')overlay.querySelector('#rename-ok').click();if(e.key==='Escape')overlay.remove();});
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
 }
 
 async function loadRomFromCache(id) {
   try {
-    const rom = await dbGet(S_ROMS, id);
-    if (!rom || !rom.data) { toast('ROM not found in cache','error'); return; }
-    launchROM(new File([rom.data], rom.name, { type:'application/octet-stream' }));
+    const rom=await dbGet(S_ROMS,id);
+    if (!rom||!rom.data) { toast('ROM not found in cache','error'); return; }
+    launchROM(new File([rom.data],rom.name,{type:'application/octet-stream'}));
   } catch(e) { toast('Failed to load ROM from cache','error'); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   DROP / CLICK TO LOAD
-══════════════════════════════════════════════════════════════ */
-const idleScreen = $('idle-screen');
-idleScreen.addEventListener('dragover', e => { e.preventDefault(); idleScreen.classList.add('drag-over'); });
-idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag-over'));
-idleScreen.addEventListener('drop', e => {
+/* ══ DROP / CLICK TO LOAD ══ */
+const idleScreen=$('idle-screen');
+idleScreen.addEventListener('dragover',e=>{e.preventDefault();idleScreen.classList.add('drag-over');});
+idleScreen.addEventListener('dragleave',()=>idleScreen.classList.remove('drag-over'));
+idleScreen.addEventListener('drop',e=>{
   e.preventDefault(); idleScreen.classList.remove('drag-over');
-  const f = e.dataTransfer.files[0]; if (!f) return;
-  launchROM(f);
+  const f=e.dataTransfer.files[0]; if (!f) return; launchROM(f);
 });
-idleScreen.addEventListener('click', e => {
-  if (e.target.closest('#continue-bar') || e.target.closest('#ctx-menu')) return;
-  try { const ac = new AudioContext(); ac.resume().then(() => ac.close()); } catch(e2) {}
+idleScreen.addEventListener('click',e=>{
+  if (e.target.closest('#continue-bar')||e.target.closest('#ctx-menu')) return;
+  try { const ac=new AudioContext(); ac.resume().then(()=>ac.close()); } catch(e2) {}
   $('rom-input').click();
 });
-$('rom-input').addEventListener('change', e => {
-  const f = e.target.files[0]; if (f) { launchROM(f); e.target.value = ''; }
+$('rom-input').addEventListener('change',e=>{
+  const f=e.target.files[0]; if (f) { launchROM(f); e.target.value=''; }
 });
 
-/* Drag .state or .sav or .gba onto game while playing */
-const emuWrap = $('emu-wrap');
-emuWrap.addEventListener('dragover', e => {
+const emuWrap=$('emu-wrap');
+emuWrap.addEventListener('dragover',e=>{
   e.preventDefault();
   if ($('emu-screen').classList.contains('active')) $('sav-drop-overlay').classList.add('visible');
 });
-emuWrap.addEventListener('dragleave', e => {
+emuWrap.addEventListener('dragleave',e=>{
   if (!emuWrap.contains(e.relatedTarget)) $('sav-drop-overlay').classList.remove('visible');
 });
-emuWrap.addEventListener('drop', async e => {
+emuWrap.addEventListener('drop',async e=>{
   e.preventDefault(); $('sav-drop-overlay').classList.remove('visible');
   if (!$('emu-screen').classList.contains('active')) return;
-  const f = e.dataTransfer.files[0]; if (!f) return;
-  const ext = extOf(f.name);
-  if (ext === '.state') {
+  const f=e.dataTransfer.files[0]; if (!f) return;
+  const ext=extOf(f.name);
+  if (ext==='.state') {
     if (!ejsReady) { toast('Wait for the game to start first','warn'); return; }
     try {
-      const buf = await f.arrayBuffer();
-      const ok = applyStateData(buf);
+      const buf=await f.arrayBuffer();
+      const ok=applyStateData(buf);
       if (!ok) { showStateToast('Failed to apply state','error'); return; }
       if (isPaused) updatePauseUI(false);
       showStateToast('State restored'); toast('State file applied ✓','success');
-    } catch(err) { toast('Failed to load state: ' + (err.message || 'unknown'),'error'); }
+    } catch(err) { toast('Failed to load state: '+(err.message||'unknown'),'error'); }
   } else if (SAV_EXTS.has(ext)) {
     importSavFile(f);
   } else if (ROM_EXTS.has(ext)) {
@@ -2040,342 +1780,246 @@ emuWrap.addEventListener('drop', async e => {
   }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   LAUNCH ROM
-══════════════════════════════════════════════════════════════ */
+/* ══ LAUNCH ROM ══ */
 async function launchROM(file) {
   clearInterval(cycleTimer);
   idleScreen.classList.add('fade-out');
-  setTimeout(() => { idleScreen.classList.add('hidden'); }, 400);
-
-  const emuScreenEl = $('emu-screen');
+  setTimeout(()=>{ idleScreen.classList.add('hidden'); },400);
+  const emuScreenEl=$('emu-screen');
   emuScreenEl.classList.add('active');
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => { emuScreenEl.classList.add('visible'); });
-  });
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ emuScreenEl.classList.add('visible'); }); });
   $('power-led').classList.add('on');
-
-  const buf = await file.arrayBuffer();
-  currentRomData = buf;
-  currentRomName = file.name;
-  const { displayName } = cleanRomName(file.name);
-  currentDisplay = displayName;
-  currentColor   = colorFromName(displayName);
+  const buf=await file.arrayBuffer();
+  currentRomData=buf; currentRomName=file.name;
+  const { displayName }=cleanRomName(file.name);
+  currentDisplay=displayName; currentColor=colorFromName(displayName);
   if (currentRomUrl) URL.revokeObjectURL(currentRomUrl);
-  currentRomUrl = URL.createObjectURL(new Blob([buf], { type:'application/octet-stream' }));
-
-  $('toolbar-game-name').textContent = displayName;
-  $('sb-game-title').textContent     = displayName;
-  $('sb-game-size').textContent      = fmtSize(file.size);
-
-  const art = await fetchCoverArt(displayName, currentColor);
-  $('sb-cover-art').innerHTML = `<img src="${art}" alt="">`;
-
+  currentRomUrl=URL.createObjectURL(new Blob([buf],{type:'application/octet-stream'}));
+  $('toolbar-game-name').textContent=displayName;
+  $('sb-game-title').textContent=displayName;
+  $('sb-game-size').textContent=fmtSize(file.size);
+  const art=await fetchCoverArt(displayName,currentColor);
+  $('sb-cover-art').innerHTML=`<img src="${art}" alt="">`;
   if (db) {
     try {
-      const existing = await dbGet(S_ROMS, file.name) || {};
-      await dbPut(S_ROMS, {
-        ...existing,
-        id:          file.name,
-        name:        file.name,
-        displayName: existing.displayName || displayName,
-        data:        buf,
-        size:        file.size,
-        lastPlayed:  Date.now(),
-        color:       currentColor,
-        artDataUrl:  art,
-      });
-    } catch(e) { console.warn('IDB ROM cache:', e); }
+      const existing=await dbGet(S_ROMS,file.name)||{};
+      await dbPut(S_ROMS,{...existing,id:file.name,name:file.name,displayName:existing.displayName||displayName,data:buf,size:file.size,lastPlayed:Date.now(),color:currentColor,artDataUrl:art});
+    } catch(e) {}
   }
-
-  setSidebar(settingSidebarDefault !== 'closed');
-
-  if (settingFullscreenStart) {
-    setTimeout(() => $('emu-wrap').requestFullscreen().catch(() => {}), 800);
-  }
-
-  isPaused = false; isMuted = false; ejsReady = false;
-  currentSpeedIdx = 2; isFastForward = false; isSlowMotion = false;
-  window.EJS_emulator = undefined;
-  updatePauseUI(false);
-  updateMuteUI(false);
-  buildSaveSlots();
-  refreshCacheLoadSub();
+  setSidebar(settingSidebarDefault!=='closed');
+  if (settingFullscreenStart) setTimeout(()=>$('emu-wrap').requestFullscreen().catch(()=>{}),800);
+  isPaused=false; isMuted=false; ejsReady=false;
+  currentSpeedIdx=2; isFastForward=false; isSlowMotion=false;
+  window.EJS_emulator=undefined;
+  updatePauseUI(false); updateMuteUI(false);
+  buildSaveSlots(); refreshCacheLoadSub();
   startPlaytimeTracking();
   showLoadIndicator('Loading core…');
-  startEmulator(currentRomUrl, displayName);
+  startEmulator(currentRomUrl,displayName);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   EMULATORJS BOOT
-══════════════════════════════════════════════════════════════ */
+/* ══ EMULATORJS BOOT ══ */
 function startEmulator(romURL, displayName) {
-  $('game').innerHTML = '';
-  document.querySelectorAll('script[src*="loader.js"],script[src*="emulatorjs"]').forEach(s => s.remove());
-  Object.keys(window).filter(k => k.startsWith('EJS_')).forEach(k => {
-    try { delete window[k]; } catch(e) { window[k] = undefined; }
-  });
-  ejsReady = false;
-  window.EJS_emulator = undefined;
+  $('game').innerHTML='';
+  document.querySelectorAll('script[src*="loader.js"],script[src*="emulatorjs"]').forEach(s=>s.remove());
+  Object.keys(window).filter(k=>k.startsWith('EJS_')).forEach(k=>{ try { delete window[k]; } catch(e) { window[k]=undefined; } });
+  ejsReady=false; window.EJS_emulator=undefined;
 
+  /* ─── Pass current key bindings to EJS so they actually work ─── */
+  window.EJS_defaultControls  = buildEJSDefaultControls();
   window.EJS_player           = '#game';
   window.EJS_gameUrl          = romURL;
-  window.EJS_core             = 'gba';          // CRITICAL: 'gba' not 'mgba' — black screen fix
+  window.EJS_core             = 'gba';
   window.EJS_pathtodata       = EJS_CDN;
   window.EJS_startOnLoaded    = true;
   window.EJS_gameTitle        = displayName;
   window.EJS_backgroundColor  = '#000000';
   window.EJS_color            = '#00c4f8';
   window.EJS_volume           = 1;
-  window.EJS_fixedSaveInterval = 30000;
+  window.EJS_fixedSaveInterval= 30000;
 
   window.EJS_Buttons = Object.fromEntries(
     ['playPause','restart','mute','settings','fullscreen','saveState','loadState',
      'screenRecord','gamepad','cheat','volume','saveSaveFiles','loadSavFiles',
-     'quickSave','quickLoad'].map(k => [k, false])
+     'quickSave','quickLoad'].map(k=>[k,false])
   );
 
   window.EJS_onGameStart = () => {
-    ejsReady = true;
+    ejsReady=true;
     buildSaveSlots();
     hideLoadIndicator();
     updateToolbarPill(false);
-    setTimeout(() => { applyPixelFilter(); }, 100);
-    setTimeout(() => {
-      applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
-      applyVolumeToEmu();
-      startAudioPolling();
-      startAutosave();
-    }, 400);
+    setTimeout(()=>{ applyPixelFilter(); },100);
+    setTimeout(()=>{ applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val); applyVolumeToEmu(); startAudioPolling(); startAutosave(); },400);
   };
 
-  setTimeout(() => {
-    const s = document.createElement('script');
-    s.src = EJS_CDN + 'loader.js?t=' + Date.now();
-    s.onerror = () => { hideLoadIndicator(); toast('Failed to load EmulatorJS — check your connection','error',5000); };
+  setTimeout(()=>{
+    const s=document.createElement('script');
+    s.src=EJS_CDN+'loader.js?t='+Date.now();
+    s.onerror=()=>{ hideLoadIndicator(); toast('Failed to load EmulatorJS — check your connection','error',5000); };
     document.body.appendChild(s);
-  }, 60);
+  },60);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   LOADING INDICATOR
-══════════════════════════════════════════════════════════════ */
-function showLoadIndicator(text) { $('load-text').textContent = text; $('load-indicator').classList.add('visible'); }
+function showLoadIndicator(text) { $('load-text').textContent=text; $('load-indicator').classList.add('visible'); }
 function hideLoadIndicator()     { $('load-indicator').classList.remove('visible'); }
 
-/* ══════════════════════════════════════════════════════════════
-   TOOLBAR PILL
-══════════════════════════════════════════════════════════════ */
 function updateToolbarPill(paused) {
-  const pill = $('toolbar-status-pill');
-  const text = $('pill-text');
-  pill.className = 'toolbar-status-pill ' + (paused ? 'paused' : 'running');
-  text.textContent = paused ? 'Paused' : 'Running';
+  const pill=$('toolbar-status-pill'), text=$('pill-text');
+  pill.className='toolbar-status-pill '+(paused?'paused':'running');
+  text.textContent=paused?'Paused':'Running';
 }
 
-/* ══════════════════════════════════════════════════════════════
-   AUTO-SAVE
-══════════════════════════════════════════════════════════════ */
+/* ══ AUTO-SAVE ══ */
 function startAutosave() {
   clearInterval(autosaveTimer);
   if (!autosaveMs) return;
-  autosaveTimer = setInterval(async () => {
-    if (!ejsReady || isPaused || !currentRomName || !db) return;
-    const stateData = captureStateData();
-    if (!stateData) return;
-    const thumb = captureThumbnail();
+  autosaveTimer=setInterval(async()=>{
+    if (!ejsReady||isPaused||!currentRomName||!db) return;
+    const stateData=captureStateData(); if (!stateData) return;
+    const thumb=captureThumbnail();
     try {
-      await dbPut(S_STATES, {
-        id: `${currentRomName}::slot0`,
-        data: stateData,
-        ts: Date.now(),
-        thumb,
-        saveName: 'Slot 0 — Auto',
-        slotIdx: 0,
-        auto: true,
-      });
-      buildSaveSlots();
-      refreshCacheLoadSub();
+      await dbPut(S_STATES,{id:`${currentRomName}::slot0`,data:stateData,ts:Date.now(),thumb,saveName:'Slot 0 — Auto',slotIdx:0,auto:true});
+      buildSaveSlots(); refreshCacheLoadSub();
     } catch(e) {}
-  }, autosaveMs);
+  },autosaveMs);
 }
 
-window.addEventListener('beforeunload', () => {
-  const emu = getEmu();
-  if (emu && emu.gameManager && typeof emu.gameManager.saveSaveFiles === 'function') {
-    try { emu.gameManager.saveSaveFiles(); } catch(e) {}
-  }
-  if (currentRomName && db && playtimeStart) {
-    const elapsed = Date.now() - playtimeStart;
-    const tx = db.transaction(S_ROMS, 'readwrite');
-    const store = tx.objectStore(S_ROMS);
-    const req = store.get(currentRomName);
-    req.onsuccess = () => {
-      if (req.result) { req.result.playTime = (req.result.playTime || 0) + elapsed + playtimeAccum; store.put(req.result); }
-    };
+window.addEventListener('beforeunload',()=>{
+  const emu=getEmu();
+  if (emu&&emu.gameManager&&typeof emu.gameManager.saveSaveFiles==='function') { try { emu.gameManager.saveSaveFiles(); } catch(e) {} }
+  if (currentRomName&&db&&playtimeStart) {
+    const elapsed=Date.now()-playtimeStart;
+    const tx=db.transaction(S_ROMS,'readwrite'), store=tx.objectStore(S_ROMS), req=store.get(currentRomName);
+    req.onsuccess=()=>{ if (req.result) { req.result.playTime=(req.result.playTime||0)+elapsed+playtimeAccum; store.put(req.result); } };
   }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   PLAYTIME TRACKING
-══════════════════════════════════════════════════════════════ */
+/* ══ PLAYTIME ══ */
 function startPlaytimeTracking() {
-  clearInterval(playtimeTimer);
-  playtimeStart = Date.now();
-  playtimeAccum = 0;
+  clearInterval(playtimeTimer); playtimeStart=Date.now(); playtimeAccum=0;
   updatePlaytimeUI();
-  playtimeTimer = setInterval(() => { if (!isPaused) updatePlaytimeUI(); }, 10000);
+  playtimeTimer=setInterval(()=>{ if (!isPaused) updatePlaytimeUI(); },10000);
 }
 function updatePlaytimeUI() {
   if (!playtimeStart) return;
-  const elapsed = isPaused ? playtimeAccum : playtimeAccum + (Date.now() - playtimeStart);
-  $('playtime-display').textContent = `⏱ ${fmtPlaytime(elapsed)}`;
+  const elapsed=isPaused?playtimeAccum:playtimeAccum+(Date.now()-playtimeStart);
+  $('playtime-display').textContent=`⏱ ${fmtPlaytime(elapsed)}`;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SIDEBAR
-══════════════════════════════════════════════════════════════ */
+/* ══ SIDEBAR ══ */
 function setSidebar(open) {
-  sidebarOpen = open;
-  $('emu-body').classList.toggle('sidebar-collapsed', !open);
-  $('sidebar-tab').querySelector('.tab-arrow').textContent = open ? '›' : '‹';
-  $('btn-sidebar-toggle').classList.toggle('active', !open);
+  sidebarOpen=open;
+  $('emu-body').classList.toggle('sidebar-collapsed',!open);
+  $('sidebar-tab').querySelector('.tab-arrow').textContent=open?'›':'‹';
+  $('btn-sidebar-toggle').classList.toggle('active',!open);
 }
-$('sidebar-tab').addEventListener('click', () => setSidebar(!sidebarOpen));
-$('btn-sidebar-toggle').addEventListener('click', () => setSidebar(!sidebarOpen));
+$('sidebar-tab').addEventListener('click',()=>setSidebar(!sidebarOpen));
+$('btn-sidebar-toggle').addEventListener('click',()=>setSidebar(!sidebarOpen));
 setSidebar(true);
 
-/* ══════════════════════════════════════════════════════════════
-   PAUSE / RESUME
-══════════════════════════════════════════════════════════════ */
+/* ══ PAUSE / RESUME ══ */
 function updatePauseUI(paused) {
-  isPaused = paused;
-  $('emu-status-dot').className = 'status-dot ' + (paused ? 'paused' : 'on');
-  $('emu-status-text').textContent = paused ? 'Paused' : 'Running';
-  const btn = $('sb-pause');
-  btn.querySelector('.sb-btn-icon').textContent = paused ? '▶' : '⏸';
-  btn.querySelector('.sb-btn-text').firstChild.textContent = paused ? 'Resume ' : 'Pause / Resume';
-  btn.classList.toggle('active-state', paused);
+  isPaused=paused;
+  $('emu-status-dot').className='status-dot '+(paused?'paused':'on');
+  $('emu-status-text').textContent=paused?'Paused':'Running';
+  const btn=$('sb-pause');
+  btn.querySelector('.sb-btn-icon').textContent=paused?'▶':'⏸';
+  btn.querySelector('.sb-btn-text').firstChild.textContent=paused?'Resume ':'Pause / Resume';
+  btn.classList.toggle('active-state',paused);
   updateToolbarPill(paused);
-  if (paused && playtimeStart) { playtimeAccum += Date.now() - playtimeStart; playtimeStart = null; }
-  else if (!paused && !playtimeStart) { playtimeStart = Date.now(); }
+  if (paused&&playtimeStart) { playtimeAccum+=Date.now()-playtimeStart; playtimeStart=null; }
+  else if (!paused&&!playtimeStart) { playtimeStart=Date.now(); }
 }
-
-$('sb-pause').addEventListener('click', () => {
-  const emu = getEmu(), next = !isPaused;
-  try {
-    if (emu && emu.gameManager && typeof emu.gameManager.toggleMainLoop === 'function')
-      emu.gameManager.toggleMainLoop(!next);
-  } catch(e) {}
+$('sb-pause').addEventListener('click',()=>{
+  const emu=getEmu(), next=!isPaused;
+  try { if (emu&&emu.gameManager&&typeof emu.gameManager.toggleMainLoop==='function') emu.gameManager.toggleMainLoop(!next); } catch(e) {}
   updatePauseUI(next);
-  toast(next ? 'Paused' : 'Resumed', 'info', 1200);
+  toast(next?'Paused':'Resumed','info',1200);
 });
 
-/* ══════════════════════════════════════════════════════════════
-   RESTART
-══════════════════════════════════════════════════════════════ */
-$('sb-restart').addEventListener('click', () => {
-  const emu = getEmu();
+/* ══ RESTART ══ */
+$('sb-restart').addEventListener('click',()=>{
+  const emu=getEmu();
   try {
-    if (emu && emu.gameManager && typeof emu.gameManager.restart === 'function') {
+    if (emu&&emu.gameManager&&typeof emu.gameManager.restart==='function') {
       emu.gameManager.restart(); updatePauseUI(false); toast('Game restarted','info',1500);
-    } else { toast('Reloading game…','info'); startEmulator(currentRomUrl, currentDisplay); }
-  } catch(e) { startEmulator(currentRomUrl, currentDisplay); }
+    } else { toast('Reloading game…','info'); startEmulator(currentRomUrl,currentDisplay); }
+  } catch(e) { startEmulator(currentRomUrl,currentDisplay); }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   MUTE
-══════════════════════════════════════════════════════════════ */
-function updateMuteUI(muted) {
-  isMuted = muted;
-  $('sb-mute').querySelector('.sb-btn-icon').textContent = muted ? '🔇' : '🔊';
-  $('sb-mute').classList.toggle('active-state', muted);
-}
+/* ══ MUTE ══ */
+function updateMuteUI(muted) { isMuted = muted; }
 function applyMuteToEmu(muted) {
-  isMuted = muted;
-  resumeAllContexts();
-  applyVolumeToEmu();
+  isMuted=muted; resumeAllContexts(); applyVolumeToEmu();
 }
-$('sb-mute').addEventListener('click', () => {
-  const next = !isMuted; applyMuteToEmu(next); updateMuteUI(next);
-  toast(next ? 'Muted' : 'Unmuted', 'info', 1200);
-});
+function toggleMute() {
+  const next=!isMuted; applyMuteToEmu(next); updateMuteUI(next);
+  toast(next?'Muted':'Unmuted','info',1200);
+}
 
-/* ══════════════════════════════════════════════════════════════
-   SPEED CONTROL
-══════════════════════════════════════════════════════════════ */
+/* ══ SPEED CONTROL ══ */
 function applySpeedToEmu(speedVal) {
-  const emu = getEmu(); if (!emu || !emu.gameManager) return;
-  const gm = emu.gameManager;
+  const emu=getEmu(); if (!emu||!emu.gameManager) return;
+  const gm=emu.gameManager;
   try {
-    if (speedVal === 1) {
-      if (isFastForward && typeof gm.toggleFastForward === 'function') gm.toggleFastForward(false);
-      if (isSlowMotion  && typeof gm.toggleSlowMotion  === 'function') gm.toggleSlowMotion(false);
-      isFastForward = false; isSlowMotion = false;
-    } else if (speedVal > 1) {
-      if (isSlowMotion && typeof gm.toggleSlowMotion === 'function') { gm.toggleSlowMotion(false); isSlowMotion = false; }
-      if (typeof gm.setFastForwardRatio === 'function') gm.setFastForwardRatio(speedVal);
-      if (!isFastForward && typeof gm.toggleFastForward === 'function') { gm.toggleFastForward(true); isFastForward = true; }
+    if (speedVal===1) {
+      if (isFastForward&&typeof gm.toggleFastForward==='function') gm.toggleFastForward(false);
+      if (isSlowMotion&&typeof gm.toggleSlowMotion==='function') gm.toggleSlowMotion(false);
+      isFastForward=false; isSlowMotion=false;
+    } else if (speedVal>1) {
+      if (isSlowMotion&&typeof gm.toggleSlowMotion==='function') { gm.toggleSlowMotion(false); isSlowMotion=false; }
+      if (typeof gm.setFastForwardRatio==='function') gm.setFastForwardRatio(speedVal);
+      if (!isFastForward&&typeof gm.toggleFastForward==='function') { gm.toggleFastForward(true); isFastForward=true; }
     } else {
-      if (isFastForward && typeof gm.toggleFastForward === 'function') { gm.toggleFastForward(false); isFastForward = false; }
-      const ratio = Math.round(1 / speedVal);
-      if (typeof gm.setSlowMotionRatio === 'function') gm.setSlowMotionRatio(ratio);
-      if (!isSlowMotion && typeof gm.toggleSlowMotion === 'function') { gm.toggleSlowMotion(true); isSlowMotion = true; }
+      if (isFastForward&&typeof gm.toggleFastForward==='function') { gm.toggleFastForward(false); isFastForward=false; }
+      const ratio=Math.round(1/speedVal);
+      if (typeof gm.setSlowMotionRatio==='function') gm.setSlowMotionRatio(ratio);
+      if (!isSlowMotion&&typeof gm.toggleSlowMotion==='function') { gm.toggleSlowMotion(true); isSlowMotion=true; }
     }
-  } catch(e) { console.warn('applySpeed:', e); }
+  } catch(e) {}
 }
 function applySpeedUI(idx) {
-  currentSpeedIdx = idx;
-  const step = SPEED_STEPS[idx];
-  const pct  = (idx / (SPEED_STEPS.length - 1) * 100).toFixed(1);
-  const slider = $('speed-slider');
-  slider.value = idx + 1;
-  slider.style.setProperty('--pct', pct + '%');
-  $('speed-val').textContent = step.label;
-  document.querySelectorAll('.speed-preset').forEach(p => {
-    const pv = parseFloat(p.dataset.speed);
-    p.classList.toggle('active',    pv === step.val);
-    p.classList.toggle('ff-active', pv > 1 && pv === step.val);
+  currentSpeedIdx=idx;
+  const step=SPEED_STEPS[idx];
+  const pct=(idx/(SPEED_STEPS.length-1)*100).toFixed(1);
+  const slider=$('speed-slider');
+  slider.value=idx+1; slider.style.setProperty('--pct',pct+'%');
+  $('speed-val').textContent=step.label;
+  document.querySelectorAll('.speed-preset').forEach(p=>{
+    const pv=parseFloat(p.dataset.speed);
+    p.classList.toggle('active',pv===step.val);
+    p.classList.toggle('ff-active',pv>1&&pv===step.val);
   });
-  const ffBadge = $('ff-badge');
-  if (step.val > 1 && settingFFBadge) { ffBadge.textContent = `⚡ ${step.label} SPEED`; ffBadge.classList.add('visible'); }
+  const ffBadge=$('ff-badge');
+  if (step.val>1&&settingFFBadge) { ffBadge.textContent=`⚡ ${step.label} SPEED`; ffBadge.classList.add('visible'); }
   else ffBadge.classList.remove('visible');
   applySpeedToEmu(step.val);
 }
-$('speed-slider').addEventListener('input', e => applySpeedUI(parseInt(e.target.value) - 1));
-document.querySelectorAll('.speed-preset').forEach(p => {
-  p.addEventListener('click', () => {
-    const idx = SPEED_STEPS.findIndex(s => s.val === parseFloat(p.dataset.speed));
-    if (idx >= 0) applySpeedUI(idx);
+$('speed-slider').addEventListener('input',e=>applySpeedUI(parseInt(e.target.value)-1));
+document.querySelectorAll('.speed-preset').forEach(p=>{
+  p.addEventListener('click',()=>{
+    const idx=SPEED_STEPS.findIndex(s=>s.val===parseFloat(p.dataset.speed));
+    if (idx>=0) applySpeedUI(idx);
   });
 });
 applySpeedUI(2);
 
-/* Fast-forward hold (Tab key) */
-document.addEventListener('keydown', e => {
-  if (e.code === 'Tab' && settingFFHold && ejsReady && !e.repeat && !listeningFor) {
+document.addEventListener('keydown',e=>{
+  if (e.code==='Tab'&&settingFFHold&&ejsReady&&!e.repeat&&!listeningFor) {
     e.preventDefault();
-    if (!ffHoldActive) {
-      ffHoldActive = true;
-      applySpeedUI(SPEED_STEPS.findIndex(s => s.val === 4));
-    }
+    if (!ffHoldActive) { ffHoldActive=true; applySpeedUI(SPEED_STEPS.findIndex(s=>s.val===4)); }
   }
 });
-document.addEventListener('keyup', e => {
-  if (e.code === 'Tab' && settingFFHold && ejsReady && ffHoldActive) {
-    ffHoldActive = false;
-    applySpeedUI(2);
-  }
+document.addEventListener('keyup',e=>{
+  if (e.code==='Tab'&&settingFFHold&&ejsReady&&ffHoldActive) { ffHoldActive=false; applySpeedUI(2); }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   CONFIRM DELETE MODAL
-══════════════════════════════════════════════════════════════ */
+/* ══ CONFIRM DELETE MODAL ══ */
 function showConfirmDelete(slotLabel) {
-  return new Promise(resolve => {
-    const overlay = document.createElement('div');
-    overlay.className = 'delete-confirm-overlay';
-    overlay.innerHTML = `
+  return new Promise(resolve=>{
+    const overlay=document.createElement('div'); overlay.className='delete-confirm-overlay';
+    overlay.innerHTML=`
       <div class="delete-confirm-box">
         <span class="delete-confirm-icon">🗑</span>
         <div class="delete-confirm-title">Delete ${esc(slotLabel)}?</div>
@@ -2386,40 +2030,29 @@ function showConfirmDelete(slotLabel) {
         </div>
       </div>`;
     document.body.appendChild(overlay);
-    overlay.querySelector('#dc-cancel').addEventListener('click',  () => { overlay.remove(); resolve(false); });
-    overlay.querySelector('#dc-confirm').addEventListener('click', () => { overlay.remove(); resolve(true); });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
-    const handler = e => {
-      if (e.key === 'Escape') { overlay.remove(); resolve(false); document.removeEventListener('keydown', handler); }
-      if (e.key === 'Enter')  { overlay.remove(); resolve(true);  document.removeEventListener('keydown', handler); }
+    overlay.querySelector('#dc-cancel').addEventListener('click',()=>{overlay.remove();resolve(false);});
+    overlay.querySelector('#dc-confirm').addEventListener('click',()=>{overlay.remove();resolve(true);});
+    overlay.addEventListener('click',e=>{if(e.target===overlay){overlay.remove();resolve(false);}});
+    const handler=e=>{
+      if (e.key==='Escape') { overlay.remove(); resolve(false); document.removeEventListener('keydown',handler); }
+      if (e.key==='Enter')  { overlay.remove(); resolve(true);  document.removeEventListener('keydown',handler); }
     };
-    document.addEventListener('keydown', handler);
+    document.addEventListener('keydown',handler);
   });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SAVE STATES
-══════════════════════════════════════════════════════════════ */
+/* ══ SAVE STATES ══ */
 async function buildSaveSlots() {
-  const container = $('save-slots');
-  if (!container) return;
-  container.innerHTML = '';
-  if (!db || !currentRomName) {
-    container.innerHTML = '<div class="save-slot-empty">Load a game first</div>';
-    return;
-  }
-  let filledCount = 0;
-
-  /* Slot 0 — Autosave */
-  let autoMeta = null;
-  try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
+  const container=$('save-slots'); if (!container) return;
+  container.innerHTML='';
+  if (!db||!currentRomName) { container.innerHTML='<div class="save-slot-empty">Load a game first</div>'; return; }
+  let filledCount=0;
+  let autoMeta=null;
+  try { autoMeta=await dbGet(S_STATES,`${currentRomName}::slot0`); } catch(e) {}
   if (autoMeta) {
-    const autoEl = document.createElement('div');
-    autoEl.className = 'save-slot has-data autosave-slot';
-    const thumbHtml = autoMeta.thumb
-      ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
-      : `<span class="save-slot-thumb-empty">💾</span>`;
-    autoEl.innerHTML = `
+    const autoEl=document.createElement('div'); autoEl.className='save-slot has-data autosave-slot';
+    const thumbHtml=autoMeta.thumb?`<img src="${autoMeta.thumb}" alt="Slot 0">`:`<span class="save-slot-thumb-empty">💾</span>`;
+    autoEl.innerHTML=`
       <div class="save-slot-left">
         <div class="save-slot-thumb">${thumbHtml}<span class="save-slot-thumb-num">0</span></div>
         <div class="save-slot-info">
@@ -2429,76 +2062,67 @@ async function buildSaveSlots() {
       </div>
       <div class="save-slot-actions">
         <button class="slot-btn load" title="Load Slot 0">LOAD</button>
-        <button class="slot-btn del"  title="Delete Slot 0">✕</button>
+        <button class="slot-btn del" title="Delete Slot 0">✕</button>
       </div>`;
-    autoEl.querySelector('.slot-btn.load').addEventListener('click', async () => {
-      const ok = applyStateData(autoMeta.data);
+    autoEl.querySelector('.slot-btn.load').addEventListener('click',async()=>{
+      const ok=applyStateData(autoMeta.data);
       if (!ok) { showStateToast('Slot 0 load failed','error'); return; }
       if (isPaused) updatePauseUI(false);
       showStateToast('Slot 0 loaded'); toast('Slot 0 restored ✓','success');
     });
-    autoEl.querySelector('.slot-btn.del').addEventListener('click', async () => {
-      const confirmed = await showConfirmDelete('Slot 0 — Autosave');
+    autoEl.querySelector('.slot-btn.del').addEventListener('click',async()=>{
+      const confirmed=await showConfirmDelete('Slot 0 — Autosave');
       if (!confirmed) return;
-      try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Slot 0 deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
+      try { await dbDel(S_STATES,`${currentRomName}::slot0`); toast('Slot 0 deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
     });
     container.appendChild(autoEl);
   }
-
-  /* Normal Save Slots 1–7 */
-  for (let i = 1; i <= NUM_SLOTS; i++) {
-    const key = `${currentRomName}::slot${i}`;
-    let meta = null;
-    try { meta = await dbGet(S_STATES, key); } catch(e) {}
+  for (let i=1;i<=NUM_SLOTS;i++) {
+    const key=`${currentRomName}::slot${i}`; let meta=null;
+    try { meta=await dbGet(S_STATES,key); } catch(e) {}
     if (meta) filledCount++;
-    const el = document.createElement('div');
-    el.className = 'save-slot' + (meta ? ' has-data' : '');
-    const thumbHtml = meta && meta.thumb
-      ? `<img src="${meta.thumb}" alt="Slot ${i}">`
-      : `<span class="save-slot-thumb-empty">🎮</span>`;
-    el.innerHTML = `
+    const el=document.createElement('div'); el.className='save-slot'+(meta?' has-data':'');
+    const thumbHtml=meta&&meta.thumb?`<img src="${meta.thumb}" alt="Slot ${i}">`:`<span class="save-slot-thumb-empty">🎮</span>`;
+    el.innerHTML=`
       <div class="save-slot-left">
         <div class="save-slot-thumb">${thumbHtml}<span class="save-slot-thumb-num">${i}</span></div>
         <div class="save-slot-info">
-          <div class="save-slot-name">${meta ? (meta.saveName ? esc(meta.saveName) : `Slot ${i}`) : `Slot ${i} — empty`}</div>
-          <div class="save-slot-time">${meta ? timeAgo(meta.ts) : 'No data'}</div>
+          <div class="save-slot-name">${meta?(meta.saveName?esc(meta.saveName):`Slot ${i}`):`Slot ${i} — empty`}</div>
+          <div class="save-slot-time">${meta?timeAgo(meta.ts):'No data'}</div>
         </div>
       </div>
       <div class="save-slot-actions">
         <button class="slot-btn sav" title="Save to slot ${i}">SAV</button>
-        ${meta ? `<button class="slot-btn load" title="Load slot ${i}">LOAD</button><button class="slot-btn del" title="Delete slot ${i}">✕</button>` : ''}
+        ${meta?`<button class="slot-btn load" title="Load slot ${i}">LOAD</button><button class="slot-btn del" title="Delete slot ${i}">✕</button>`:''}
       </div>`;
-    el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
-    const loadBtn = el.querySelector('.slot-btn.load');
-    const delBtn  = el.querySelector('.slot-btn.del');
-    if (loadBtn) loadBtn.addEventListener('click', () => loadFromSlot(i));
-    if (delBtn)  delBtn.addEventListener('click',  () => deleteSlotWithConfirm(i));
+    el.querySelector('.slot-btn.sav').addEventListener('click',()=>saveToSlot(i));
+    const loadBtn=el.querySelector('.slot-btn.load'), delBtn=el.querySelector('.slot-btn.del');
+    if (loadBtn) loadBtn.addEventListener('click',()=>loadFromSlot(i));
+    if (delBtn)  delBtn.addEventListener('click', ()=>deleteSlotWithConfirm(i));
     container.appendChild(el);
   }
-
-  const badge = $('save-slots-badge');
-  if (badge) badge.textContent = filledCount ? `${filledCount}/${NUM_SLOTS} used` : `${NUM_SLOTS} slots`;
+  const badge=$('save-slots-badge');
+  if (badge) badge.textContent=filledCount?`${filledCount}/${NUM_SLOTS} used`:`${NUM_SLOTS} slots`;
 }
 
 async function saveToSlot(i) {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
-  const stateData = captureStateData();
-  if (!stateData) { toast('Save failed — make sure the game is actively running','warn', 4000); return; }
-  const thumb = captureThumbnail();
+  const stateData=captureStateData();
+  if (!stateData) { toast('Save failed — make sure the game is actively running','warn',4000); return; }
+  const thumb=captureThumbnail();
   try {
-    await dbPut(S_STATES, { id:`${currentRomName}::slot${i}`, data:stateData, ts:Date.now(), thumb, slotIdx:i });
-    showStateToast(`Slot ${i} saved`);
-    buildSaveSlots(); refreshCacheLoadSub();
+    await dbPut(S_STATES,{id:`${currentRomName}::slot${i}`,data:stateData,ts:Date.now(),thumb,slotIdx:i});
+    showStateToast(`Slot ${i} saved`); buildSaveSlots(); refreshCacheLoadSub();
   } catch(e) { toast('Failed to write save state to storage','error'); }
 }
 
 async function loadFromSlot(i) {
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-    if (!meta || !meta.data) { toast('Slot is empty','error'); return; }
+    const meta=await dbGet(S_STATES,`${currentRomName}::slot${i}`);
+    if (!meta||!meta.data) { toast('Slot is empty','error'); return; }
     if (!ejsReady) { toast('Emulator not ready','error'); return; }
-    const ok = applyStateData(meta.data);
+    const ok=applyStateData(meta.data);
     if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); toast('Could not apply state','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${i} loaded`); toast(`Slot ${i} restored ✓`,'success');
@@ -2506,45 +2130,37 @@ async function loadFromSlot(i) {
 }
 
 async function deleteSlotWithConfirm(i, slotLabel) {
-  const confirmed = await showConfirmDelete(slotLabel || `Slot ${i}`);
+  const confirmed=await showConfirmDelete(slotLabel||`Slot ${i}`);
   if (!confirmed) return;
   await deleteSlot(i);
 }
-
 async function deleteSlot(i) {
-  try {
-    await dbDel(S_STATES, `${currentRomName}::slot${i}`);
-    toast(`Slot ${i} deleted`,'info',1500);
-    buildSaveSlots(); refreshCacheLoadSub();
-  } catch(e) { toast('Delete failed','error'); }
+  try { await dbDel(S_STATES,`${currentRomName}::slot${i}`); toast(`Slot ${i} deleted`,'info',1500); buildSaveSlots(); refreshCacheLoadSub(); }
+  catch(e) { toast('Delete failed','error'); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   DELETE SLOT PICKER
-══════════════════════════════════════════════════════════════ */
+/* ══ DELETE SLOT PICKER ══ */
 async function showDeleteSlotPicker() {
-  return new Promise(async resolve => {
-    const slots = [];
-    let autoMeta = null;
-    try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
-    if (autoMeta) slots.push({ i: 0, meta: autoMeta, label: 'Slot 0 — Auto' });
-    for (let i = 1; i <= NUM_SLOTS; i++) {
-      let meta = null;
-      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
-      if (meta) slots.push({ i, meta, label: meta.saveName || `Slot ${i}` });
+  return new Promise(async resolve=>{
+    const slots=[];
+    let autoMeta=null;
+    try { autoMeta=await dbGet(S_STATES,`${currentRomName}::slot0`); } catch(e) {}
+    if (autoMeta) slots.push({i:0,meta:autoMeta,label:'Slot 0 — Auto'});
+    for (let i=1;i<=NUM_SLOTS;i++) {
+      let meta=null; try { meta=await dbGet(S_STATES,`${currentRomName}::slot${i}`); } catch(e) {}
+      if (meta) slots.push({i,meta,label:meta.saveName||`Slot ${i}`});
     }
     if (!slots.length) { toast('No saved states to delete','warn'); resolve(null); return; }
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML = `
+    const overlay=document.createElement('div'); overlay.className='modal-overlay';
+    overlay.innerHTML=`
       <div class="modal-box" style="min-width:380px">
         <div class="modal-title font-display">Delete Save State</div>
         <div class="modal-subtitle">Select a save to permanently remove</div>
         <div class="slot-picker-grid">
-          ${slots.map(({ i, meta, label }) => `
+          ${slots.map(({i,meta,label})=>`
             <div class="slot-picker-item has-data danger-item" data-slot="${i}" data-label="${esc(label)}">
               <div class="slot-picker-thumb">
-                ${meta.thumb ? `<img src="${meta.thumb}" alt="">` : `<span style="font-size:16px;opacity:.22">🎮</span>`}
+                ${meta.thumb?`<img src="${meta.thumb}" alt="">`:`<span style="font-size:16px;opacity:.22">🎮</span>`}
                 <span class="slot-picker-thumb-num">${i}</span>
               </div>
               <div class="slot-picker-info">
@@ -2557,430 +2173,291 @@ async function showDeleteSlotPicker() {
         <div class="modal-actions"><button class="modal-btn" id="del-picker-cancel">Cancel</button></div>
       </div>`;
     document.body.appendChild(overlay);
-    overlay.querySelectorAll('.danger-item').forEach(item => {
-      item.addEventListener('click', () => {
-        overlay.remove();
-        resolve({ slot: parseInt(item.dataset.slot, 10), label: item.dataset.label });
-      });
+    overlay.querySelectorAll('.danger-item').forEach(item=>{
+      item.addEventListener('click',()=>{ overlay.remove(); resolve({slot:parseInt(item.dataset.slot,10),label:item.dataset.label}); });
     });
-    overlay.querySelector('#del-picker-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
-    const handler = e => { if (e.key === 'Escape') { overlay.remove(); resolve(null); document.removeEventListener('keydown', handler); } };
-    document.addEventListener('keydown', handler);
+    overlay.querySelector('#del-picker-cancel').addEventListener('click',()=>{overlay.remove();resolve(null);});
+    overlay.addEventListener('click',e=>{if(e.target===overlay){overlay.remove();resolve(null);}});
+    const handler=e=>{if(e.key==='Escape'){overlay.remove();resolve(null);document.removeEventListener('keydown',handler);}};
+    document.addEventListener('keydown',handler);
   });
 }
 
-$('sb-delete-slot').addEventListener('click', async () => {
+$('sb-delete-slot').addEventListener('click',async()=>{
   if (!currentRomName) { toast('No game loaded','error'); return; }
-  const pick = await showDeleteSlotPicker();
-  if (!pick) return;
-  const confirmed = await showConfirmDelete(pick.label);
-  if (!confirmed) return;
-  if (pick.slot === 0) {
-    try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
+  const pick=await showDeleteSlotPicker(); if (!pick) return;
+  const confirmed=await showConfirmDelete(pick.label); if (!confirmed) return;
+  if (pick.slot===0) {
+    try { await dbDel(S_STATES,`${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
   } else {
     await deleteSlot(pick.slot);
   }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   SLOT PICKER MODAL
-══════════════════════════════════════════════════════════════ */
+/* ══ SLOT PICKER MODAL ══ */
 async function showSlotPicker(mode) {
-  return new Promise(async (resolve) => {
-    const slots = [];
-    for (let i = 1; i <= NUM_SLOTS; i++) {
-      let meta = null;
-      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
-      slots.push({ i, meta });
+  return new Promise(async resolve=>{
+    const slots=[];
+    for (let i=1;i<=NUM_SLOTS;i++) {
+      let meta=null; try { meta=await dbGet(S_STATES,`${currentRomName}::slot${i}`); } catch(e) {}
+      slots.push({i,meta});
     }
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    const isSave = mode === 'save';
-    const slotItems = slots.map(({ i, meta }) => {
-      const thumb = meta && meta.thumb
-        ? `<img src="${meta.thumb}" alt=""><span class="slot-picker-thumb-num">${i}</span>`
-        : `<span style="font-size:16px;opacity:.22">🎮</span><span class="slot-picker-thumb-num">${i}</span>`;
-      const badge = meta ? `<span class="slot-picker-badge filled">FILLED</span>` : `<span class="slot-picker-badge empty">EMPTY</span>`;
-      const label = meta ? (meta.saveName || `Slot ${i}`) : `Slot ${i}`;
-      const ts = meta ? timeAgo(meta.ts) : 'No save';
-      return `
-        <div class="slot-picker-item ${meta ? 'has-data' : ''}" data-slot="${i}">
-          <div class="slot-picker-thumb">${thumb}</div>
-          <div class="slot-picker-info">
-            <div class="slot-picker-name">${esc(label)}</div>
-            <div class="slot-picker-time">${ts}</div>
-          </div>
-          ${badge}
-        </div>`;
+    const overlay=document.createElement('div'); overlay.className='modal-overlay';
+    const isSave=mode==='save';
+    const slotItems=slots.map(({i,meta})=>{
+      const thumb=meta&&meta.thumb?`<img src="${meta.thumb}" alt=""><span class="slot-picker-thumb-num">${i}</span>`:`<span style="font-size:16px;opacity:.22">🎮</span><span class="slot-picker-thumb-num">${i}</span>`;
+      const badge=meta?`<span class="slot-picker-badge filled">FILLED</span>`:`<span class="slot-picker-badge empty">EMPTY</span>`;
+      const label=meta?(meta.saveName||`Slot ${i}`):`Slot ${i}`;
+      const ts=meta?timeAgo(meta.ts):'No save';
+      return `<div class="slot-picker-item ${meta?'has-data':''}" data-slot="${i}">
+        <div class="slot-picker-thumb">${thumb}</div>
+        <div class="slot-picker-info"><div class="slot-picker-name">${esc(label)}</div><div class="slot-picker-time">${ts}</div></div>
+        ${badge}</div>`;
     }).join('');
-    overlay.innerHTML = `
+    overlay.innerHTML=`
       <div class="modal-box" style="min-width:380px">
-        <div class="modal-title font-display">${isSave ? 'Save to Slot' : 'Load from Slot'}</div>
-        <div class="modal-subtitle">${isSave ? 'Choose a slot — existing data will be overwritten' : 'Choose a slot to restore'}</div>
+        <div class="modal-title font-display">${isSave?'Save to Slot':'Load from Slot'}</div>
+        <div class="modal-subtitle">${isSave?'Choose a slot — existing data will be overwritten':'Choose a slot to restore'}</div>
         <div class="slot-picker-grid">${slotItems}</div>
-        ${isSave ? `
-        <div class="modal-name-row">
-          <label class="modal-name-label">SAVE NAME (OPTIONAL)</label>
-          <input class="modal-input" id="slot-name-input" type="text" placeholder="e.g. Before final boss" maxlength="60">
-        </div>` : ''}
-        <div class="modal-actions">
-          <button class="modal-btn" id="slot-cancel">Cancel</button>
-        </div>
+        ${isSave?`<div class="modal-name-row"><label class="modal-name-label">SAVE NAME (OPTIONAL)</label><input class="modal-input" id="slot-name-input" type="text" placeholder="e.g. Before final boss" maxlength="60"></div>`:''}
+        <div class="modal-actions"><button class="modal-btn" id="slot-cancel">Cancel</button></div>
       </div>`;
     document.body.appendChild(overlay);
-    let selectedSlot = null;
-    overlay.querySelectorAll('.slot-picker-item').forEach(item => {
-      item.addEventListener('click', () => {
-        overlay.querySelectorAll('.slot-picker-item').forEach(el => { el.style.outline = 'none'; el.style.background = ''; });
-        item.style.outline = '2px solid var(--accent)';
-        item.style.outlineOffset = '-2px';
-        selectedSlot = parseInt(item.dataset.slot, 10);
+    let selectedSlot=null;
+    overlay.querySelectorAll('.slot-picker-item').forEach(item=>{
+      item.addEventListener('click',()=>{
+        overlay.querySelectorAll('.slot-picker-item').forEach(el=>{el.style.outline='none';el.style.background='';});
+        item.style.outline='2px solid var(--accent)'; item.style.outlineOffset='-2px';
+        selectedSlot=parseInt(item.dataset.slot,10);
         if (!isSave) {
-          const meta = slots.find(s => s.i === selectedSlot)?.meta;
-          if (!meta) { toast('That slot is empty', 'warn', 2000); return; }
-          overlay.remove(); resolve({ slotIndex: selectedSlot, saveName: null });
+          const meta=slots.find(s=>s.i===selectedSlot)?.meta;
+          if (!meta) { toast('That slot is empty','warn',2000); return; }
+          overlay.remove(); resolve({slotIndex:selectedSlot,saveName:null});
         } else {
           overlay.querySelector('#slot-name-input')?.focus();
-          let confirmBtn = overlay.querySelector('#slot-confirm');
+          let confirmBtn=overlay.querySelector('#slot-confirm');
           if (!confirmBtn) {
-            confirmBtn = document.createElement('button');
-            confirmBtn.id = 'slot-confirm'; confirmBtn.className = 'modal-btn primary';
-            confirmBtn.textContent = 'Save Here';
+            confirmBtn=document.createElement('button');
+            confirmBtn.id='slot-confirm'; confirmBtn.className='modal-btn primary'; confirmBtn.textContent='Save Here';
             overlay.querySelector('.modal-actions').prepend(confirmBtn);
-            confirmBtn.addEventListener('click', () => {
+            confirmBtn.addEventListener('click',()=>{
               if (!selectedSlot) return;
-              const name = overlay.querySelector('#slot-name-input')?.value.trim() || '';
-              overlay.remove(); resolve({ slotIndex: selectedSlot, saveName: name || null });
+              const name=overlay.querySelector('#slot-name-input')?.value.trim()||'';
+              overlay.remove(); resolve({slotIndex:selectedSlot,saveName:name||null});
             });
           }
         }
       });
     });
-    overlay.querySelector('#slot-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
-    overlay.querySelector('#slot-name-input')?.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && selectedSlot) overlay.querySelector('#slot-confirm')?.click();
+    overlay.querySelector('#slot-cancel').addEventListener('click',()=>{overlay.remove();resolve(null);});
+    overlay.addEventListener('click',e=>{if(e.target===overlay){overlay.remove();resolve(null);}});
+    overlay.querySelector('#slot-name-input')?.addEventListener('keydown',e=>{
+      if (e.key==='Enter'&&selectedSlot) overlay.querySelector('#slot-confirm')?.click();
     });
   });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CACHE SAVE / LOAD
-══════════════════════════════════════════════════════════════ */
+/* ══ CACHE SAVE / LOAD ══ */
 async function refreshCacheLoadSub() {
-  if (!db || !currentRomName) return;
+  if (!db||!currentRomName) return;
   try {
-    let latest = null;
-    for (let i = 1; i <= NUM_SLOTS; i++) {
-      const entry = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-      if (entry && (!latest || entry.ts > latest.ts)) latest = entry;
+    let latest=null;
+    for (let i=1;i<=NUM_SLOTS;i++) {
+      const entry=await dbGet(S_STATES,`${currentRomName}::slot${i}`);
+      if (entry&&(!latest||entry.ts>latest.ts)) latest=entry;
     }
-    $('cache-load-sub').textContent = latest
-      ? `Last: ${latest.saveName || `Slot ${latest.slotIdx||'?'}`} — ${timeAgo(latest.ts)}`
-      : 'No saves yet';
+    $('cache-load-sub').textContent=latest?`Last: ${latest.saveName||`Slot ${latest.slotIdx||'?'}`} — ${timeAgo(latest.ts)}`:'No saves yet';
   } catch(e) {}
 }
 
-$('sb-cache-save').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded', 'error'); return; }
-  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
-  const pick = await showSlotPicker('save');
-  if (!pick) return;
-  const stateData = captureStateData();
-  if (!stateData) { toast('Could not capture state — make sure the game is actively running', 'warn', 4500); return; }
-  const thumb = captureThumbnail();
+$('sb-cache-save').addEventListener('click',async()=>{
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
+  const pick=await showSlotPicker('save'); if (!pick) return;
+  const stateData=captureStateData();
+  if (!stateData) { toast('Could not capture state — make sure the game is actively running','warn',4500); return; }
+  const thumb=captureThumbnail();
   try {
-    await dbPut(S_STATES, {
-      id: `${currentRomName}::slot${pick.slotIndex}`,
-      data: stateData, ts: Date.now(), thumb,
-      saveName: pick.saveName, slotIdx: pick.slotIndex,
-    });
+    await dbPut(S_STATES,{id:`${currentRomName}::slot${pick.slotIndex}`,data:stateData,ts:Date.now(),thumb,saveName:pick.saveName,slotIdx:pick.slotIndex});
     showStateToast(`Slot ${pick.slotIndex} saved`);
-    toast(`Saved to Slot ${pick.slotIndex}${pick.saveName ? ` — "${pick.saveName}"` : ''} ✓`, 'success');
+    toast(`Saved to Slot ${pick.slotIndex}${pick.saveName?` — "${pick.saveName}"`:''} ✓`,'success');
     buildSaveSlots(); refreshCacheLoadSub();
-  } catch(e) { toast('Save failed', 'error'); }
+  } catch(e) { toast('Save failed','error'); }
 });
 
-$('sb-cache-load').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded', 'error'); return; }
-  if (!ejsReady)       { toast('Emulator not ready yet', 'warn'); return; }
-  const pick = await showSlotPicker('load');
-  if (!pick) return;
+$('sb-cache-load').addEventListener('click',async()=>{
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
+  const pick=await showSlotPicker('load'); if (!pick) return;
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${pick.slotIndex}`);
-    if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
-    const ok = applyStateData(meta.data);
+    const meta=await dbGet(S_STATES,`${currentRomName}::slot${pick.slotIndex}`);
+    if (!meta||!meta.data) { toast('Slot is empty','error'); return; }
+    const ok=applyStateData(meta.data);
     if (!ok) { showStateToast(`Slot ${pick.slotIndex} load failed`,'error'); toast('Could not apply state','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${pick.slotIndex} loaded`);
-    toast(`Loaded Slot ${pick.slotIndex}${meta.saveName ? ` — "${meta.saveName}"` : ''} ✓`, 'success');
-  } catch(e) { toast('Load failed', 'error'); }
+    toast(`Loaded Slot ${pick.slotIndex}${meta.saveName?` — "${meta.saveName}"`:''} ✓`,'success');
+  } catch(e) { toast('Load failed','error'); }
 });
 
-/* ══════════════════════════════════════════════════════════════
-   KEYBOARD QUICK-SAVE / QUICK-LOAD
-══════════════════════════════════════════════════════════════ */
+/* ══ KEYBOARD QUICK-SAVE / QUICK-LOAD ══ */
 async function quickSaveSlot(i) {
-  if (!currentRomName || !ejsReady) { showStateToast('Not ready','warn'); return; }
-  const stateData = captureStateData();
+  if (!currentRomName||!ejsReady) { showStateToast('Not ready','warn'); return; }
+  const stateData=captureStateData();
   if (!stateData) { showStateToast(`Slot ${i} — game not ready`,'warn'); return; }
-  const thumb = captureThumbnail();
+  const thumb=captureThumbnail();
   try {
-    await dbPut(S_STATES, {
-      id: `${currentRomName}::slot${i}`, data: stateData, ts: Date.now(),
-      thumb, saveName: null, slotIdx: i,
-    });
-    showStateToast(`Slot ${i} saved`);
-    buildSaveSlots(); refreshCacheLoadSub();
+    await dbPut(S_STATES,{id:`${currentRomName}::slot${i}`,data:stateData,ts:Date.now(),thumb,saveName:null,slotIdx:i});
+    showStateToast(`Slot ${i} saved`); buildSaveSlots(); refreshCacheLoadSub();
   } catch(e) { showStateToast(`Slot ${i} save failed`,'error'); }
 }
-
 async function quickLoadSlot(i) {
-  if (!currentRomName || !ejsReady) { showStateToast('Not ready','warn'); return; }
+  if (!currentRomName||!ejsReady) { showStateToast('Not ready','warn'); return; }
   try {
-    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
-    if (!meta || !meta.data) { showStateToast(`Slot ${i} is empty`,'error'); return; }
-    const ok = applyStateData(meta.data);
+    const meta=await dbGet(S_STATES,`${currentRomName}::slot${i}`);
+    if (!meta||!meta.data) { showStateToast(`Slot ${i} is empty`,'error'); return; }
+    const ok=applyStateData(meta.data);
     if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${i} loaded`);
   } catch(e) { showStateToast(`Slot ${i} load failed`,'error'); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   IMPORT STATE FILE (.state) — applies LIVE
-══════════════════════════════════════════════════════════════ */
-$('sb-import-state').addEventListener('click', () => {
-  if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
-  if (!ejsReady)       { toast('Wait for the game to start first', 'warn'); return; }
-  $('state-input').accept = '.state';
-  $('state-input').click();
+/* ══ IMPORT STATE FILE (.state) ══ */
+$('sb-import-state').addEventListener('click',()=>{
+  if (!currentRomName) { toast('Load a ROM first','error'); return; }
+  if (!ejsReady)       { toast('Wait for the game to start first','warn'); return; }
+  $('state-input').accept='.state'; $('state-input').click();
 });
-
-$('state-input').addEventListener('change', async e => {
-  const f = e.target.files[0]; e.target.value = '';
-  if (!f) return;
-  const ext = extOf(f.name);
-  if (ext !== '.state') { toast('Only .state files are supported', 'error'); return; }
-  if (!ejsReady) { toast('Emulator not ready', 'warn'); return; }
+$('state-input').addEventListener('change',async e=>{
+  const f=e.target.files[0]; e.target.value=''; if (!f) return;
+  const ext=extOf(f.name);
+  if (ext!=='.state') { toast('Only .state files are supported','error'); return; }
+  if (!ejsReady) { toast('Emulator not ready','warn'); return; }
   try {
-    const buf = await f.arrayBuffer();
-    const ok = applyStateData(buf);
-    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state', 'error', 4000); return; }
+    const buf=await f.arrayBuffer();
+    const ok=applyStateData(buf);
+    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state','error',4000); return; }
     if (isPaused) updatePauseUI(false);
-    showStateToast('State restored'); toast('State file loaded — continuing from snapshot ✓', 'success');
-    if (db && currentRomName) {
-      const thumb = captureThumbnail();
-      await dbPut(S_STATES, { id:`${currentRomName}::slot1`, data:buf, ts:Date.now(), thumb, saveName:'Imported state', slotIdx:1 });
+    showStateToast('State restored'); toast('State file loaded — continuing from snapshot ✓','success');
+    if (db&&currentRomName) {
+      const thumb=captureThumbnail();
+      await dbPut(S_STATES,{id:`${currentRomName}::slot1`,data:buf,ts:Date.now(),thumb,saveName:'Imported state',slotIdx:1});
       buildSaveSlots(); refreshCacheLoadSub();
     }
-  } catch(err) {
-    toast('Failed to load state file: ' + (err.message || 'unknown'), 'error', 5000);
-  }
+  } catch(err) { toast('Failed to load state file: '+(err.message||'unknown'),'error',5000); }
 });
 
-$('sb-export-state').addEventListener('click', async () => {
+$('sb-export-state').addEventListener('click',async()=>{
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Wait for game to start','warn'); return; }
-  const stateData = captureStateData();
+  const stateData=captureStateData();
   if (!stateData) { toast('No state to export — game may still be booting','warn'); return; }
-  const baseName = currentDisplay || currentRomName.replace(/\.[^.]+$/, '');
-  download(new Blob([stateData], { type:'application/octet-stream' }), `${baseName}.state`);
+  const baseName=currentDisplay||currentRomName.replace(/\.[^.]+$/,'');
+  download(new Blob([stateData],{type:'application/octet-stream'}),`${baseName}.state`);
   toast('State file exported ✓','success');
 });
 
-/* ══════════════════════════════════════════════════════════════
-   BATTERY SAVE IMPORT (.sav)
-══════════════════════════════════════════════════════════════ */
-$('sb-import-sav').addEventListener('click', () => {
-  if (!currentRomName) { toast('Load a ROM first','error'); return; }
-  $('sav-input').click();
-});
-$('sav-input').addEventListener('change', e => {
-  const f = e.target.files[0]; if (!f) return;
-  e.target.value = '';
-  importSavFile(f);
-});
-
+/* ══ BATTERY SAVE EXPORT (kept as util, no UI button) ══ */
 async function importSavFile(file) {
-  if (!SAV_EXTS.has(extOf(file.name))) { toast(`Unsupported file type: ${extOf(file.name)}`, 'error'); return; }
-  if (!ejsReady) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
-  const emu = getEmu();
-  if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
+  if (!SAV_EXTS.has(extOf(file.name))) { toast(`Unsupported file type: ${extOf(file.name)}`,'error'); return; }
+  if (!ejsReady) { toast('Emulator not ready — wait for game to start','warn'); return; }
+  const emu=getEmu(); if (!emu||!emu.gameManager) { toast('Emulator not ready','error'); return; }
   try {
-    const u8 = new Uint8Array(await file.arrayBuffer());
-    const gm = emu.gameManager;
-    if (gm.FS && typeof gm.FS.writeFile === 'function') {
+    const u8=new Uint8Array(await file.arrayBuffer());
+    const gm=emu.gameManager;
+    if (gm.FS&&typeof gm.FS.writeFile==='function') {
       try { gm.FS.mkdir('/home/web_user/retroarch/userdata/saves'); } catch(e) {}
-      gm.FS.writeFile(`/home/web_user/retroarch/userdata/saves/${currentDisplay}.srm`, u8);
-      if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles();
-      toast('.sav imported — restarting to apply…', 'success', 3000);
-      setTimeout(() => {
-        try { gm.restart(); } catch(e) { startEmulator(currentRomUrl, currentDisplay); }
-        updatePauseUI(false);
-      }, 800);
+      gm.FS.writeFile(`/home/web_user/retroarch/userdata/saves/${currentDisplay}.srm`,u8);
+      if (typeof gm.saveSaveFiles==='function') gm.saveSaveFiles();
+      toast('.sav imported — restarting to apply…','success',3000);
+      setTimeout(()=>{ try { gm.restart(); } catch(e) { startEmulator(currentRomUrl,currentDisplay); } updatePauseUI(false); },800);
     } else {
-      if (db) await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
-      toast('.sav stored — will apply on next game load', 'warn', 4000);
+      if (db) await dbPut(S_META,{id:'pendsav_'+currentRomName,data:u8,fileName:file.name,ts:Date.now()});
+      toast('.sav stored — will apply on next game load','warn',4000);
     }
-  } catch(err) {
-    toast('Failed to import: ' + (err.message || 'unknown error'), 'error', 5000);
-  }
+  } catch(err) { toast('Failed to import: '+(err.message||'unknown error'),'error',5000); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BATTERY SAVE EXPORT (.sav)
-══════════════════════════════════════════════════════════════ */
-$('sb-export-save').addEventListener('click', async () => {
-  if (!currentRomName) { toast('No game loaded','error'); return; }
-  const emu = getEmu();
-  if (emu && emu.gameManager) {
-    const gm = emu.gameManager;
-    try { if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles(); } catch(e) {}
-    try {
-      if (typeof gm.getSaveFile === 'function') {
-        const sav = gm.getSaveFile();
-        if (sav && sav.byteLength > 0) {
-          download(new Blob([sav], { type:'application/octet-stream' }), savName(currentRomName));
-          toast('Battery save exported ✓','success'); return;
-        }
-      }
-    } catch(e) {}
-    if (gm.FS) {
-      for (const dir of ['/home/web_user/retroarch/userdata/saves/','/home/web_user/retroarch/userdata/']) {
-        try {
-          const entries = gm.FS.readdir(dir);
-          const savFile = entries.find(f => /\.(srm|sav|eep|fla)$/i.test(f));
-          if (savFile) {
-            download(new Blob([gm.FS.readFile(dir + savFile)], { type:'application/octet-stream' }), savName(currentRomName));
-            toast('Battery save exported ✓','success'); return;
-          }
-        } catch(e) {}
-      }
-    }
-  }
-  toast('No save data found — in-game save first','warn');
-});
-
-/* ══════════════════════════════════════════════════════════════
-   SCREENSHOT
-══════════════════════════════════════════════════════════════ */
+/* ══ SCREENSHOT ══ */
 async function takeScreenshot() {
   try {
-    const canvas = document.querySelector('#game canvas');
-    if (!canvas) { toast('No game screen found', 'error'); return; }
-    const flash = $('ss-flash');
+    const canvas=document.querySelector('#game canvas');
+    if (!canvas) { toast('No game screen found','error'); return; }
+    const flash=$('ss-flash');
     flash.classList.remove('pop'); flash.offsetHeight; flash.classList.add('pop');
-    canvas.toBlob(blob => {
-      if (!blob) { toast('Screenshot failed', 'error'); return; }
-      download(blob, `${currentDisplay || 'screenshot'}_${Date.now()}.png`);
-      toast('Screenshot saved ✓', 'success', 1800);
+    canvas.toBlob(blob=>{
+      if (!blob) { toast('Screenshot failed','error'); return; }
+      download(blob,`${currentDisplay||'screenshot'}_${Date.now()}.png`);
+      toast('Screenshot saved ✓','success',1800);
     });
-  } catch(e) { toast('Screenshot failed', 'error'); }
+  } catch(e) { toast('Screenshot failed','error'); }
 }
-$('btn-screenshot').addEventListener('click', takeScreenshot);
-$('sb-screenshot').addEventListener('click', takeScreenshot);
+$('btn-screenshot').addEventListener('click',takeScreenshot);
+$('sb-screenshot').addEventListener('click',takeScreenshot);
 
-/* ══════════════════════════════════════════════════════════════
-   EXPORT ROM
-══════════════════════════════════════════════════════════════ */
-$('sb-export-rom').addEventListener('click', () => {
+/* ══ EXPORT ROM ══ */
+$('sb-export-rom').addEventListener('click',()=>{
   if (!currentRomData) { toast('No ROM loaded','error'); return; }
-  download(new Blob([currentRomData], { type:'application/octet-stream' }), currentRomName);
+  download(new Blob([currentRomData],{type:'application/octet-stream'}),currentRomName);
   toast('ROM downloaded ✓','success');
 });
 
-/* ══════════════════════════════════════════════════════════════
-   LOAD NEW ROM
-══════════════════════════════════════════════════════════════ */
-$('sb-load-new').addEventListener('click', () => $('rom-input').click());
+/* ══ LOAD NEW ROM ══ */
+$('sb-load-new').addEventListener('click',()=>$('rom-input').click());
 
-/* ══════════════════════════════════════════════════════════════
-   TOOLBAR BUTTONS
-══════════════════════════════════════════════════════════════ */
-$('btn-back').addEventListener('click', () => {
-  clearInterval(autosaveTimer); clearInterval(playtimeTimer);
-  location.reload();
-});
-$('btn-fullscreen').addEventListener('click', () => {
+/* ══ TOOLBAR BUTTONS ══ */
+$('btn-back').addEventListener('click',()=>{ clearInterval(autosaveTimer); clearInterval(playtimeTimer); location.reload(); });
+$('btn-fullscreen').addEventListener('click',()=>{
   if (document.fullscreenElement) document.exitFullscreen();
-  else $('emu-wrap').requestFullscreen().catch(() => {});
+  else $('emu-wrap').requestFullscreen().catch(()=>{});
 });
-$('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle('visible'));
+$('btn-keys').addEventListener('click',()=>$('keys-overlay').classList.toggle('visible'));
 
-/* ══════════════════════════════════════════════════════════════
-   KEYBOARD SHORTCUTS
-══════════════════════════════════════════════════════════════ */
-document.addEventListener('keydown', async e => {
-  if (e.key === '`') backtickHeld = true;
-  // Don't intercept if we're listening for a binding or Tab FF hold is active
-  if (listeningFor && listeningFor.cancel) return; // key binding in progress
+/* ══ KEYBOARD SHORTCUTS ══ */
+document.addEventListener('keydown',async e=>{
+  if (e.key==='`') backtickHeld=true;
+  if (listeningFor&&listeningFor.cancel) return;
   if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
 
-  const inEmu    = $('emu-screen').classList.contains('active');
-  const keysOpen = $('keys-overlay').classList.contains('visible');
+  const inEmu=$('emu-screen').classList.contains('active');
+  const keysOpen=$('keys-overlay').classList.contains('visible');
 
-  // Ctrl + ` = open delete save picker
-  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+  if ((e.ctrlKey||e.metaKey)&&e.key==='`') {
     e.preventDefault();
-    if (!inEmu || !currentRomName) return;
-    const pick = await showDeleteSlotPicker();
-    if (!pick) return;
-    const confirmed = await showConfirmDelete(pick.label);
-    if (!confirmed) return;
-    if (pick.slot === 0) {
-      try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e2) {}
-    } else {
-      await deleteSlot(pick.slot);
-    }
+    if (!inEmu||!currentRomName) return;
+    const pick=await showDeleteSlotPicker(); if (!pick) return;
+    const confirmed=await showConfirmDelete(pick.label); if (!confirmed) return;
+    if (pick.slot===0) {
+      try { await dbDel(S_STATES,`${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e2) {}
+    } else { await deleteSlot(pick.slot); }
     return;
   }
 
-  if (e.key === 'Escape') {
-    if (keysOpen) { $('keys-overlay').classList.remove('visible'); return; }
-    closeCtxMenu(); return;
-  }
-  if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
-  if (!inEmu || keysOpen) return;
+  if (e.key==='Escape') { if (keysOpen) { $('keys-overlay').classList.remove('visible'); return; } closeCtxMenu(); return; }
+  if (e.key==='?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
+  if (!inEmu||keysOpen) return;
 
-  // ` + 1–6 = quick-save
-  if (backtickHeld && /^[1-6]$/.test(e.key)) {
-    e.preventDefault(); quickSaveSlot(parseInt(e.key, 10)); return;
-  }
-  // Ctrl + 1–6 = quick-load
-  if ((e.ctrlKey || e.metaKey) && /^[1-6]$/.test(e.key)) {
-    e.preventDefault(); quickLoadSlot(parseInt(e.key, 10)); return;
-  }
-
-  // Tab: handled by FF hold listener; if FF hold is off, toggle sidebar
-  if (e.code === 'Tab') {
-    if (!settingFFHold) { e.preventDefault(); setSidebar(!sidebarOpen); }
-    return;
-  }
+  if (backtickHeld&&/^[1-6]$/.test(e.key)) { e.preventDefault(); quickSaveSlot(parseInt(e.key,10)); return; }
+  if ((e.ctrlKey||e.metaKey)&&/^[1-6]$/.test(e.key)) { e.preventDefault(); quickLoadSlot(parseInt(e.key,10)); return; }
+  if (e.code==='Tab') { if (!settingFFHold) { e.preventDefault(); setSidebar(!sidebarOpen); } return; }
 
   switch (e.key) {
-    case 'm': case 'M': $('sb-mute').click(); break;
+    case 'm': case 'M': toggleMute(); break;
     case 'p': case 'P': $('sb-pause').click(); break;
     case ' ': e.preventDefault(); $('sb-pause').click(); break;
     case 'f': case 'F': $('btn-fullscreen').click(); break;
     case 'c': case 'C': takeScreenshot(); break;
   }
 });
+document.addEventListener('keyup',e=>{ if (e.key==='`') backtickHeld=false; });
+$('keys-overlay').addEventListener('click',e=>{ if (e.target===$('keys-overlay')) $('keys-overlay').classList.remove('visible'); });
 
-document.addEventListener('keyup', e => { if (e.key === '`') backtickHeld = false; });
-
-$('keys-overlay').addEventListener('click', e => {
-  if (e.target === $('keys-overlay')) $('keys-overlay').classList.remove('visible');
-});
-
-/* ══════════════════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════════════════ */
+/* ══ INIT ══ */
 loadSettings();
 openDB()
-  .then(d => { db = d; buildContinueBar(); })
-  .catch(e => console.warn('IndexedDB unavailable — persistence disabled:', e));
+  .then(d=>{ db=d; buildContinueBar(); })
+  .catch(e=>console.warn('IndexedDB unavailable — persistence disabled:',e));
 initSettingsUI();
 
 })();
