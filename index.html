@@ -49,44 +49,58 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #idle-screen{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
-  cursor:pointer;transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
-  gap:var(--sp3);background:#07090c;isolation:isolate;
+  cursor:pointer;gap:var(--sp3);background:#06080b;isolation:isolate;
+  /* GPU-only transition — fast clean exit */
+  transition:opacity .35s ease, transform .35s ease;
+  will-change:opacity, transform;
 }
-#idle-screen.fade-out{opacity:0;pointer-events:none;transform:scale(1.03)}
+#idle-screen.fade-out{
+  opacity:0;
+  transform:scale(1.04);
+  pointer-events:none;
+}
+#idle-screen.hidden{ display:none; }
 
+/* ── Background ── */
 .landing-bg{
   position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,196,248,.14) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 40% at 85% 60%,rgba(0,80,200,.1) 0%,transparent 50%),
-    radial-gradient(ellipse 60% 50% at 10% 80%,rgba(100,0,210,.07) 0%,transparent 50%),
-    linear-gradient(180deg,#07090c 0%,#0b0f16 40%,#0d1219 100%);
-  animation:bg-breathe 12s ease-in-out infinite alternate;
+    radial-gradient(ellipse 90% 70% at 50% -5%, rgba(0,196,248,.18) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 65%,rgba(0,80,200,.13) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 55% at 10% 80%,rgba(100,0,210,.09) 0%,transparent 50%),
+    linear-gradient(180deg,#06080b 0%,#090d14 40%,#0b0f18 100%);
+  animation:bg-breathe 14s ease-in-out infinite alternate;
 }
-@keyframes bg-breathe{0%{opacity:.9}50%{opacity:1}100%{opacity:.85}}
+@keyframes bg-breathe{0%{opacity:.88}50%{opacity:1}100%{opacity:.82}}
 
 .landing-grid{
   position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(0,196,248,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,248,.038) 1px,transparent 1px);
-  background-size:56px 56px;
-  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black 25%,transparent 72%);
-  animation:grid-drift 22s linear infinite;
+  background-image:
+    linear-gradient(rgba(0,196,248,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,196,248,.05) 1px,transparent 1px),
+    linear-gradient(rgba(0,196,248,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,196,248,.02) 1px,transparent 1px);
+  background-size:56px 56px, 56px 56px, 14px 14px, 14px 14px;
+  mask-image:radial-gradient(ellipse 85% 65% at 50% 50%,black 20%,transparent 70%);
+  animation:grid-drift 28s linear infinite;
 }
 @keyframes grid-drift{0%{transform:translateY(0)}100%{transform:translateY(56px)}}
 
-.landing-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px);z-index:0}
-.landing-orb-1{width:520px;height:520px;top:-18%;left:-12%;background:rgba(0,196,248,.07);animation:orb1 18s ease-in-out infinite alternate}
-.landing-orb-2{width:420px;height:420px;bottom:-12%;right:-6%;background:rgba(100,0,230,.08);animation:orb2 14s ease-in-out infinite alternate}
-.landing-orb-3{width:320px;height:320px;top:38%;left:33%;background:rgba(0,196,248,.045);animation:orb3 10s ease-in-out infinite alternate}
-@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(5%,8%) scale(1.1)}}
-@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-6%,-5%) scale(1.15)}}
-@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.6}to{transform:translate(3%,-4%) scale(1.2);opacity:1}}
+.landing-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.landing-orb-1{width:600px;height:600px;top:-20%;left:-14%;background:radial-gradient(circle,rgba(0,196,248,.1) 0%,transparent 70%);filter:blur(80px);animation:orb1 20s ease-in-out infinite alternate}
+.landing-orb-2{width:500px;height:500px;bottom:-14%;right:-8%;background:radial-gradient(circle,rgba(100,0,230,.11) 0%,transparent 70%);filter:blur(70px);animation:orb2 16s ease-in-out infinite alternate}
+.landing-orb-3{width:380px;height:380px;top:35%;left:30%;background:radial-gradient(circle,rgba(0,196,248,.055) 0%,transparent 70%);filter:blur(60px);animation:orb3 12s ease-in-out infinite alternate}
+@keyframes orb1{from{transform:translate(0,0) scale(1)}to{transform:translate(6%,10%) scale(1.12)}}
+@keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-7%,-6%) scale(1.18)}}
+@keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.5}to{transform:translate(4%,-5%) scale(1.25);opacity:1}}
 
+/* Noise texture overlay */
 #idle-screen::before{
-  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.025;
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.032;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:256px 256px;
 }
+/* Scanline effect */
 #idle-screen::after{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.055) 3px,rgba(0,0,0,.055) 4px);
@@ -94,29 +108,57 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 @keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
 
-#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.45}
+/* Sweep line (v9) */
+.landing-sweep{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.landing-sweep::after{
+  content:'';position:absolute;left:0;right:0;height:3px;
+  background:linear-gradient(to right,transparent,rgba(0,196,248,.25),rgba(0,196,248,.08),transparent);
+  animation:sweep-line 7s ease-in-out infinite;
+  box-shadow:0 0 20px rgba(0,196,248,.3);
+}
+@keyframes sweep-line{0%{top:-10%;opacity:0}10%{opacity:1}90%{opacity:.3}100%{top:110%;opacity:0}}
+
+/* Corner brackets (v9) */
+.corner-bracket{position:absolute;z-index:3;pointer-events:none;width:40px;height:40px;opacity:.18}
+.corner-bracket.tl{top:20px;left:20px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
+.corner-bracket.tr{top:20px;right:20px;border-top:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
+.corner-bracket.bl{bottom:20px;left:20px;border-bottom:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
+.corner-bracket.br{bottom:20px;right:20px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
+
+/* Hex deco (v9) */
+.hex-deco{position:absolute;z-index:2;pointer-events:none;font-family:var(--font-mono);font-size:9px;color:rgba(0,196,248,.12);letter-spacing:.1em;user-select:none}
+.hex-deco.d1{top:12%;left:8%;animation:hex-float1 11s ease-in-out infinite}
+.hex-deco.d2{top:22%;right:5%;animation:hex-float2 14s ease-in-out infinite}
+.hex-deco.d3{bottom:28%;left:6%;animation:hex-float1 9s ease-in-out infinite 2s}
+.hex-deco.d4{bottom:18%;right:9%;animation:hex-float2 13s ease-in-out infinite 1s}
+@keyframes hex-float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes hex-float2{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+
+#particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
 
 /* ── Showcase ── */
 .showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
-.showcase-bg{position:absolute;inset:0;transition:background 1s ease}
+.showcase-bg{position:absolute;inset:0;transition:background 1.2s ease}
 .showcase-pulse{
   position:absolute;inset:0;
   background:radial-gradient(ellipse 55% 45% at 76% 38%,var(--game-color,rgba(0,196,248,.12)) 0%,transparent 65%);
-  animation:ambient-pulse 5s ease-in-out infinite;transition:background 1s ease;
+  animation:ambient-pulse 5s ease-in-out infinite;transition:background 1.2s ease;
 }
-@keyframes ambient-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes ambient-pulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 .showcase-flash{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none}
-.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .5s ease-out forwards;pointer-events:none}
+.showcase-wipe{position:absolute;inset:-50%;z-index:5;animation:wipe-sweep .55s ease-out forwards;pointer-events:none}
 @keyframes wipe-sweep{0%{transform:translate(-100%) rotate(12deg)}to{transform:translate(100%) rotate(12deg)}}
 .showcase-slash{position:absolute;top:-20%;right:18%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none;transition:border-color .8s ease}
-.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.032)}
+.showcase-slash::before,.showcase-slash::after{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.04)}
 .showcase-slash::after{right:-14px;opacity:.3}
+.showcase-slash2{position:absolute;top:-20%;right:22%;width:1px;height:140%;transform:rotate(15deg);pointer-events:none}
+.showcase-slash2::before{content:'';position:absolute;inset:0;border-right:1px solid rgba(255,255,255,.02)}
 
 .showcase-title{position:absolute;top:6%;left:4%;display:flex;flex-direction:column;gap:8px;z-index:3}
-.showcase-title.slam{animation:title-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-title.slam{animation:title-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-title.out{animation:title-exit .22s ease-in forwards}
-@keyframes title-slam{0%{opacity:0;transform:translateX(-70px) scale(1.08)}65%{opacity:1;transform:translateX(6px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-36px)}}
+@keyframes title-slam{0%{opacity:0;transform:translateX(-80px) scale(1.06)}65%{opacity:1;transform:translateX(5px) scale(1)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes title-exit{0%{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-40px)}}
 .showcase-label{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.22em;color:var(--text-ghost);text-transform:uppercase;font-family:var(--font-mono)}
 .showcase-label::before{content:'';width:16px;height:1px;background:var(--text-ghost);flex-shrink:0}
 .showcase-name{font-size:clamp(20px,2.6vw,34px);font-weight:600;color:#f0f2f6;line-height:1.1;max-width:340px;letter-spacing:-.01em}
@@ -125,12 +167,13 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes underline-grow{0%{width:0}to{width:56px}}
 
 .showcase-art{position:absolute;right:7vw;top:18%;z-index:3}
-.showcase-art.slam{animation:art-slam .55s cubic-bezier(.16,1.2,.3,1) forwards}
+.showcase-art.slam{animation:art-slam .6s cubic-bezier(.16,1.2,.3,1) forwards}
 .showcase-art.out{animation:art-exit .22s ease-in forwards}
-@keyframes art-slam{0%{opacity:0;transform:translateX(110px) scale(.82) rotate(4deg)}55%{opacity:1;transform:translateX(-8px) scale(1.02) rotate(-.8deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
-@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(72px) scale(.9)}}
-.showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.08) contrast(1.04);box-shadow:0 24px 72px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);user-select:none;pointer-events:none;transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s ease}
-.showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(3px);border-radius:10px;pointer-events:none}
+@keyframes art-slam{0%{opacity:0;transform:translateX(120px) scale(.8) rotate(5deg)}55%{opacity:1;transform:translateX(-10px) scale(1.03) rotate(-.6deg)}to{opacity:1;transform:translateX(0) scale(1) rotate(0)}}
+@keyframes art-exit{0%{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(80px) scale(.88)}}
+.showcase-art-img{width:clamp(130px,16vw,230px);height:auto;border-radius:10px;filter:saturate(1.1) contrast(1.05);box-shadow:0 24px 72px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06),0 0 60px rgba(0,196,248,.08);user-select:none;pointer-events:none}
+.showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(4px);border-radius:10px;pointer-events:none}
+.showcase-art-glow{position:absolute;inset:-20px;border-radius:20px;background:radial-gradient(circle,var(--art-glow,rgba(0,196,248,.15)) 0%,transparent 70%);filter:blur(20px);z-index:-1;transition:background 1.2s ease}
 
 /* ── GBA Shell ── */
 .gba-shell{
@@ -140,61 +183,90 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   transform:translate(-5vw);z-index:3;
   filter:drop-shadow(0 20px 60px rgba(0,0,0,.75));
   animation:gba-float 6s ease-in-out infinite;
+  will-change:transform;
 }
-@keyframes gba-float{0%,100%{transform:translate(-5vw) translateY(0)}50%{transform:translate(-5vw) translateY(-9px)}}
+@keyframes gba-float{
+  0%,100%{transform:translate(-5vw) translateY(0)}
+  25%{transform:translate(-5vw) translateY(-7px)}
+  75%{transform:translate(-5vw) translateY(-9px)}
+}
 .gba-image{width:min(62vw,580px);height:auto;user-select:none;pointer-events:none}
 .gba-screen-overlay{
   position:absolute;left:var(--gba-screen-left);top:var(--gba-screen-top);
   width:var(--gba-screen-width);height:var(--gba-screen-height);
-  z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.28);
+  z-index:1;overflow:hidden;border-radius:3px;background:rgba(0,0,0,.3);
 }
+.gba-screen-overlay::before{
+  content:'';position:absolute;inset:0;z-index:10;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(255,255,255,.04) 0%,transparent 100%);
+  animation:screen-flicker 8s ease-in-out infinite;
+}
+@keyframes screen-flicker{0%,95%,100%{opacity:1}96%{opacity:.4}97%{opacity:.9}98%{opacity:.3}99%{opacity:1}}
 .gba-screen-content{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:var(--sp2);padding:0 6%;text-align:center;
-  animation:screen-fade-in 1.2s ease forwards;
 }
-@keyframes screen-fade-in{0%{opacity:0}to{opacity:1}}
-.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.38)}
+.gba-screen-text{display:block;width:100%;font-size:clamp(11px,1.8vw,17px);font-weight:600;color:#c4cad3;text-shadow:0 0 20px rgba(180,220,255,.4)}
 .gba-screen-hint{display:block;width:100%;font-size:clamp(8px,1vw,11px);color:#6b7280;margin-top:2px}
-.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7}
-.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;background:var(--text-ghost);transition:all .5s ease}
-.gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow)}
+.gba-screen-drop-icon{font-size:clamp(14px,2vw,22px);margin-bottom:4px;opacity:.7;animation:icon-bounce 2.5s ease-in-out infinite}
+@keyframes icon-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.gba-power-led{position:absolute;left:30.5%;top:22%;width:6px;height:6px;border-radius:50%;animation:led-idle-blink 4s ease-in-out infinite}
+.gba-power-led.on{background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow),0 0 18px var(--led-green-glow);animation:none}
+@keyframes led-idle-blink{0%,88%,100%{background:rgba(0,232,90,.08);box-shadow:none}90%{background:rgba(0,232,90,.35);box-shadow:0 0 4px rgba(0,232,90,.4)}}
+
+#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 70px rgba(0,196,248,.7))}
+#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
+#idle-screen.drag-over .gba-screen-overlay{background:rgba(0,196,248,.08)}
 
 /* ── Landing brand ── */
-.landing-brand{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
-@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(12px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
-.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1}
+.landing-brand{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
+@keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(14px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
+.landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1;position:relative}
 .landing-title .accent{color:var(--accent);letter-spacing:.04em}
 .landing-title .dot{color:var(--text-tertiary)}
-.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px}
+.landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.15em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px;opacity:.7}
+/* Version badge (v9) */
+.landing-version-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(0,196,248,.06);border:1px solid rgba(0,196,248,.15);
+  border-radius:20px;padding:2px 10px;font-size:9px;font-family:var(--font-mono);
+  color:rgba(0,196,248,.6);letter-spacing:.1em;margin-top:4px;
+}
+.landing-version-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:rgba(0,196,248,.5);animation:badge-dot-blink 2s ease-in-out infinite}
+@keyframes badge-dot-blink{0%,100%{opacity:.4}50%{opacity:1}}
 
 .landing-controls{
   display:flex;align-items:center;gap:10px;font-size:var(--xs);color:var(--text-ghost);
-  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:480px;
+  z-index:3;transform:translate(-5vw);flex-wrap:wrap;justify-content:center;max-width:500px;
   animation:brand-in 1s .45s ease both;
 }
 .landing-key{
   display:inline-flex;align-items:center;justify-content:center;
-  padding:2px 7px;border:1px solid rgba(255,255,255,.09);border-radius:4px;
-  background:rgba(255,255,255,.055);color:var(--text-tertiary);font-size:9px;
+  padding:2px 7px;border:1px solid rgba(255,255,255,.1);border-radius:4px;
+  background:rgba(255,255,255,.06);color:var(--text-tertiary);font-size:9px;
   line-height:1.5;min-width:20px;font-family:var(--font-mono);
-  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.055);
+  box-shadow:0 2px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .landing-separator{width:1px;height:10px;background:var(--border-subtle);flex-shrink:0}
 .landing-disclaimer{
   max-width:420px;text-align:center;font-size:var(--xs);line-height:1.7;
-  color:var(--text-ghost);z-index:3;transform:translate(-5vw);animation:brand-in 1s .55s ease both;
+  color:var(--text-ghost);z-index:3;transform:translate(-5vw);animation:brand-in 1s .55s ease both;opacity:.6;
 }
-#idle-screen.drag-over .gba-image{filter:drop-shadow(0 0 60px rgba(0,196,248,.6))}
-#idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
+/* Privacy badge (v9) */
+.landing-privacy{
+  display:inline-flex;align-items:center;gap:5px;z-index:3;
+  font-size:9px;font-family:var(--font-mono);color:rgba(0,232,90,.5);
+  letter-spacing:.08em;transform:translate(-5vw);animation:brand-in 1s .6s ease both;
+}
+.landing-privacy::before{content:'🔒';font-size:10px}
 
 /* ── Continue Bar ── */
 #continue-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 var(--sp5) var(--sp4);display:none}
 #continue-bar.visible{display:block}
-#continue-bar::before{content:'';display:block;height:60px;background:linear-gradient(to bottom,transparent,rgba(7,9,12,.96));pointer-events:none;margin-bottom:var(--sp3)}
+#continue-bar::before{content:'';display:block;height:80px;background:linear-gradient(to bottom,transparent,rgba(6,8,11,.97));pointer-events:none;margin-bottom:var(--sp3)}
 .continue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp3)}
 .continue-label{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono)}
-.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0}
+.continue-label-icon{width:6px;height:6px;border-radius:50%;background:var(--led-green);box-shadow:0 0 6px var(--led-green-glow);flex-shrink:0;animation:status-pulse 2.5s ease-in-out infinite}
 .continue-label-count{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:1px 8px;font-size:9px;color:var(--text-ghost);letter-spacing:0;text-transform:none;margin-left:4px}
 .continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .continue-list::-webkit-scrollbar{display:none}
@@ -202,35 +274,22 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 /* Cards */
 .continue-card{
   flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
-  background:linear-gradient(135deg,rgba(255,255,255,.075) 0%,rgba(255,255,255,.028) 100%);
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,.03) 100%);
   border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-lg);
   padding:10px 14px 10px 10px;cursor:pointer;
   min-width:215px;max-width:255px;position:relative;overflow:hidden;
   backdrop-filter:blur(20px);
-  box-shadow:0 8px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.055);
-  transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease,background var(--normal) ease;
+  box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform var(--normal) var(--ease-spring),box-shadow var(--normal) ease,border-color var(--normal) ease;
   animation:card-slide-in .4s var(--ease-spring) both;
 }
-@keyframes card-slide-in{0%{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.continue-card:hover{
-  transform:translateY(-6px) scale(1.018);
-  border-color:rgba(0,196,248,.32);
-  background:linear-gradient(135deg,rgba(0,196,248,.1) 0%,rgba(255,255,255,.04) 100%);
-  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(0,196,248,.15),inset 0 1px 0 rgba(255,255,255,.1);
-}
+@keyframes card-slide-in{0%{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.continue-card:hover{transform:translateY(-7px) scale(1.02);border-color:rgba(0,196,248,.35);box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 40px rgba(0,196,248,.18),inset 0 1px 0 rgba(255,255,255,.1)}
 .continue-card::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,rgba(0,196,248,.07),transparent 60%);transition:opacity var(--normal) ease;pointer-events:none}
 .continue-card:hover::before{opacity:1}
-.continue-card-art{
-  width:52px;height:52px;border-radius:var(--radius-md);flex-shrink:0;overflow:hidden;
-  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-  position:relative;box-shadow:0 4px 12px rgba(0,0,0,.4);
-}
+.continue-card-art{width:52px;height:52px;border-radius:var(--radius-md);flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .continue-card-art img{width:100%;height:100%;object-fit:cover;display:block}
-.continue-card-art-badge{
-  position:absolute;bottom:-2px;right:-2px;background:var(--led-green);border-radius:50%;
-  width:10px;height:10px;border:2px solid #07090c;box-shadow:0 0 6px var(--led-green-glow);display:none;
-}
+.continue-card-art-badge{position:absolute;bottom:-2px;right:-2px;background:var(--led-green);border-radius:50%;width:10px;height:10px;border:2px solid #06080b;box-shadow:0 0 6px var(--led-green-glow);display:none}
 .continue-card.recently-played .continue-card-art-badge{display:block}
 .continue-card-info{flex:1;min-width:0}
 .continue-card-name{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
@@ -238,22 +297,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-card-meta-dot{width:2px;height:2px;border-radius:50%;background:var(--text-ghost);flex-shrink:0}
 .continue-card-star{position:absolute;top:6px;left:6px;font-size:8px;color:var(--warn);display:none;text-shadow:0 0 8px rgba(245,158,11,.5)}
 .continue-card.favorited .continue-card-star{display:block}
-.continue-card-play{
-  width:34px;height:34px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),#0099cc);
-  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;color:#000;font-size:11px;font-weight:700;
-  box-shadow:0 4px 12px rgba(0,196,248,.35);
-  transition:transform .18s ease,box-shadow .18s ease;
-}
-.continue-card:hover .continue-card-play{transform:scale(1.12);box-shadow:0 6px 20px rgba(0,196,248,.5)}
-.continue-card-menu{
-  position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);
-  cursor:pointer;color:var(--text-ghost);font-size:12px;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity var(--fast) ease,background var(--fast) ease,color var(--fast) ease;
-}
+.continue-card-play{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0099cc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;font-size:11px;font-weight:700;box-shadow:0 4px 12px rgba(0,196,248,.35);transition:transform .18s ease,box-shadow .18s ease}
+.continue-card:hover .continue-card-play{transform:scale(1.14);box-shadow:0 6px 22px rgba(0,196,248,.55)}
+.continue-card-menu{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:var(--text-ghost);font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--fast) ease,background var(--fast) ease,color var(--fast) ease}
 .continue-card:hover .continue-card-menu{opacity:1}
 .continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
 
@@ -276,16 +322,16 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 /* ── Modals ── */
 .modal-overlay{
   position:fixed;inset:0;z-index:600;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(5px);
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
   display:flex;align-items:center;justify-content:center;
-  animation:fade-in .18s ease forwards;
+  animation:fade-in .32s cubic-bezier(.22,1,.36,1) forwards;
 }
 @keyframes fade-in{0%{opacity:0}to{opacity:1}}
 .modal-box{
   background:linear-gradient(160deg,rgba(30,33,40,1),rgba(22,25,32,1));
   border:1px solid var(--border-mid);border-radius:var(--radius-xl);
   padding:var(--sp5);min-width:340px;max-width:92vw;
-  animation:modal-in .2s var(--ease-back) forwards;
+  animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;
   box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.035);
 }
 @keyframes modal-in{0%{opacity:0;transform:scale(.88) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -313,20 +359,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 /* Slot picker */
 .slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
-.slot-picker-item{
-  display:flex;align-items:center;gap:var(--sp3);
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
-  border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;
-  transition:border-color .18s ease,background .18s ease,transform .18s ease;
-}
+.slot-picker-item{display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .18s ease}
 .slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(2px)}
 .slot-picker-item.has-data{border-color:rgba(0,196,248,.18);background:rgba(0,196,248,.05)}
 .slot-picker-item:active{transform:scale(.98)}
-.slot-picker-thumb{
-  width:52px;height:40px;border-radius:7px;flex-shrink:0;overflow:hidden;
-  background:var(--bg-elevated);border:1px solid rgba(255,255,255,.07);
-  display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;
-}
+.slot-picker-thumb{width:52px;height:40px;border-radius:7px;flex-shrink:0;overflow:hidden;background:var(--bg-elevated);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
 .slot-picker-thumb img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:pixelated}
 .slot-picker-thumb-num{position:absolute;bottom:2px;right:3px;font-family:var(--font-mono);font-size:9px;font-weight:700;color:rgba(0,196,248,.9);line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 .slot-picker-info{flex:1;min-width:0}
@@ -337,25 +374,20 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .slot-picker-badge.empty{background:rgba(255,255,255,.04);color:var(--text-ghost);border:1px solid rgba(255,255,255,.07)}
 .modal-name-row{margin-top:var(--sp3)}
 .modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
-
-.autosave-slot {
-  border-color: rgba(0,196,248,.45);
-  box-shadow:
-    0 0 0 1px rgba(0,196,248,.08),
-    0 8px 24px rgba(0,196,248,.08);
-}
-
-.autosave-slot .save-slot-thumb-num {
-  background: #00c4f8;
-  color: #001018;
-  font-weight: 800;
-}
+/* Danger picker items (v9) */
+.slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(2px)}
+.slot-picker-item.danger-item:hover .slot-picker-name{color:var(--error)}
+.autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
 
 /* ═══════════════════════════════════════════════════════════
    EMULATOR SCREEN
    ═══════════════════════════════════════════════════════════ */
-#emu-screen{display:none;position:fixed;inset:0;z-index:100;background:#000}
+#emu-screen{
+  display:none;position:fixed;inset:0;z-index:100;background:#000;
+  opacity:0;transition:opacity .3s ease;
+}
 #emu-screen.active{display:flex;flex-direction:column}
+#emu-screen.visible{opacity:1}
 
 /* ── Toolbar ── */
 #emu-toolbar{
@@ -403,9 +435,21 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes tooltip-in{0%{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 /* ── Emulator body ── */
-#emu-body{flex:1;display:flex;overflow:hidden;position:relative}
-#emu-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#000;min-width:0;min-height:0}
-#game{position:relative;width:100%;height:100%}
+#emu-body{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
+
+/* CRITICAL: game wrapper explicit dimensions for EmulatorJS */
+#emu-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;background:#000;
+  min-width:0;min-height:0;
+}
+
+/* CRITICAL: #game div MUST have explicit 100% width/height — EJS reads offsetWidth/offsetHeight */
+#game{
+  width:100%;
+  height:100%;
+  position:relative;
+}
 
 /* SAV drop overlay */
 #sav-drop-overlay{
@@ -443,6 +487,8 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 12px rgba(0,232,90,.15);
   animation:state-toast-in .22s var(--ease-spring);
 }
+#state-toast.error-toast{border-color:rgba(232,64,87,.5);color:var(--error)}
+#state-toast.warn-toast{border-color:rgba(245,158,11,.4);color:var(--warn)}
 #state-toast.visible{display:flex}
 @keyframes state-toast-in{0%{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 
@@ -507,7 +553,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   font-size:9px;letter-spacing:.04em;text-transform:none;
 }
 
-/* Sidebar buttons — improved */
+/* Sidebar buttons */
 .sb-btn{
   width:100%;display:flex;align-items:center;gap:var(--sp3);
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
@@ -523,12 +569,16 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn.accent-btn{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent)}
 .sb-btn.accent-btn:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.2),0 0 16px rgba(0,196,248,.18)}
 .sb-btn.active-state{border-color:var(--led-green)!important;color:var(--led-green)!important;background:rgba(0,232,90,.07)!important}
+/* Danger button (v9) */
+.sb-btn.danger-btn{background:rgba(232,64,87,.07);border-color:rgba(232,64,87,.2);color:var(--error)}
+.sb-btn.danger-btn:hover{background:rgba(232,64,87,.14);border-color:var(--error)}
 .sb-btn-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
 .sb-btn-text{flex:1}
 .sb-btn-sub{font-size:10px;color:var(--text-tertiary);display:block;margin-top:1px;font-family:var(--font-mono)}
 .sb-btn.active-state .sb-btn-sub{color:rgba(0,232,90,.55)}
 .sb-btn-arrow{color:var(--text-ghost);font-size:11px;flex-shrink:0;transition:transform var(--fast),color var(--fast)}
 .sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
+.sb-btn.danger-btn:hover .sb-btn-arrow{color:var(--error)}
 
 /* Status */
 .status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
@@ -573,9 +623,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));
   border:1px solid rgba(255,255,255,.07);
   box-shadow:0 4px 16px rgba(0,0,0,.18);
-  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  transition:transform .42s cubic-bezier(.22,1,.36,1),border-color .32s ease,box-shadow .32s ease;
   position:relative;overflow:hidden;
-   justify-content: space-between;
+  justify-content:space-between;
+  will-change:transform;transform:translateZ(0);
 }
 .save-slot::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(0,196,248,.035),transparent);transition:opacity .2s ease}
 .save-slot:hover::before{opacity:1}
@@ -592,53 +643,24 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot-name{font-size:var(--xs);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-slot-time{font-size:10px;color:var(--text-ghost);font-family:var(--font-mono);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.save-slot-actions {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-shrink: 0;
-}
-.slot-btn {
-  border: none;
-  outline: none;
-  cursor: pointer;
-
-  min-width: 52px;
-  height: 32px;
-  padding: 0 10px;
-
-  border-radius: 8px;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(255,255,255,0.08);
-  color: white;
-
-  transition: 0.15s;
-}
-
-.slot-btn.del {
-  min-width: 32px;
-  background: rgba(255, 80, 80, 0.18);
-  color: #ff8080;
-}
-
-.slot-btn.del:hover {
-  background: rgba(255, 80, 80, 0.32);
+.save-slot-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.slot-btn{
+  border:none;outline:none;cursor:pointer;
+  min-width:52px;height:32px;padding:0 10px;
+  border-radius:8px;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);color:white;
+  transition:.15s;
 }
 .slot-btn:active{transform:scale(.9)!important}
-.slot-btn.sav{color:var(--accent);border-color:rgba(0,196,248,.22);background:rgba(0,196,248,.07)}
+.slot-btn.sav{color:var(--accent);border:1px solid rgba(0,196,248,.22);background:rgba(0,196,248,.07)}
 .slot-btn.sav:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 0 10px rgba(0,196,248,.22);transform:translateY(-1px)}
-.slot-btn.load{color:var(--led-green);border-color:rgba(0,232,90,.22);background:rgba(0,232,90,.06)}
+.slot-btn.load{color:var(--led-green);border:1px solid rgba(0,232,90,.22);background:rgba(0,232,90,.06)}
 .slot-btn.load:hover{background:rgba(0,232,90,.18);border-color:var(--led-green);box-shadow:0 0 10px rgba(0,232,90,.22);transform:translateY(-1px)}
-.slot-btn.del{color:var(--text-ghost);border-color:rgba(255,255,255,.06);background:transparent;padding:5px 7px;font-size:11px}
-.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.32);background:rgba(232,64,87,.07);transform:translateY(-1px)}
+.slot-btn.del{min-width:32px;color:var(--text-ghost);background:rgba(255,80,80,.04);border:1px solid rgba(255,255,255,.06);padding:0 7px;font-size:11px}
+.slot-btn.del:hover{color:var(--error);border-color:rgba(232,64,87,.45);background:rgba(232,64,87,.12);transform:translateY(-1px)}
 .save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
+.autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
 
 /* Playtime */
 .playtime-display{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);color:var(--text-ghost);font-family:var(--font-mono);margin-top:var(--sp2)}
@@ -650,12 +672,25 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #rom-input,#sav-input,#state-input{display:none!important;position:fixed;left:-9999px}
 
 /* ═══════════════════════════════════════════════════════════
+   CONFIRM DELETE MODAL (v9)
+   ═══════════════════════════════════════════════════════════ */
+.delete-confirm-overlay{position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;animation:fade-in .15s ease forwards}
+.delete-confirm-box{background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);padding:var(--sp5);min-width:320px;max-width:88vw;animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
+.delete-confirm-title{font-size:var(--lg);font-weight:600;font-family:var(--font-display);letter-spacing:-.01em;margin-bottom:8px;text-align:center;color:var(--text-primary)}
+.delete-confirm-desc{font-size:var(--sm);color:var(--text-secondary);text-align:center;line-height:1.6;margin-bottom:var(--sp5)}
+.delete-confirm-actions{display:flex;gap:var(--sp2)}
+.delete-confirm-actions .modal-btn{flex:1;justify-content:center;display:flex}
+
+/* ═══════════════════════════════════════════════════════════
    KEYBOARD SHORTCUT OVERLAY
    ═══════════════════════════════════════════════════════════ */
 #keys-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;animation:fade-in .18s ease}
 #keys-overlay.visible{display:flex}
-.keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:340px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:360px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
 .keys-title{font-size:var(--xl);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display)}
+/* Section headers in keys overlay (v9) */
+.keys-section{font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono);margin:var(--sp4) 0 var(--sp2);padding-bottom:var(--sp2);border-bottom:1px solid var(--border-subtle)}
 .keys-grid{display:grid;grid-template-columns:auto 1fr;gap:var(--sp2) var(--sp4)}
 .key-chip{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--border-mid);border-radius:4px;background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);color:var(--text-secondary);white-space:nowrap}
 .key-desc{font-size:var(--sm);color:var(--text-secondary);align-self:center}
@@ -687,6 +722,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   .showcase-wipe,.showcase-flash{display:none}
   .showcase-title.slam,.showcase-art.slam{animation:none;opacity:1;transform:none}
   .showcase-title.out,.showcase-art.out{animation:none;opacity:0}
+  #idle-screen.fade-out{transition:none}
 }
 </style>
 </head>
@@ -703,6 +739,18 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="landing-orb landing-orb-1"></div>
   <div class="landing-orb landing-orb-2"></div>
   <div class="landing-orb landing-orb-3"></div>
+  <div class="landing-sweep"></div>
+
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+
+  <div class="hex-deco d1">0x0800<br>GBA_ROM<br>0x03FF</div>
+  <div class="hex-deco d2">ARM7TDMI<br>16.78MHz<br>0xC000</div>
+  <div class="hex-deco d3">EWRAM<br>256KB<br>0x0200</div>
+  <div class="hex-deco d4">VRAM<br>96KB<br>0x06FF</div>
+
   <canvas id="particles-canvas"></canvas>
 
   <div class="showcase">
@@ -710,6 +758,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="showcase-pulse" id="showcase-pulse"></div>
     <div class="showcase-flash" id="showcase-flash"></div>
     <div class="showcase-slash" id="showcase-slash"></div>
+    <div class="showcase-slash2"></div>
     <div class="showcase-title slam" id="showcase-title">
       <span class="showcase-label font-mono">GAME BOY ADVANCE EMULATOR</span>
       <h2 class="showcase-name font-display" id="showcase-name"></h2>
@@ -717,12 +766,13 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <div class="showcase-underline" id="showcase-underline"></div>
     </div>
     <div class="showcase-art slam" id="showcase-art">
+      <div class="showcase-art-glow" id="showcase-art-glow"></div>
       <img src="" alt="" class="showcase-art-img" id="showcase-img" draggable="false"/>
       <div class="showcase-art-reflect"></div>
     </div>
   </div>
 
-  <div class="gba-shell">
+  <div class="gba-shell" id="gba-shell">
     <div class="gba-screen-overlay">
       <div class="gba-screen-content">
         <div class="gba-screen-drop-icon">🎮</div>
@@ -735,8 +785,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   </div>
 
   <div class="landing-brand">
-    <h1 class="landing-title font-display"><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
+    <h1 class="landing-title font-display" data-text="SwiftGBA."><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
     <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
+    <div class="landing-version-badge font-mono">v4.0 · STABLE</div>
   </div>
   <div class="landing-controls font-mono">
     <span class="landing-key">Z</span> A
@@ -752,6 +803,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="landing-separator"></div>
     <span class="landing-key">M</span> Mute
   </div>
+  <div class="landing-privacy font-mono">100% local · zero uploads · no tracking</div>
   <div class="landing-disclaimer">
     Your ROM never leaves your device — everything runs locally in your browser.
   </div>
@@ -790,15 +842,20 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
   <div id="emu-body">
     <div id="emu-wrap">
+      <!--
+        CRITICAL: #game must be a direct child of a container with explicit dimensions.
+        EmulatorJS uses offsetWidth/offsetHeight of #game to size the canvas.
+        width:100%;height:100% on #game + flex:1 on #emu-wrap ensures non-zero dimensions.
+      -->
       <div id="game"></div>
       <div id="sav-drop-overlay">
         <div>📁</div>
-        <div>Drop save file to import live</div>
+        <div>Drop .state file to restore snapshot</div>
       </div>
       <div id="ff-badge">⚡ FAST FORWARD</div>
       <div id="ss-flash"></div>
       <div id="state-toast">
-        <span>●</span><span id="state-toast-text">State saved</span>
+        <span id="state-toast-icon">●</span><span id="state-toast-text">State saved</span>
       </div>
       <div id="load-indicator">
         <div class="load-dot"></div>
@@ -884,7 +941,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
         </div>
       </div>
 
-      <!-- Quick Save -->
+      <!-- Cache Save -->
       <div class="sidebar-section">
         <div class="sidebar-section-title">Cache Save</div>
         <button class="sb-btn accent-btn" id="sb-cache-save">
@@ -897,48 +954,27 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           <span class="sb-btn-text">Load State<span class="sb-btn-sub" id="cache-load-sub">Pick a slot to restore</span></span>
           <span class="sb-btn-arrow">›</span>
         </button>
+        <button class="sb-btn danger-btn" id="sb-delete-slot">
+          <span class="sb-btn-icon">🗑</span>
+          <span class="sb-btn-text">Delete Save<span class="sb-btn-sub">Remove a save slot</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
       </div>
 
-
       <!-- Snapshot System -->
-<div class="sidebar-section">
-
- <div class="sidebar-section-title">
- Snapshot System
- </div>
-
- <button class="sb-btn accent-btn" id="sb-import-state">
-
- <span class="sb-btn-icon">📂⚙</span>
-
- <span class="sb-btn-text">
- Load Manual State
- <span class="sb-btn-sub">
- Continue from exact gameplay moment (.state)
- </span>
- </span>
-
- <span class="sb-btn-arrow">›</span>
-
- </button>
-
- <button class="sb-btn" id="sb-export-state">
-
- <span class="sb-btn-icon">💾⚙</span>
-
- <span class="sb-btn-text">
- Save Manual State
- <span class="sb-btn-sub">
- Download portable gameplay snapshot
- </span>
- </span>
-
- <span class="sb-btn-arrow">›</span>
-
- </button>
-
-</div>
-
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Snapshot System</div>
+        <button class="sb-btn accent-btn" id="sb-import-state">
+          <span class="sb-btn-icon">📂⚙</span>
+          <span class="sb-btn-text">Load Manual State<span class="sb-btn-sub">Continue from exact gameplay moment (.state)</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+        <button class="sb-btn" id="sb-export-state">
+          <span class="sb-btn-icon">💾⚙</span>
+          <span class="sb-btn-text">Save Manual State<span class="sb-btn-sub">Download portable gameplay snapshot</span></span>
+          <span class="sb-btn-arrow">›</span>
+        </button>
+      </div>
 
       <!-- ROM -->
       <div class="sidebar-section">
@@ -962,6 +998,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 <div id="keys-overlay">
   <div class="keys-box">
     <div class="keys-title font-display">Keyboard Shortcuts</div>
+    <div class="keys-section">GBA Controls</div>
     <div class="keys-grid">
       <span class="key-chip">Z</span><span class="key-desc">A button</span>
       <span class="key-chip">X</span><span class="key-desc">B button</span>
@@ -969,17 +1006,24 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <span class="key-chip">S</span><span class="key-desc">R shoulder</span>
       <span class="key-chip">Enter</span><span class="key-desc">Start</span>
       <span class="key-chip">Shift</span><span class="key-desc">Select</span>
-      <span class="key-chip">←↑↓→</span><span class="key-desc">D-Pad</span>
+      <span class="key-chip">← ↑ ↓ →</span><span class="key-desc">D-Pad</span>
+    </div>
+    <div class="keys-section">Emulator</div>
+    <div class="keys-grid">
       <span class="key-chip">Space / P</span><span class="key-desc">Pause / Resume</span>
       <span class="key-chip">M</span><span class="key-desc">Toggle mute</span>
       <span class="key-chip">F</span><span class="key-desc">Fullscreen</span>
       <span class="key-chip">C</span><span class="key-desc">Screenshot</span>
       <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar</span>
-      <span class="key-chip">Alt+1–6</span><span class="key-desc">Quick-save slot 1–6</span>
-<span class="key-chip">Ctrl+1–6</span><span class="key-desc">Quick-load slot 1–6</span>
-<span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave</span>
       <span class="key-chip">?</span><span class="key-desc">This overlay</span>
       <span class="key-chip">Esc</span><span class="key-desc">Close overlay</span>
+    </div>
+    <div class="keys-section">Save States</div>
+    <div class="keys-grid">
+      <span class="key-chip">` + 1–6</span><span class="key-desc">Quick-save slot 1–6</span>
+      <span class="key-chip">Ctrl + 1–6</span><span class="key-desc">Quick-load slot 1–6</span>
+      <span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave (every 45s)</span>
+      <span class="key-chip">Ctrl + `</span><span class="key-desc">Open delete save picker</span>
     </div>
   </div>
 </div>
@@ -990,14 +1034,21 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   SwiftGBA — Enhanced Frontend v3
-   Key fixes:
-   ✦ saveState() used everywhere (not getState())
-   ✦ Separate import/export for .state snapshots
-   ✦ Keyboard hotkeys for quick-save/load (1–6, Ctrl+1–6)
-   ✦ In-viewport state toast replaces reliance on bottom toast
-   ✦ Toolbar status pill
-   ✦ Improved button styles + arrows
+   SwiftGBA — Merged v4 (current base + v9 fixes + new features)
+   KEY FIXES FROM v9:
+   ✦ EJS_core changed from 'mgba' → 'gba'  (BLACK SCREEN FIX)
+   ✦ #game div has explicit width/height CSS (EJS reads offsetWidth/offsetHeight)
+   ✦ #emu-screen uses opacity fade-in (.active + .visible) instead of display:flex only
+   ✦ idleScreen uses .hidden class instead of style.display='none'
+   ✦ Proper Chrome/Chromebook AudioContext unlock fix
+   ✦ Emu-wrap drag/drop for .state and .gba files while playing
+   ✦ Delete Save button + showConfirmDelete modal
+   ✦ deleteSlotWithConfirm function
+   ✦ Improved showStateToast with type/icon support
+   ✦ New landing page elements: sweep, corner brackets, hex deco, version badge, privacy line
+   ✦ showcase-slash2, art-glow elements
+   ✦ Keys overlay organized into sections
+   ✦ backtickHeld is now a local let variable (not window.backtickHeld)
 ══════════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
@@ -1012,7 +1063,6 @@ const S_META      = 'meta';
 const S_STATES    = 'states';
 const NUM_SLOTS   = 7;
 const AUTOSAVE_MS = 45000;
-const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
 const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
 
 const SPEED_STEPS = [
@@ -1108,13 +1158,20 @@ function toast(msg, type='info', dur=2800) {
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, dur);
 }
 
-/* In-viewport state notification (top-right of game area) */
-let _stateTostTimer = null;
-function showStateToast(msg) {
-  clearTimeout(_stateTostTimer);
-  $('state-toast-text').textContent = msg;
-  $('state-toast').classList.add('visible');
-  _stateTostTimer = setTimeout(() => $('state-toast').classList.remove('visible'), 2200);
+/* In-viewport state notification — improved with type support (v9) */
+let _stateToastTimer = null;
+function showStateToast(msg, type='success') {
+  clearTimeout(_stateToastTimer);
+  const el       = $('state-toast');
+  const iconEl   = $('state-toast-icon');
+  const textEl   = $('state-toast-text');
+  el.classList.remove('error-toast','warn-toast');
+  if (type === 'error')     { el.classList.add('error-toast'); iconEl.textContent = '✕'; }
+  else if (type === 'warn') { el.classList.add('warn-toast');  iconEl.textContent = '⚠'; }
+  else                      { iconEl.textContent = '●'; }
+  textEl.textContent = msg;
+  el.classList.add('visible');
+  _stateToastTimer = setTimeout(() => el.classList.remove('visible'), 2400);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1172,8 +1229,6 @@ function captureStateData() {
   const emu = getEmu();
   if (!emu || !emu.gameManager) return null;
   const gm = emu.gameManager;
-  // EJS exposes saveState() which returns an ArrayBuffer or Uint8Array
-  // Try multiple known method names across EJS versions
   for (const method of ['saveState', 'getState', 'quickSave']) {
     try {
       if (typeof gm[method] === 'function') {
@@ -1188,27 +1243,17 @@ function captureStateData() {
 /* ── Apply state data to running emulator ── */
 function applyStateData(data) {
   const emu = getEmu();
-
   if (!emu || !emu.gameManager) return false;
-
   const gm = emu.gameManager;
-
   for (const method of ['loadState', 'quickLoad']) {
     try {
       if (typeof gm[method] === 'function') {
-
-        const fixedData =
-          data instanceof Uint8Array
-            ? data
-            : new Uint8Array(data);
-
+        const fixedData = data instanceof Uint8Array ? data : new Uint8Array(data);
         gm[method](fixedData);
-
         return true;
       }
     } catch(e) {}
   }
-
   return false;
 }
 
@@ -1222,42 +1267,46 @@ function tryUnlockAudio() {
   const emu = getEmu();
   const vol = isMuted ? 0 : 1;
   const candidates = [];
+  const addAC = ac => { if (ac instanceof AudioContext && !candidates.includes(ac)) candidates.push(ac); };
+
   if (emu) {
-    [
-      emu.audioContext,
-      emu.gameManager && emu.gameManager.audioContext,
-      emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
-      emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
-    ].forEach(ac => { if (ac instanceof AudioContext) candidates.push(ac); });
+    addAC(emu.audioContext);
+    if (emu.gameManager) {
+      addAC(emu.gameManager.audioContext);
+      addAC(emu.gameManager.audio && emu.gameManager.audio.context);
+    }
+    if (emu.Module && emu.Module.SDL2) addAC(emu.Module.SDL2.audioContext);
   }
   try {
     for (const k of Object.keys(window)) {
       try {
         const v = window[k];
-        if (v instanceof AudioContext && !candidates.includes(v)) candidates.push(v);
-        if (v && typeof v === 'object') {
-          const sub = v.audioContext || v._audioCtx;
-          if (sub instanceof AudioContext && !candidates.includes(sub)) candidates.push(sub);
-        }
+        if (v instanceof AudioContext) addAC(v);
+        if (v && typeof v === 'object') { addAC(v.audioContext); addAC(v._audioCtx); }
       } catch(e) {}
     }
   } catch(e) {}
+
   let foundSuspended = false;
   candidates.forEach(ac => {
     try { if (ac.state === 'suspended') { ac.resume().catch(() => {}); foundSuspended = true; } } catch(e) {}
   });
+
   if (candidates.length === 0 && !_audioUnlocked) {
     clearTimeout(_audioRetryTimer);
     _audioRetryTimer = setTimeout(tryUnlockAudio, 800);
     return;
   }
   if (emu) {
+    try { if (typeof emu.changeVolume === 'function') emu.changeVolume(vol); } catch(e) {}
     try {
-      if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
-      else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
+      if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
         emu.gameManager.setVolume(vol);
     } catch(e) {}
-    try { if (emu.gameManager && emu.gameManager.volumeNode) emu.gameManager.volumeNode.gain.value = vol; } catch(e) {}
+    try {
+      if (emu.gameManager && emu.gameManager.volumeNode)
+        emu.gameManager.volumeNode.gain.value = vol;
+    } catch(e) {}
   }
   if (!foundSuspended && candidates.length > 0) _audioUnlocked = true;
 }
@@ -1267,7 +1316,7 @@ function scheduleAudioPolling() {
   clearTimeout(_audioRetryTimer);
   let polls = 0;
   function poll() {
-    if (_audioUnlocked || polls++ > 12) return;
+    if (_audioUnlocked || polls++ > 15) return;
     tryUnlockAudio();
     _audioRetryTimer = setTimeout(poll, 800);
   }
@@ -1277,6 +1326,43 @@ function scheduleAudioPolling() {
 ['click','keydown','touchstart','pointerdown'].forEach(ev => {
   document.addEventListener(ev, () => { if (ejsReady) tryUnlockAudio(); }, { passive:true });
 });
+
+/* Chromebook / Chrome OS AudioContext fix (v9) */
+(function installChromeAudioFix() {
+  function resumeAll() {
+    if (!$('emu-screen') || !$('emu-screen').classList.contains('active')) return;
+    let resumed = false;
+    const emu = window.EJS_emulator;
+    const candidates = new Set();
+    if (emu) {
+      [emu.audioContext,
+       emu.gameManager && emu.gameManager.audioContext,
+       emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
+       emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
+      ].forEach(ac => { if (ac instanceof AudioContext) candidates.add(ac); });
+    }
+    try {
+      for (const k of Object.keys(window)) {
+        try {
+          const v = window[k];
+          if (v instanceof AudioContext) candidates.add(v);
+          if (v && typeof v === 'object') {
+            if (v.audioContext instanceof AudioContext) candidates.add(v.audioContext);
+          }
+        } catch(_) {}
+      }
+    } catch(_) {}
+    candidates.forEach(ac => {
+      if (ac.state === 'suspended') { ac.resume().then(() => { resumed = true; }).catch(() => {}); }
+    });
+    if (resumed || candidates.size > 0) {
+      ['click','keydown','touchstart','pointerdown'].forEach(ev =>
+        document.removeEventListener(ev, resumeAll, true));
+    }
+  }
+  ['click','keydown','touchstart','pointerdown'].forEach(ev =>
+    document.addEventListener(ev, resumeAll, { capture: true, passive: true }));
+})();
 
 /* ══════════════════════════════════════════════════════════════
    ROM NAME CLEANER
@@ -1339,12 +1425,13 @@ async function fetchCoverArt(displayName, color) {
   function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 80; i++) {
     particles.push({
       x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
-      r: Math.random() * 1.5 + 0.3,
-      vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
-      alpha: Math.random() * 0.55 + 0.1,
+      r: Math.random() * 1.6 + 0.2,
+      vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
+      alpha: Math.random() * 0.45 + 0.08,
+      hue: Math.random() > 0.85 ? 280 : 195,
     });
   }
   function frame() {
@@ -1355,13 +1442,19 @@ async function fetchCoverArt(displayName, color) {
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = 'rgba(0,196,248,.35)';
-      ctx.fillStyle = `rgba(0,196,248,${p.alpha})`;
+      if (Math.random() > 0.97) {
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = p.hue === 280 ? 'rgba(124,58,237,.3)' : 'rgba(0,196,248,.35)';
+      } else {
+        ctx.shadowBlur = 0;
+      }
+      ctx.fillStyle = p.hue === 280
+        ? `rgba(124,58,237,${p.alpha})`
+        : `rgba(0,196,248,${p.alpha})`;
       ctx.fill();
     });
     const idle = $('idle-screen');
-    if (idle && !idle.classList.contains('fade-out')) requestAnimationFrame(frame);
+    if (idle && !idle.classList.contains('hidden')) requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 })();
@@ -1383,16 +1476,17 @@ const GAMES = [
 ];
 
 let showcaseIdx = 0, cycleTimer = null;
-const $sBg    = $('showcase-bg'),
-      $sPulse = $('showcase-pulse'),
-      $sFlash = $('showcase-flash'),
-      $sSlash = $('showcase-slash'),
-      $sTitle = $('showcase-title'),
-      $sName  = $('showcase-name'),
+const $sBg     = $('showcase-bg'),
+      $sPulse  = $('showcase-pulse'),
+      $sFlash  = $('showcase-flash'),
+      $sSlash  = $('showcase-slash'),
+      $sTitle  = $('showcase-title'),
+      $sName   = $('showcase-name'),
       $sRegion = $('showcase-region'),
-      $sUl    = $('showcase-underline'),
-      $sArt   = $('showcase-art'),
-      $sImg   = $('showcase-img');
+      $sUl     = $('showcase-underline'),
+      $sArt    = $('showcase-art'),
+      $sImg    = $('showcase-img'),
+      $sGlow   = $('showcase-art-glow');
 
 function applyShowcase(g, animate) {
   $sName.textContent = g.name; $sRegion.textContent = g.region || '';
@@ -1402,10 +1496,11 @@ function applyShowcase(g, animate) {
   $sFlash.style.background = g.color;
   $sSlash.style.borderColor = `${g.color}20`;
   $sUl.style.background = g.color;
+  if ($sGlow) $sGlow.style.setProperty('--art-glow', g.color + '25');
   if (animate) {
     const old = qs('.showcase-wipe'); if (old) old.remove();
     const w = document.createElement('div'); w.className = 'showcase-wipe';
-    w.style.background = `linear-gradient(to right,transparent,${g.color}16,transparent)`;
+    w.style.background = `linear-gradient(to right,transparent,${g.color}18,transparent)`;
     $sBg.parentElement.insertBefore(w, $sBg.nextSibling);
     w.addEventListener('animationend', () => w.remove(), { once:true });
     $sFlash.style.animation = 'none'; $sFlash.offsetHeight; $sFlash.style.animation = '';
@@ -1416,7 +1511,7 @@ function applyShowcase(g, animate) {
 function cycleNext() {
   $sTitle.classList.remove('slam'); $sTitle.classList.add('out');
   $sArt.classList.remove('slam'); $sArt.classList.add('out');
-  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 250);
+  setTimeout(() => { showcaseIdx = (showcaseIdx + 1) % GAMES.length; applyShowcase(GAMES[showcaseIdx], true); }, 260);
 }
 applyShowcase(GAMES[0], false);
 setTimeout(() => applyShowcase(GAMES[0], true), 200);
@@ -1549,7 +1644,6 @@ idleScreen.addEventListener('dragleave', () => idleScreen.classList.remove('drag
 idleScreen.addEventListener('drop', e => {
   e.preventDefault(); idleScreen.classList.remove('drag-over');
   const f = e.dataTransfer.files[0]; if (!f) return;
-  
   launchROM(f);
 });
 idleScreen.addEventListener('click', e => {
@@ -1560,16 +1654,49 @@ $('rom-input').addEventListener('change', e => {
   const f = e.target.files[0]; if (f) { launchROM(f); e.target.value = ''; }
 });
 
+/* Drag .state or .gba onto game while playing (v9) */
+const emuWrap = $('emu-wrap');
+emuWrap.addEventListener('dragover', e => {
+  e.preventDefault();
+  if ($('emu-screen').classList.contains('active')) $('sav-drop-overlay').classList.add('visible');
+});
+emuWrap.addEventListener('dragleave', e => {
+  if (!emuWrap.contains(e.relatedTarget)) $('sav-drop-overlay').classList.remove('visible');
+});
+emuWrap.addEventListener('drop', async e => {
+  e.preventDefault(); $('sav-drop-overlay').classList.remove('visible');
+  if (!$('emu-screen').classList.contains('active')) return;
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const ext = extOf(f.name);
+  if (ext === '.state') {
+    if (!ejsReady) { toast('Wait for the game to start first','warn'); return; }
+    try {
+      const buf = await f.arrayBuffer();
+      const ok = applyStateData(buf);
+      if (!ok) { showStateToast('Failed to apply state','error'); return; }
+      if (isPaused) updatePauseUI(false);
+      showStateToast('State restored'); toast('State file applied ✓','success');
+    } catch(err) { toast('Failed to load state: ' + (err.message || 'unknown'),'error'); }
+  } else if (ext === '.gba' || ext === '.zip') {
+    launchROM(f);
+  }
+});
+
 /* ══════════════════════════════════════════════════════════════
    LAUNCH ROM
 ══════════════════════════════════════════════════════════════ */
 async function launchROM(file) {
-  const ext = extOf(file.name);
- 
   clearInterval(cycleTimer);
   idleScreen.classList.add('fade-out');
-  setTimeout(() => { idleScreen.style.display = 'none'; }, 500);
-  $('emu-screen').classList.add('active');
+  // Use hidden class after fade (v9 approach — doesn't break layout)
+  setTimeout(() => { idleScreen.classList.add('hidden'); }, 400);
+
+  const emuScreenEl = $('emu-screen');
+  emuScreenEl.classList.add('active');
+  // Trigger opacity fade-in on next frame (v9 fix)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => { emuScreenEl.classList.add('visible'); });
+  });
   $('power-led').classList.add('on');
 
   const buf = await file.arrayBuffer();
@@ -1632,7 +1759,7 @@ function startEmulator(romURL, displayName) {
 
   window.EJS_player           = '#game';
   window.EJS_gameUrl          = romURL;
-  window.EJS_core             = 'mgba';
+  window.EJS_core             = 'gba';           // ← CRITICAL FIX: was 'mgba', black screen fix
   window.EJS_pathtodata       = EJS_CDN;
   window.EJS_startOnLoaded    = true;
   window.EJS_gameTitle        = displayName;
@@ -1648,7 +1775,7 @@ function startEmulator(romURL, displayName) {
   );
 
   window.EJS_onGameStart = () => {
-     tryUnlockAudio();
+    tryUnlockAudio();
     ejsReady = true;
     buildSaveSlots();
     hideLoadIndicator();
@@ -1690,33 +1817,24 @@ function updateToolbarPill(paused) {
 ══════════════════════════════════════════════════════════════ */
 function startAutosave() {
   clearInterval(autosaveTimer);
-
   autosaveTimer = setInterval(async () => {
-
     if (!ejsReady || isPaused || !currentRomName || !db) return;
-
     const stateData = captureStateData();
     if (!stateData) return;
-
     const thumb = captureThumbnail();
-
     try {
-
       await dbPut(S_STATES, {
         id: `${currentRomName}::slot0`,
         data: stateData,
         ts: Date.now(),
         thumb,
-        saveName: 'Slot 0 - Auto',
+        saveName: 'Slot 0 — Auto',
         slotIdx: 0,
         auto: true,
       });
-
       buildSaveSlots();
       refreshCacheLoadSub();
-
     } catch(e) {}
-
   }, AUTOSAVE_MS);
 }
 
@@ -1879,7 +1997,36 @@ document.querySelectorAll('.speed-preset').forEach(p => {
 applySpeedUI(2);
 
 /* ══════════════════════════════════════════════════════════════
-   SAVE STATES — uses captureStateData() / applyStateData()
+   CONFIRM DELETE MODAL (v9)
+══════════════════════════════════════════════════════════════ */
+function showConfirmDelete(slotLabel) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'delete-confirm-overlay';
+    overlay.innerHTML = `
+      <div class="delete-confirm-box">
+        <span class="delete-confirm-icon">🗑</span>
+        <div class="delete-confirm-title">Delete ${esc(slotLabel)}?</div>
+        <div class="delete-confirm-desc">This save will be permanently removed and cannot be recovered.</div>
+        <div class="delete-confirm-actions">
+          <button class="modal-btn" id="dc-cancel">Cancel</button>
+          <button class="modal-btn danger" id="dc-confirm">Delete</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#dc-cancel').addEventListener('click',  () => { overlay.remove(); resolve(false); });
+    overlay.querySelector('#dc-confirm').addEventListener('click', () => { overlay.remove(); resolve(true); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(false); } });
+    const handler = e => {
+      if (e.key === 'Escape') { overlay.remove(); resolve(false); document.removeEventListener('keydown', handler); }
+      if (e.key === 'Enter')  { overlay.remove(); resolve(true);  document.removeEventListener('keydown', handler); }
+    };
+    document.addEventListener('keydown', handler);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SAVE STATES
 ══════════════════════════════════════════════════════════════ */
 async function buildSaveSlots() {
   const container = $('save-slots');
@@ -1891,145 +2038,55 @@ async function buildSaveSlots() {
   }
   let filledCount = 0;
 
-/* ═════════════════════════════════════════════
-   SLOT 0 — AUTOSAVE
-═════════════════════════════════════════════ */
-
-let autoMeta = null;
-
-try {
-  autoMeta = await dbGet(
-    S_STATES,
-    `${currentRomName}::slot0`
-  );
-} catch(e) {}
-
-if (autoMeta) {
-
-  const autoEl = document.createElement('div');
-
-  autoEl.className =
-    'save-slot has-data autosave-slot';
-
-  const thumbHtml = autoMeta.thumb
-    ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
-    : `<span class="save-slot-thumb-empty">💾</span>`;
-
-  autoEl.innerHTML = `
-    <div class="save-slot-left">
-
-      <div class="save-slot-thumb">
-        ${thumbHtml}
-        <span class="save-slot-thumb-num">0</span>
-      </div>
-
-      <div class="save-slot-info">
-
-        <div class="save-slot-name">
-          Slot 0 - Auto
+  /* ── Slot 0 — Autosave ── */
+  let autoMeta = null;
+  try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
+  if (autoMeta) {
+    const autoEl = document.createElement('div');
+    autoEl.className = 'save-slot has-data autosave-slot';
+    const thumbHtml = autoMeta.thumb
+      ? `<img src="${autoMeta.thumb}" alt="Slot 0">`
+      : `<span class="save-slot-thumb-empty">💾</span>`;
+    autoEl.innerHTML = `
+      <div class="save-slot-left">
+        <div class="save-slot-thumb">${thumbHtml}<span class="save-slot-thumb-num">0</span></div>
+        <div class="save-slot-info">
+          <div class="save-slot-name">Slot 0 — Auto</div>
+          <div class="save-slot-time">${timeAgo(autoMeta.ts)}</div>
         </div>
-
-        <div class="save-slot-time">
-          ${timeAgo(autoMeta.ts)}
-        </div>
-
       </div>
-    </div>
-
-    <div class="save-slot-actions">
-
-      <button
-        class="slot-btn load"
-        title="Load Slot 0"
-      >
-        LOAD
-      </button>
-
-      <button
-        class="slot-btn del"
-        title="Delete Slot 0"
-      >
-        ✕
-      </button>
-
-    </div>
-  `;
-
-  autoEl
-    .querySelector('.slot-btn.load')
-    .addEventListener('click', async () => {
-
+      <div class="save-slot-actions">
+        <button class="slot-btn load" title="Load Slot 0">LOAD</button>
+        <button class="slot-btn del"  title="Delete Slot 0">✕</button>
+      </div>`;
+    autoEl.querySelector('.slot-btn.load').addEventListener('click', async () => {
       const ok = applyStateData(autoMeta.data);
-
-      if (!ok) {
-        toast(
-          'Could not load Slot 0',
-          'error'
-        );
-        return;
-      }
-
-      if (isPaused)
-        updatePauseUI(false);
-
-      showStateToast('Slot 0 loaded');
-
-      toast(
-        'Slot 0 restored ✓',
-        'success'
-      );
+      if (!ok) { showStateToast('Slot 0 load failed','error'); return; }
+      if (isPaused) updatePauseUI(false);
+      showStateToast('Slot 0 loaded'); toast('Slot 0 restored ✓','success');
     });
-
-  autoEl
-    .querySelector('.slot-btn.del')
-    .addEventListener('click', async () => {
-
-      try {
-
-        await dbDel(
-          S_STATES,
-          `${currentRomName}::slot0`
-        );
-
-        toast(
-          'Slot 0 deleted',
-          'info'
-        );
-
-        buildSaveSlots();
-
-      } catch(e) {
-
-        toast(
-          'Delete failed',
-          'error'
-        );
-      }
+    autoEl.querySelector('.slot-btn.del').addEventListener('click', async () => {
+      const confirmed = await showConfirmDelete('Slot 0 — Autosave');
+      if (!confirmed) return;
+      try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Slot 0 deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
     });
+    container.appendChild(autoEl);
+  }
 
-  container.appendChild(autoEl);
-}
-
-/* ═════════════════════════════════════════════
-   NORMAL SAVE SLOTS
-═════════════════════════════════════════════ */
-
-for (let i = 1; i <= NUM_SLOTS; i++) {
+  /* ── Normal Save Slots 1–7 ── */
+  for (let i = 1; i <= NUM_SLOTS; i++) {
     const key = `${currentRomName}::slot${i}`;
     let meta = null;
     try { meta = await dbGet(S_STATES, key); } catch(e) {}
     if (meta) filledCount++;
     const el = document.createElement('div');
     el.className = 'save-slot' + (meta ? ' has-data' : '');
-    let thumbHtml = meta && meta.thumb
+    const thumbHtml = meta && meta.thumb
       ? `<img src="${meta.thumb}" alt="Slot ${i}">`
       : `<span class="save-slot-thumb-empty">🎮</span>`;
     el.innerHTML = `
       <div class="save-slot-left">
-        <div class="save-slot-thumb">
-          ${thumbHtml}
-          <span class="save-slot-thumb-num">${i}</span>
-        </div>
+        <div class="save-slot-thumb">${thumbHtml}<span class="save-slot-thumb-num">${i}</span></div>
         <div class="save-slot-info">
           <div class="save-slot-name">${meta ? (meta.saveName ? esc(meta.saveName) : `Slot ${i}`) : `Slot ${i} — empty`}</div>
           <div class="save-slot-time">${meta ? timeAgo(meta.ts) : 'No data'}</div>
@@ -2041,18 +2098,12 @@ for (let i = 1; i <= NUM_SLOTS; i++) {
       </div>`;
     el.querySelector('.slot-btn.sav').addEventListener('click', () => saveToSlot(i));
     const loadBtn = el.querySelector('.slot-btn.load');
-const delBtn  = el.querySelector('.slot-btn.del');
-
-if (loadBtn) {
-  loadBtn.addEventListener('click', () => loadFromSlot(i));
-}
-
-if (delBtn) {
-  delBtn.addEventListener('click', () => deleteSlot(i));
-}
+    const delBtn  = el.querySelector('.slot-btn.del');
+    if (loadBtn) loadBtn.addEventListener('click', () => loadFromSlot(i));
+    if (delBtn)  delBtn.addEventListener('click',  () => deleteSlotWithConfirm(i));
     container.appendChild(el);
   }
-  // Update badge
+
   const badge = $('save-slots-badge');
   if (badge) badge.textContent = filledCount ? `${filledCount}/${NUM_SLOTS} used` : `${NUM_SLOTS} slots`;
 }
@@ -2060,14 +2111,11 @@ if (delBtn) {
 async function saveToSlot(i) {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
-
-  // Try to capture state — attempt a few approaches
   const stateData = captureStateData();
   if (!stateData) {
     toast('Save failed — make sure the game is actively running (not at boot screen)','warn', 4000);
     return;
   }
-
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, { id:`${currentRomName}::slot${i}`, data:stateData, ts:Date.now(), thumb, slotIdx:i });
@@ -2083,175 +2131,91 @@ async function loadFromSlot(i) {
     if (!meta || !meta.data) { toast('Slot is empty','error'); return; }
     if (!ejsReady) { toast('Emulator not ready','error'); return; }
     const ok = applyStateData(meta.data);
-    if (!ok) { toast('Could not apply state — emulator not responding','error'); return; }
+    if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); toast('Could not apply state — emulator not responding','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${i} loaded`);
     toast(`Slot ${i} restored ✓`,'success');
   } catch(e) { toast('Failed to load state','error'); }
 }
 
-async function deleteSlot(i) {
-  try { await dbDel(S_STATES, `${currentRomName}::slot${i}`); toast(`Slot ${i} deleted`,'info',1500); buildSaveSlots(); }
-  catch(e) { toast('Delete failed','error'); }
+async function deleteSlotWithConfirm(i, slotLabel) {
+  const confirmed = await showConfirmDelete(slotLabel || `Slot ${i}`);
+  if (!confirmed) return;
+  await deleteSlot(i);
 }
+
+async function deleteSlot(i) {
+  try {
+    await dbDel(S_STATES, `${currentRomName}::slot${i}`);
+    toast(`Slot ${i} deleted`,'info',1500);
+    buildSaveSlots();
+    refreshCacheLoadSub();
+  } catch(e) { toast('Delete failed','error'); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DELETE SLOT PICKER (v9 — improved with autosave slot support)
+══════════════════════════════════════════════════════════════ */
 async function showDeleteSlotPicker() {
-
   return new Promise(async resolve => {
-
     const slots = [];
-
+    let autoMeta = null;
+    try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
+    if (autoMeta) slots.push({ i: 0, meta: autoMeta, label: 'Slot 0 — Auto' });
     for (let i = 1; i <= NUM_SLOTS; i++) {
-
       let meta = null;
-
-      try {
-        meta = await dbGet(
-          S_STATES,
-          `${currentRomName}::slot${i}`
-        );
-      } catch(e) {}
-
-      if (meta) {
-        slots.push({
-          i,
-          meta
-        });
-      }
+      try { meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`); } catch(e) {}
+      if (meta) slots.push({ i, meta, label: meta.saveName || `Slot ${i}` });
     }
-
-    // No saves
-    if (!slots.length) {
-
-      toast(
-        'No save slots to delete',
-        'warn'
-      );
-
-      resolve(null);
-
-      return;
-    }
-
+    if (!slots.length) { toast('No saved states to delete','warn'); resolve(null); return; }
     const overlay = document.createElement('div');
-
     overlay.className = 'modal-overlay';
-
     overlay.innerHTML = `
       <div class="modal-box" style="min-width:380px">
-
-        <div class="modal-title font-display">
-          Delete Save Slot
-        </div>
-
-        <div class="modal-subtitle">
-          Choose a save to permanently delete
-        </div>
-
+        <div class="modal-title font-display">Delete Save State</div>
+        <div class="modal-subtitle">Select a save to permanently remove</div>
         <div class="slot-picker-grid">
-
-          ${slots.map(({i, meta}) => `
-
-            <div
-              class="slot-picker-item has-data delete-picker"
-              data-slot="${i}"
-            >
-
+          ${slots.map(({ i, meta, label }) => `
+            <div class="slot-picker-item has-data danger-item" data-slot="${i}" data-label="${esc(label)}">
               <div class="slot-picker-thumb">
-
-                ${
-                  meta.thumb
-                    ? `<img src="${meta.thumb}" alt="">`
-                    : `<span style="font-size:16px;opacity:.22">🎮</span>`
-                }
-
-                <span class="slot-picker-thumb-num">
-                  ${i}
-                </span>
-
+                ${meta.thumb ? `<img src="${meta.thumb}" alt="">` : `<span style="font-size:16px;opacity:.22">🎮</span>`}
+                <span class="slot-picker-thumb-num">${i}</span>
               </div>
-
               <div class="slot-picker-info">
-
-                <div class="slot-picker-name">
-                  ${esc(meta.saveName || `Slot ${i}`)}
-                </div>
-
-                <div class="slot-picker-time">
-                  ${timeAgo(meta.ts)}
-                </div>
-
+                <div class="slot-picker-name">${esc(label)}</div>
+                <div class="slot-picker-time">${timeAgo(meta.ts)}</div>
               </div>
-
-              <div
-                style="
-                  color:#ff5f5f;
-                  font-weight:700;
-                  font-size:18px;
-                "
-              >
-                ✕
-              </div>
-
-            </div>
-
-          `).join('')}
-
+              <span style="color:var(--error);font-size:16px;font-weight:700;flex-shrink:0">✕</span>
+            </div>`).join('')}
         </div>
-
-        <div class="modal-actions">
-
-          <button
-            class="modal-btn"
-            id="delete-slot-cancel"
-          >
-            Cancel
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
+        <div class="modal-actions"><button class="modal-btn" id="del-picker-cancel">Cancel</button></div>
+      </div>`;
     document.body.appendChild(overlay);
-
-    overlay
-      .querySelectorAll('.delete-picker')
-      .forEach(item => {
-
-        item.addEventListener('click', () => {
-
-          const slot =
-            parseInt(
-              item.dataset.slot,
-              10
-            );
-
-          overlay.remove();
-
-          resolve(slot);
-        });
-      });
-
-    overlay
-      .querySelector('#delete-slot-cancel')
-      .addEventListener('click', () => {
-
+    overlay.querySelectorAll('.danger-item').forEach(item => {
+      item.addEventListener('click', () => {
         overlay.remove();
-
-        resolve(null);
+        resolve({ slot: parseInt(item.dataset.slot, 10), label: item.dataset.label });
       });
-
-    overlay.addEventListener('click', e => {
-
-      if (e.target === overlay) {
-
-        overlay.remove();
-
-        resolve(null);
-      }
     });
+    overlay.querySelector('#del-picker-cancel').addEventListener('click', () => { overlay.remove(); resolve(null); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.remove(); resolve(null); } });
+    const handler = e => { if (e.key === 'Escape') { overlay.remove(); resolve(null); document.removeEventListener('keydown', handler); } };
+    document.addEventListener('keydown', handler);
   });
 }
+
+$('sb-delete-slot').addEventListener('click', async () => {
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  const pick = await showDeleteSlotPicker();
+  if (!pick) return;
+  const confirmed = await showConfirmDelete(pick.label);
+  if (!confirmed) return;
+  if (pick.slot === 0) {
+    try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e) { toast('Delete failed','error'); }
+  } else {
+    await deleteSlot(pick.slot);
+  }
+});
 
 /* ══════════════════════════════════════════════════════════════
    SLOT PICKER MODAL
@@ -2338,7 +2302,7 @@ async function showSlotPicker(mode) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   QUICK SAVE / LOAD
+   CACHE SAVE / LOAD
 ══════════════════════════════════════════════════════════════ */
 async function refreshCacheLoadSub() {
   if (!db || !currentRomName) return;
@@ -2386,7 +2350,7 @@ $('sb-cache-load').addEventListener('click', async () => {
     const meta = await dbGet(S_STATES, `${currentRomName}::slot${pick.slotIndex}`);
     if (!meta || !meta.data) { toast('Slot is empty', 'error'); return; }
     const ok = applyStateData(meta.data);
-    if (!ok) { toast('Could not apply state','error'); return; }
+    if (!ok) { showStateToast(`Slot ${pick.slotIndex} load failed`,'error'); toast('Could not apply state','error'); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast(`Slot ${pick.slotIndex} loaded`);
     toast(`Loaded Slot ${pick.slotIndex}${meta.saveName ? ` — "${meta.saveName}"` : ''} ✓`, 'success');
@@ -2394,13 +2358,12 @@ $('sb-cache-load').addEventListener('click', async () => {
 });
 
 /* ══════════════════════════════════════════════════════════════
-   KEYBOARD QUICK-SAVE / QUICK-LOAD (keys 1–6, Ctrl+1–6)
-   These bypass the slot picker modal for speed.
+   KEYBOARD QUICK-SAVE / QUICK-LOAD (` + 1–6) / (Ctrl+1–6)
 ══════════════════════════════════════════════════════════════ */
 async function quickSaveSlot(i) {
-  if (!currentRomName || !ejsReady) return;
+  if (!currentRomName || !ejsReady) { showStateToast('Not ready','warn'); return; }
   const stateData = captureStateData();
-  if (!stateData) { toast(`Slot ${i} — game not ready yet`, 'warn'); return; }
+  if (!stateData) { showStateToast(`Slot ${i} — game not ready`,'warn'); return; }
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, {
@@ -2409,75 +2372,23 @@ async function quickSaveSlot(i) {
     });
     showStateToast(`Slot ${i} saved`);
     buildSaveSlots(); refreshCacheLoadSub();
-  } catch(e) { toast('Quick-save failed', 'error'); }
+  } catch(e) { showStateToast(`Slot ${i} save failed`,'error'); }
 }
 
 async function quickLoadSlot(i) {
-
-  if (!currentRomName || !ejsReady)
-    return;
-
+  if (!currentRomName || !ejsReady) { showStateToast('Not ready','warn'); return; }
   try {
-
-    const meta = await dbGet(
-      S_STATES,
-      `${currentRomName}::slot${i}`
-    );
-
-    // EMPTY SLOT FIX
-    if (
-      !meta ||
-      !meta.data ||
-      (
-        meta.data.byteLength === 0 &&
-        meta.data.length === 0
-      )
-    ) {
-
-      toast(
-        `Error: Slot ${i} is empty`,
-        'error'
-      );
-
-      showStateToast(
-        `Slot ${i} empty`
-      );
-
-      return;
-    }
-
+    const meta = await dbGet(S_STATES, `${currentRomName}::slot${i}`);
+    if (!meta || !meta.data) { showStateToast(`Slot ${i} is empty`,'error'); return; }
     const ok = applyStateData(meta.data);
-
-    if (!ok) {
-
-      toast(
-        'Could not apply state',
-        'error'
-      );
-
-      return;
-    }
-
-    if (isPaused)
-      updatePauseUI(false);
-
-    showStateToast(
-      `Slot ${i} loaded`
-    );
-
-  } catch(e) {
-
-    toast(
-      'Quick-load failed',
-      'error'
-    );
-  }
+    if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); return; }
+    if (isPaused) updatePauseUI(false);
+    showStateToast(`Slot ${i} loaded`);
+  } catch(e) { showStateToast(`Slot ${i} load failed`,'error'); }
 }
 
 /* ══════════════════════════════════════════════════════════════
    IMPORT STATE FILE (.state) — applies LIVE, no restart
-   This is the "snapshot" / "save state" file format.
-   EJS state data is an ArrayBuffer. We try loadState() directly.
 ══════════════════════════════════════════════════════════════ */
 $('sb-import-state').addEventListener('click', () => {
   if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
@@ -2489,23 +2400,15 @@ $('sb-import-state').addEventListener('click', () => {
 $('state-input').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
   if (!f) return;
-  // Determine if this is a state file or a battery save
   const ext = extOf(f.name);
-
-if (ext !== '.state') {
-  toast('Only .state files are supported', 'error');
-  return;
-}
-  // Treat as state snapshot
+  if (ext !== '.state') { toast('Only .state files are supported', 'error'); return; }
   if (!ejsReady) { toast('Emulator not ready', 'warn'); return; }
   try {
     const buf = await f.arrayBuffer();
     const ok = applyStateData(buf);
-    if (!ok) { toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
+    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
     if (isPaused) updatePauseUI(false);
-    showStateToast('State restored');
-    toast('State file loaded — continuing from snapshot ✓', 'success');
-    // Also save to slot 1 so it's in the library
+    showStateToast('State restored'); toast('State file loaded — continuing from snapshot ✓', 'success');
     if (db && currentRomName) {
       const thumb = captureThumbnail();
       await dbPut(S_STATES, { id:`${currentRomName}::slot1`, data:buf, ts:Date.now(), thumb, saveName:'Imported state', slotIdx:1 });
@@ -2527,42 +2430,21 @@ $('sb-export-state').addEventListener('click', async () => {
   toast('State file exported ✓','success');
 });
 
-
-
 /* ══════════════════════════════════════════════════════════════
    SCREENSHOT
 ══════════════════════════════════════════════════════════════ */
 async function takeScreenshot() {
   try {
     const canvas = document.querySelector('#game canvas');
-
-    if (!canvas) {
-      toast('No game screen found', 'error');
-      return;
-    }
-
+    if (!canvas) { toast('No game screen found', 'error'); return; }
     const flash = $('ss-flash');
-    flash.classList.remove('pop');
-    flash.offsetHeight;
-    flash.classList.add('pop');
-
+    flash.classList.remove('pop'); flash.offsetHeight; flash.classList.add('pop');
     canvas.toBlob(blob => {
-      if (!blob) {
-        toast('Screenshot failed', 'error');
-        return;
-      }
-
-      download(
-        blob,
-        `${currentDisplay || 'screenshot'}_${Date.now()}.png`
-      );
-
+      if (!blob) { toast('Screenshot failed', 'error'); return; }
+      download(blob, `${currentDisplay || 'screenshot'}_${Date.now()}.png`);
       toast('Screenshot saved ✓', 'success', 1800);
     });
-
-  } catch (e) {
-    toast('Screenshot failed', 'error');
-  }
+  } catch(e) { toast('Screenshot failed', 'error'); }
 }
 $('btn-screenshot').addEventListener('click', takeScreenshot);
 $('sb-screenshot').addEventListener('click', takeScreenshot);
@@ -2597,44 +2479,30 @@ $('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle
 /* ══════════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS
 ══════════════════════════════════════════════════════════════ */
-// Track ` key
-window.backtickHeld = false;
+let backtickHeld = false;
 
 document.addEventListener('keydown', async e => {
-
-  // Ctrl + ` = Delete Save Menu
-  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
-
-    e.preventDefault();
-
-    if (!currentRomName) {
-      toast('No game loaded', 'error');
-      return;
-    }
-
-    const pick = await showDeleteSlotPicker();
-
-    if (pick == null) return;
-
-    await deleteSlot(pick);
-
-    return;
-  }
-
-  // Normal backtick hold for saving
-  if (e.key === '`') {
-    window.backtickHeld = true;
-  }
-});
-document.addEventListener('keyup', e => {
-  if (e.key === '`') {
-    window.backtickHeld = false;
-  }
-});
-document.addEventListener('keydown', e => {
+  if (e.key === '`') backtickHeld = true;
   if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+
   const inEmu    = $('emu-screen').classList.contains('active');
   const keysOpen = $('keys-overlay').classList.contains('visible');
+
+  // Ctrl + ` = open delete save picker
+  if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+    e.preventDefault();
+    if (!inEmu || !currentRomName) return;
+    const pick = await showDeleteSlotPicker();
+    if (!pick) return;
+    const confirmed = await showConfirmDelete(pick.label);
+    if (!confirmed) return;
+    if (pick.slot === 0) {
+      try { await dbDel(S_STATES, `${currentRomName}::slot0`); toast('Autosave deleted','info'); buildSaveSlots(); } catch(e2) {}
+    } else {
+      await deleteSlot(pick.slot);
+    }
+    return;
+  }
 
   if (e.key === 'Escape') {
     if (keysOpen) { $('keys-overlay').classList.remove('visible'); return; }
@@ -2642,26 +2510,15 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === '?') { if (inEmu) $('keys-overlay').classList.toggle('visible'); return; }
   if (!inEmu || keysOpen) return;
-// ` + 1-6 = quick save
-// Ctrl + 1-6 = quick load
-if (/^[1-6]$/.test(e.key)) {
 
-  const slot = parseInt(e.key, 10);
-
-  // Ctrl + number = LOAD
-  if (e.ctrlKey || e.metaKey) {
-    e.preventDefault();
-    quickLoadSlot(slot);
-    return;
+  // ` + 1–6 = quick-save
+  if (backtickHeld && /^[1-6]$/.test(e.key)) {
+    e.preventDefault(); quickSaveSlot(parseInt(e.key, 10)); return;
   }
-
-  // ` key held + number = SAVE
-  if (window.backtickHeld) {
-    e.preventDefault();
-    quickSaveSlot(slot);
-    return;
+  // Ctrl + 1–6 = quick-load
+  if ((e.ctrlKey || e.metaKey) && /^[1-6]$/.test(e.key)) {
+    e.preventDefault(); quickLoadSlot(parseInt(e.key, 10)); return;
   }
-}
 
   switch (e.key) {
     case 'm': case 'M': $('sb-mute').click(); break;
@@ -2672,6 +2529,8 @@ if (/^[1-6]$/.test(e.key)) {
     case 'c': case 'C': takeScreenshot(); break;
   }
 });
+
+document.addEventListener('keyup', e => { if (e.key === '`') backtickHeld = false; });
 
 $('keys-overlay').addEventListener('click', e => {
   if (e.target === $('keys-overlay')) $('keys-overlay').classList.remove('visible');
