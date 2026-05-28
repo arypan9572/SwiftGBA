@@ -35,7 +35,7 @@
   --xs:11px;--sm:13px;--base:15px;--lg:18px;--xl:24px;--2xl:32px;
   --ease-spring:cubic-bezier(.22,1,.36,1);--ease-back:cubic-bezier(.34,1.56,.64,1);
   --fast:.14s;--normal:.26s;--slow:.4s;
-  --sidebar-w:292px;--toolbar-h:50px;
+  --sidebar-w:300px;--toolbar-h:50px;
   --radius-sm:6px;--radius-md:10px;--radius-lg:14px;--radius-xl:18px;
 }
 *,*:before,*:after{box-sizing:border-box;margin:0;padding:0}
@@ -50,18 +50,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100dvh;width:100vw;position:fixed;inset:0;overflow:hidden;
   cursor:pointer;gap:var(--sp3);background:#06080b;isolation:isolate;
-  /* GPU-only transition — fast clean exit */
   transition:opacity .35s ease, transform .35s ease;
   will-change:opacity, transform;
 }
-#idle-screen.fade-out{
-  opacity:0;
-  transform:scale(1.04);
-  pointer-events:none;
-}
+#idle-screen.fade-out{opacity:0;transform:scale(1.04);pointer-events:none;}
 #idle-screen.hidden{ display:none; }
 
-/* ── Background ── */
 .landing-bg{
   position:absolute;inset:0;z-index:0;pointer-events:none;
   background:
@@ -94,13 +88,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 @keyframes orb2{from{transform:translate(0,0) scale(1)}to{transform:translate(-7%,-6%) scale(1.18)}}
 @keyframes orb3{from{transform:translate(0,0) scale(1);opacity:.5}to{transform:translate(4%,-5%) scale(1.25);opacity:1}}
 
-/* Noise texture overlay */
 #idle-screen::before{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.032;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:256px 256px;
 }
-/* Scanline effect */
 #idle-screen::after{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.055) 3px,rgba(0,0,0,.055) 4px);
@@ -108,7 +100,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 @keyframes scan-drift{0%{background-position:0 0}100%{background-position:0 80px}}
 
-/* Sweep line (v9) */
 .landing-sweep{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 .landing-sweep::after{
   content:'';position:absolute;left:0;right:0;height:3px;
@@ -118,14 +109,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 @keyframes sweep-line{0%{top:-10%;opacity:0}10%{opacity:1}90%{opacity:.3}100%{top:110%;opacity:0}}
 
-/* Corner brackets (v9) */
 .corner-bracket{position:absolute;z-index:3;pointer-events:none;width:40px;height:40px;opacity:.18}
 .corner-bracket.tl{top:20px;left:20px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
 .corner-bracket.tr{top:20px;right:20px;border-top:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
 .corner-bracket.bl{bottom:20px;left:20px;border-bottom:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
 .corner-bracket.br{bottom:20px;right:20px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
 
-/* Hex deco (v9) */
 .hex-deco{position:absolute;z-index:2;pointer-events:none;font-family:var(--font-mono);font-size:9px;color:rgba(0,196,248,.12);letter-spacing:.1em;user-select:none}
 .hex-deco.d1{top:12%;left:8%;animation:hex-float1 11s ease-in-out infinite}
 .hex-deco.d2{top:22%;right:5%;animation:hex-float2 14s ease-in-out infinite}
@@ -136,7 +125,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
 #particles-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
 
-/* ── Showcase ── */
 .showcase{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
 .showcase-bg{position:absolute;inset:0;transition:background 1.2s ease}
 .showcase-pulse{
@@ -175,7 +163,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .showcase-art-reflect{position:absolute;top:100%;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent);transform:scaleY(-1);filter:blur(4px);border-radius:10px;pointer-events:none}
 .showcase-art-glow{position:absolute;inset:-20px;border-radius:20px;background:radial-gradient(circle,var(--art-glow,rgba(0,196,248,.15)) 0%,transparent 70%);filter:blur(20px);z-index:-1;transition:background 1.2s ease}
 
-/* ── GBA Shell ── */
 .gba-shell{
   --gba-screen-left:29.4%;--gba-screen-top:22.2%;
   --gba-screen-width:40.6%;--gba-screen-height:45.1%;
@@ -218,14 +205,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #idle-screen.drag-over .gba-screen-text{color:var(--accent);text-shadow:0 0 20px var(--accent-glow)}
 #idle-screen.drag-over .gba-screen-overlay{background:rgba(0,196,248,.08)}
 
-/* ── Landing brand ── */
 .landing-brand{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;transform:translate(-5vw);animation:brand-in 1s .3s ease both}
 @keyframes brand-in{0%{opacity:0;transform:translate(-5vw) translateY(14px)}to{opacity:1;transform:translate(-5vw) translateY(0)}}
 .landing-title{font-size:clamp(24px,2.8vw,38px);font-weight:600;letter-spacing:-.03em;line-height:1;position:relative}
 .landing-title .accent{color:var(--accent);letter-spacing:.04em}
 .landing-title .dot{color:var(--text-tertiary)}
 .landing-tagline{font-size:var(--xs);color:var(--text-ghost);letter-spacing:.15em;text-transform:uppercase;font-family:var(--font-mono);margin-top:2px;opacity:.7}
-/* Version badge (v9) */
 .landing-version-badge{
   display:inline-flex;align-items:center;gap:5px;
   background:rgba(0,196,248,.06);border:1px solid rgba(0,196,248,.15);
@@ -252,7 +237,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   max-width:420px;text-align:center;font-size:var(--xs);line-height:1.7;
   color:var(--text-ghost);z-index:3;transform:translate(-5vw);animation:brand-in 1s .55s ease both;opacity:.6;
 }
-/* Privacy badge (v9) */
 .landing-privacy{
   display:inline-flex;align-items:center;gap:5px;z-index:3;
   font-size:9px;font-family:var(--font-mono);color:rgba(0,232,90,.5);
@@ -260,7 +244,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 .landing-privacy::before{content:'🔒';font-size:10px}
 
-/* ── Continue Bar ── */
 #continue-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:0 var(--sp5) var(--sp4);display:none}
 #continue-bar.visible{display:block}
 #continue-bar::before{content:'';display:block;height:80px;background:linear-gradient(to bottom,transparent,rgba(6,8,11,.97));pointer-events:none;margin-bottom:var(--sp3)}
@@ -271,7 +254,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-list{display:flex;gap:var(--sp3);overflow-x:auto;scrollbar-width:none;padding-bottom:4px;align-items:stretch}
 .continue-list::-webkit-scrollbar{display:none}
 
-/* Cards */
 .continue-card{
   flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
   background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,.03) 100%);
@@ -303,7 +285,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .continue-card:hover .continue-card-menu{opacity:1}
 .continue-card-menu:hover{background:rgba(255,255,255,.12);color:var(--text-primary)}
 
-/* ── Context dropdown ── */
 .ctx-menu{
   position:fixed;z-index:500;
   background:rgba(22,25,32,.97);backdrop-filter:blur(24px);
@@ -319,7 +300,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .ctx-item-icon{width:16px;text-align:center;font-size:12px;flex-shrink:0;opacity:.7}
 .ctx-sep{height:1px;background:var(--border-subtle);margin:4px 0}
 
-/* ── Modals ── */
 .modal-overlay{
   position:fixed;inset:0;z-index:600;
   background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
@@ -357,7 +337,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .modal-btn.danger{background:rgba(232,64,87,.1);border-color:rgba(232,64,87,.28);color:var(--error)}
 .modal-btn.danger:hover{background:rgba(232,64,87,.2);border-color:var(--error)}
 
-/* Slot picker */
 .slot-picker-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--sp4);max-height:360px;overflow-y:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent}
 .slot-picker-item{display:flex;align-items:center;gap:var(--sp3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-md);padding:10px var(--sp3);cursor:pointer;transition:border-color .18s ease,background .18s ease,transform .18s ease}
 .slot-picker-item:hover{border-color:var(--accent);background:rgba(0,196,248,.08);transform:translateX(2px)}
@@ -374,7 +353,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .slot-picker-badge.empty{background:rgba(255,255,255,.04);color:var(--text-ghost);border:1px solid rgba(255,255,255,.07)}
 .modal-name-row{margin-top:var(--sp3)}
 .modal-name-label{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:6px;display:block}
-/* Danger picker items (v9) */
 .slot-picker-item.danger-item:hover{border-color:rgba(232,64,87,.5);background:rgba(232,64,87,.07);transform:translateX(2px)}
 .slot-picker-item.danger-item:hover .slot-picker-name{color:var(--error)}
 .autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
@@ -389,7 +367,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #emu-screen.active{display:flex;flex-direction:column}
 #emu-screen.visible{opacity:1}
 
-/* ── Toolbar ── */
 #emu-toolbar{
   display:flex;align-items:center;justify-content:space-between;
   height:var(--toolbar-h);padding:0 var(--sp5);
@@ -434,24 +411,20 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 @keyframes tooltip-in{0%{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-/* ── Emulator body ── */
 #emu-body{flex:1;display:flex;overflow:hidden;position:relative;min-height:0}
 
-/* CRITICAL: game wrapper explicit dimensions for EmulatorJS */
 #emu-wrap{
   flex:1;display:flex;align-items:center;justify-content:center;
   overflow:hidden;position:relative;background:#000;
   min-width:0;min-height:0;
 }
 
-/* CRITICAL: #game div MUST have explicit 100% width/height — EJS reads offsetWidth/offsetHeight */
 #game{
   width:100%;
   height:100%;
   position:relative;
 }
 
-/* SAV drop overlay */
 #sav-drop-overlay{
   position:absolute;inset:0;z-index:20;
   background:rgba(0,196,248,.08);border:2px dashed var(--accent);
@@ -461,7 +434,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 }
 #sav-drop-overlay.visible{display:flex}
 
-/* Fast-forward badge */
 #ff-badge{
   position:absolute;top:var(--sp3);left:50%;transform:translateX(-50%);
   background:rgba(0,0,0,.82);border:1px solid var(--accent);border-radius:20px;
@@ -473,12 +445,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #ff-badge.visible{display:block}
 @keyframes ff-pop{0%{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 
-/* Screenshot flash */
 #ss-flash{position:absolute;inset:0;z-index:30;background:#fff;pointer-events:none;opacity:0}
 #ss-flash.pop{animation:ss-flash .4s ease forwards}
 @keyframes ss-flash{0%{opacity:.85}to{opacity:0}}
 
-/* Save-state notification */
 #state-toast{
   position:absolute;top:var(--sp3);right:var(--sp4);z-index:25;
   background:rgba(0,0,0,.88);border:1px solid rgba(0,232,90,.4);border-radius:var(--radius-md);
@@ -492,14 +462,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #state-toast.visible{display:flex}
 @keyframes state-toast-in{0%{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-/* Hide all EJS chrome */
 .ejs_menu_bar,.ejs_buttons_container,.ejs_bottom_bar,
 .ejs-bar-menu,.ejs-top-bar,.ejs_control_bar,
 #ejs_controls_bar,.ejs-bar,
 .ejs_ui_container>.ejs_menu,
 .ejs_volume_slider,.ejs_netplay{display:none!important;height:0!important;overflow:hidden!important}
 
-/* ── Sidebar tab ── */
 #sidebar-tab{
   position:relative;width:20px;flex-shrink:0;
   background:var(--bg-panel);border-left:1px solid var(--border-subtle);
@@ -510,21 +478,43 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #sidebar-tab:hover{background:var(--bg-elevated);color:var(--text-primary)}
 #sidebar-tab .tab-arrow{transition:transform var(--normal) var(--ease-spring);line-height:1}
 
-/* ── Sidebar ── */
 #sidebar{
   width:var(--sidebar-w);flex-shrink:0;
   background:var(--bg-panel);border-left:1px solid var(--border-subtle);
   display:flex;flex-direction:column;
-  overflow-y:auto;overflow-x:hidden;
-  scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;
+  overflow:hidden;
   transition:width var(--normal) var(--ease-spring),opacity var(--normal) ease;
 }
-#sidebar::-webkit-scrollbar{width:4px}
-#sidebar::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
 #emu-body.sidebar-collapsed #sidebar{width:0;opacity:0;pointer-events:none;border-left:none}
 #emu-body.sidebar-collapsed #sidebar-tab .tab-arrow{transform:rotate(180deg)}
 
-/* Sidebar header */
+/* Sidebar tab nav (from index 3) */
+.sidebar-tab-nav{
+  display:flex;flex-shrink:0;
+  border-bottom:1px solid var(--border-subtle);
+  background:var(--bg-elevated);
+}
+.sidebar-tab-btn{
+  flex:1;padding:10px var(--sp3);
+  background:none;border:none;cursor:pointer;
+  font-size:var(--xs);font-family:var(--font-mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-tertiary);
+  border-bottom:2px solid transparent;
+  transition:color var(--fast),border-color var(--fast),background var(--fast);
+  margin-bottom:-1px;
+}
+.sidebar-tab-btn:hover{color:var(--text-secondary);background:rgba(255,255,255,.03)}
+.sidebar-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.sidebar-panel{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;
+  display:none;flex-direction:column;
+}
+.sidebar-panel.active{display:flex}
+.sidebar-panel::-webkit-scrollbar{width:4px}
+.sidebar-panel::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
+
 .sidebar-game-header{
   padding:var(--sp3) var(--sp4);border-bottom:1px solid var(--border-subtle);
   background:var(--bg-elevated);flex-shrink:0;display:flex;align-items:center;gap:var(--sp3);
@@ -539,7 +529,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sidebar-game-title{font-size:var(--sm);font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sidebar-game-size{font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);margin-top:2px}
 
-/* Sections */
 .sidebar-section{padding:var(--sp4);border-bottom:1px solid var(--border-subtle)}
 .sidebar-section:last-child{border-bottom:none}
 .sidebar-section-title{
@@ -553,7 +542,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   font-size:9px;letter-spacing:.04em;text-transform:none;
 }
 
-/* Sidebar buttons */
 .sb-btn{
   width:100%;display:flex;align-items:center;gap:var(--sp3);
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
@@ -569,7 +557,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn.accent-btn{background:rgba(0,196,248,.1);border-color:rgba(0,196,248,.3);color:var(--accent)}
 .sb-btn.accent-btn:hover{background:rgba(0,196,248,.18);border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.2),0 0 16px rgba(0,196,248,.18)}
 .sb-btn.active-state{border-color:var(--led-green)!important;color:var(--led-green)!important;background:rgba(0,232,90,.07)!important}
-/* Danger button (v9) */
 .sb-btn.danger-btn{background:rgba(232,64,87,.07);border-color:rgba(232,64,87,.2);color:var(--error)}
 .sb-btn.danger-btn:hover{background:rgba(232,64,87,.14);border-color:var(--error)}
 .sb-btn-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
@@ -580,14 +567,12 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .sb-btn:hover .sb-btn-arrow{transform:translateX(2px);color:var(--accent)}
 .sb-btn.danger-btn:hover .sb-btn-arrow{color:var(--error)}
 
-/* Status */
 .status-row{display:flex;align-items:center;gap:var(--sp2);font-size:var(--sm);color:var(--text-secondary)}
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-ghost);flex-shrink:0;transition:all .4s}
 .status-dot.on{background:var(--led-green);box-shadow:0 0 5px var(--led-green-glow);animation:status-pulse 2.5s ease-in-out infinite}
 .status-dot.paused{background:var(--warn);box-shadow:0 0 5px rgba(245,158,11,.4)}
 @keyframes status-pulse{0%,100%{box-shadow:0 0 4px var(--led-green-glow)}50%{box-shadow:0 0 10px var(--led-green-glow),0 0 18px rgba(0,232,90,.15)}}
 
-/* Speed */
 .speed-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp2)}
 .speed-label{font-size:var(--sm);color:var(--text-secondary)}
 .speed-val{font-family:var(--font-mono);font-size:var(--sm);color:var(--accent);min-width:40px;text-align:right}
@@ -608,7 +593,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .speed-preset:hover,.speed-preset.active{border-color:var(--accent);color:var(--accent);background:rgba(0,196,248,.08)}
 .speed-preset.ff-active{border-color:var(--warn)!important;color:var(--warn)!important;background:rgba(245,158,11,.08)!important}
 
-/* Save Slots */
 .save-slots{
   display:flex;flex-direction:column;gap:8px;
   width:100%;max-height:440px;overflow-y:auto;
@@ -662,88 +646,78 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 .save-slot-empty{padding:24px;border-radius:var(--radius-md);text-align:center;color:rgba(255,255,255,.25);font-size:var(--xs);font-family:var(--font-mono);background:rgba(255,255,255,.018);border:1px dashed rgba(255,255,255,.055);line-height:1.7}
 .autosave-slot{border-color:rgba(0,196,248,.45)!important;box-shadow:0 0 0 1px rgba(0,196,248,.08)}
 
-/* Playtime */
 .playtime-display{display:flex;align-items:center;gap:var(--sp2);font-size:var(--xs);color:var(--text-ghost);font-family:var(--font-mono);margin-top:var(--sp2)}
 
-/* Divider within sidebar section */
 .sb-divider{height:1px;background:var(--border-subtle);margin:var(--sp2) 0}
 
-/* ── Sidebar nav tabs ── */
-.sidebar-nav{
-  display:flex;border-bottom:1px solid var(--border-subtle);flex-shrink:0;
-  background:var(--bg-elevated);
-}
-.sidebar-nav-tab{
-  flex:1;padding:10px 0;font-size:var(--xs);font-family:var(--font-mono);
-  letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);
-  background:none;border:none;cursor:pointer;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
-  transition:color var(--fast),border-color var(--fast);
-}
-.sidebar-nav-tab:hover{color:var(--text-secondary)}
-.sidebar-nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+#rom-input,#sav-input,#state-input{display:none!important;position:fixed;left:-9999px}
 
-.sidebar-panel{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;
-  scrollbar-width:thin;scrollbar-color:var(--border-subtle) transparent;}
-.sidebar-panel::-webkit-scrollbar{width:4px}
-.sidebar-panel::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:2px}
-.sidebar-panel.active{display:flex}
-
-/* Settings-specific styles */
-.settings-row{
+/* ═══════════════════════════════════════════════════════════
+   SETTINGS PANEL STYLES (from index 3)
+   ═══════════════════════════════════════════════════════════ */
+.setting-row{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);
 }
-.settings-row:last-child{border-bottom:none}
-.settings-row-label{font-size:var(--sm);color:var(--text-primary)}
-.settings-row-sub{font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);display:block;margin-top:1px}
-.settings-toggle{
-  width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:var(--sm);color:var(--text-primary)}
+.setting-sub{font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);display:block;margin-top:1px}
+.toggle-switch{position:relative;width:38px;height:22px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;border-radius:11px;
   background:var(--bg-elevated);border:1px solid var(--border-mid);
-  position:relative;transition:background var(--normal),border-color var(--normal);
-  flex-shrink:0;
+  cursor:pointer;transition:background .2s ease,border-color .2s ease;
 }
-.settings-toggle::after{
-  content:'';position:absolute;left:3px;top:50%;transform:translateY(-50%);
-  width:14px;height:14px;border-radius:50%;background:var(--text-ghost);
-  transition:left var(--normal) var(--ease-spring),background var(--normal);
+.toggle-switch input:checked + .toggle-track{background:var(--accent);border-color:var(--accent)}
+.toggle-track::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;transition:transform .2s ease,box-shadow .2s ease;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);
 }
-.settings-toggle.on{background:rgba(0,196,248,.18);border-color:var(--accent)}
-.settings-toggle.on::after{left:21px;background:var(--accent)}
+.toggle-switch input:checked + .toggle-track::after{transform:translateX(16px)}
 
-.vol-row{display:flex;align-items:center;gap:var(--sp3);padding:10px 0}
-.vol-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center;cursor:pointer;user-select:none}
-.vol-slider{
-  flex:1;height:4px;border-radius:2px;outline:none;border:none;
-  appearance:none;cursor:pointer;
-  background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--vol-pct,100%),var(--bg-elevated) var(--vol-pct,100%));
-}
-.vol-slider::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent-glow);cursor:pointer;transition:transform .15s}
-.vol-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
-.vol-val{font-family:var(--font-mono);font-size:var(--xs);color:var(--accent);min-width:34px;text-align:right}
-
-.key-bind-row{
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
+.ctrl-bind{
   display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:7px 10px;
 }
-.key-bind-row:last-child{border-bottom:none}
-.key-bind-label{font-size:var(--sm);color:var(--text-secondary)}
-.key-bind-chip{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:3px 10px;border:1px solid var(--border-mid);border-radius:5px;
-  background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);
-  color:var(--text-secondary);min-width:52px;text-align:center;cursor:pointer;
-  transition:border-color var(--fast),color var(--fast),background var(--fast);
-  user-select:none;
+.ctrl-bind-label{font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em}
+.ctrl-bind-key{
+  background:var(--bg-elevated);border:1px solid var(--border-mid);
+  border-radius:5px;padding:2px 8px;font-size:10px;font-family:var(--font-mono);
+  color:var(--text-primary);cursor:pointer;min-width:36px;text-align:center;
+  transition:border-color .15s,background .15s,color .15s;
+  box-shadow:0 2px 0 rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
 }
-.key-bind-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.key-bind-chip.listening{border-color:var(--warn);color:var(--warn);background:var(--warn-dim);animation:key-listen-blink .7s ease-in-out infinite}
-@keyframes key-listen-blink{0%,100%{opacity:1}50%{opacity:.55}}
+.ctrl-bind-key:hover{border-color:var(--accent);color:var(--accent)}
+.ctrl-bind-key.listening{
+  border-color:var(--warn);color:var(--warn);
+  background:rgba(245,158,11,.1);
+  animation:key-pulse .7s ease-in-out infinite alternate;
+}
+@keyframes key-pulse{0%{box-shadow:0 0 0 rgba(245,158,11,0)}to{box-shadow:0 0 8px rgba(245,158,11,.5)}}
+.ctrl-reset-btn{
+  width:100%;margin-top:var(--sp3);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:8px;padding:8px;font-size:var(--xs);font-family:var(--font-mono);
+  color:var(--text-tertiary);cursor:pointer;letter-spacing:.06em;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.ctrl-reset-btn:hover{border-color:var(--error);color:var(--error);background:rgba(232,64,87,.07)}
+.setting-select{
+  background:var(--bg-input);border:1px solid var(--border-subtle);
+  border-radius:7px;padding:5px 10px;color:var(--text-primary);
+  font-size:var(--xs);font-family:var(--font-mono);outline:none;cursor:pointer;
+  transition:border-color var(--fast);
+}
+.setting-select:focus,.setting-select:hover{border-color:var(--accent)}
 
-
-
-/* File inputs */
-#rom-input,#sav-input,#state-input{display:none!important;position:fixed;left:-9999px}
+/* ═══════════════════════════════════════════════════════════
+   CONFIRM DELETE MODAL
+   ═══════════════════════════════════════════════════════════ */
 .delete-confirm-overlay{position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;animation:fade-in .15s ease forwards}
 .delete-confirm-box{background:linear-gradient(160deg,rgba(38,20,24,1),rgba(28,18,20,1));border:1px solid rgba(232,64,87,.35);border-radius:var(--radius-xl);padding:var(--sp5);min-width:320px;max-width:88vw;animation:modal-in .42s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 24px 80px rgba(0,0,0,.7)}
 .delete-confirm-icon{font-size:32px;margin-bottom:var(--sp3);display:block;text-align:center}
@@ -759,7 +733,6 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 #keys-overlay.visible{display:flex}
 .keys-box{background:var(--bg-panel);border:1px solid var(--border-mid);border-radius:var(--radius-xl);padding:var(--sp6);min-width:360px;max-width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
 .keys-title{font-size:var(--xl);font-weight:600;margin-bottom:var(--sp4);font-family:var(--font-display)}
-/* Section headers in keys overlay (v9) */
 .keys-section{font-size:var(--xs);letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-family:var(--font-mono);margin:var(--sp4) 0 var(--sp2);padding-bottom:var(--sp2);border-bottom:1px solid var(--border-subtle)}
 .keys-grid{display:grid;grid-template-columns:auto 1fr;gap:var(--sp2) var(--sp4)}
 .key-chip{display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--border-mid);border-radius:4px;background:var(--bg-elevated);font-family:var(--font-mono);font-size:var(--xs);color:var(--text-secondary);white-space:nowrap}
@@ -798,9 +771,9 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 </head>
 <body>
 
-<!-- File inputs outside click zones -->
 <input type="file" id="rom-input" accept=".gba,.zip,.GBA" style="display:none">
 <input type="file" id="state-input" accept=".state,.STATE" style="display:none">
+<input type="file" id="sav-input" accept=".sav,.SAV,.srm,.SRM,.eep,.EEP,.fla,.FLA" style="display:none">
 
 <!-- ══════════════ IDLE / LANDING ══════════════ -->
 <div id="idle-screen">
@@ -857,7 +830,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="landing-brand">
     <h1 class="landing-title font-display" data-text="SwiftGBA."><span>Swift</span><span class="accent">GBA</span><span class="dot">.</span></h1>
     <div class="landing-tagline font-mono">Browser-native GBA emulation</div>
-    <div class="landing-version-badge font-mono">v4.0 · STABLE</div>
+    <div class="landing-version-badge font-mono">v5.0 · STABLE</div>
   </div>
   <div class="landing-controls font-mono">
     <span class="landing-key">Z</span> A
@@ -912,15 +885,10 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
 
   <div id="emu-body">
     <div id="emu-wrap">
-      <!--
-        CRITICAL: #game must be a direct child of a container with explicit dimensions.
-        EmulatorJS uses offsetWidth/offsetHeight of #game to size the canvas.
-        width:100%;height:100% on #game + flex:1 on #emu-wrap ensures non-zero dimensions.
-      -->
       <div id="game"></div>
       <div id="sav-drop-overlay">
         <div>📁</div>
-        <div>Drop .state file to restore snapshot</div>
+        <div>Drop .state or .sav file</div>
       </div>
       <div id="ff-badge">⚡ FAST FORWARD</div>
       <div id="ss-flash"></div>
@@ -940,22 +908,22 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     </div>
 
     <div id="sidebar">
-      <div class="sidebar-game-header">
-        <div class="sb-cover-art" id="sb-cover-art"><span id="sb-cover-fallback">🎮</span></div>
-        <div class="sb-game-info">
-          <div class="sidebar-game-title" id="sb-game-title">No game loaded</div>
-          <div class="sidebar-game-size"  id="sb-game-size">—</div>
-        </div>
-      </div>
-
-      <!-- Sidebar Nav Tabs -->
-      <div class="sidebar-nav">
-        <button class="sidebar-nav-tab active" id="snt-game" onclick="switchSidebarTab('game')">Game</button>
-        <button class="sidebar-nav-tab" id="snt-settings" onclick="switchSidebarTab('settings')">Settings</button>
+      <!-- Tab nav -->
+      <div class="sidebar-tab-nav">
+        <button class="sidebar-tab-btn active" data-panel="game">Game</button>
+        <button class="sidebar-tab-btn" data-panel="settings">Settings</button>
       </div>
 
       <!-- ══ GAME PANEL ══ -->
-      <div class="sidebar-panel active" id="sp-game">
+      <div class="sidebar-panel active" id="panel-game">
+
+        <div class="sidebar-game-header">
+          <div class="sb-cover-art" id="sb-cover-art"><span id="sb-cover-fallback">🎮</span></div>
+          <div class="sb-game-info">
+            <div class="sidebar-game-title" id="sb-game-title">No game loaded</div>
+            <div class="sidebar-game-size"  id="sb-game-size">—</div>
+          </div>
+        </div>
 
         <!-- Status -->
         <div class="sidebar-section">
@@ -978,6 +946,11 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           <button class="sb-btn" id="sb-restart">
             <span class="sb-btn-icon">🔄</span>
             <span class="sb-btn-text">Restart Game<span class="sb-btn-sub">Soft reset</span></span>
+            <span class="sb-btn-arrow">›</span>
+          </button>
+          <button class="sb-btn" id="sb-mute">
+            <span class="sb-btn-icon">🔊</span>
+            <span class="sb-btn-text">Toggle Mute<span class="sb-btn-sub">Keyboard: M</span></span>
             <span class="sb-btn-arrow">›</span>
           </button>
           <button class="sb-btn" id="sb-screenshot">
@@ -1050,6 +1023,21 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           </button>
         </div>
 
+        <!-- Battery Save -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Battery Save (.sav)</div>
+          <button class="sb-btn" id="sb-import-sav">
+            <span class="sb-btn-icon">📥</span>
+            <span class="sb-btn-text">Import .sav File<span class="sb-btn-sub">Drag-and-drop also works</span></span>
+            <span class="sb-btn-arrow">›</span>
+          </button>
+          <button class="sb-btn" id="sb-export-save">
+            <span class="sb-btn-icon">📤</span>
+            <span class="sb-btn-text">Export .sav File<span class="sb-btn-sub">Download battery save</span></span>
+            <span class="sb-btn-arrow">›</span>
+          </button>
+        </div>
+
         <!-- ROM -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">ROM</div>
@@ -1065,63 +1053,129 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
           </button>
         </div>
 
-      </div><!-- /sp-game -->
+      </div><!-- /panel-game -->
 
       <!-- ══ SETTINGS PANEL ══ -->
-      <div class="sidebar-panel" id="sp-settings">
+      <div class="sidebar-panel" id="panel-settings">
 
-        <!-- Audio -->
+        <!-- Audio & Display -->
         <div class="sidebar-section">
-          <div class="sidebar-section-title">Audio</div>
-          <div class="vol-row">
-            <span class="vol-icon" id="vol-icon" title="Click to mute">🔊</span>
-            <input type="range" class="vol-slider" id="vol-slider" min="0" max="100" step="1" value="100">
-            <span class="vol-val" id="vol-val">100%</span>
+          <div class="sidebar-section-title">Audio &amp; Display</div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Sound</div>
+              <span class="setting-sub">Enable game audio</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-sound" checked>
+              <div class="toggle-track"></div>
+            </label>
           </div>
-          <!-- hidden mute btn kept for keyboard shortcut M / existing code references -->
-          <button id="sb-mute" style="display:none"></button>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Volume</div>
+              <span class="setting-sub" id="volume-sub-label">100%</span>
+            </div>
+            <input type="range" id="setting-volume" min="0" max="100" value="100"
+              style="width:100px;accent-color:var(--accent);cursor:pointer">
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Pixel Filter</div>
+              <span class="setting-sub">Smoothing vs sharp pixels</span>
+            </div>
+            <select class="setting-select" id="setting-filter">
+              <option value="pixelated">Sharp (Pixelated)</option>
+              <option value="smooth">Smooth (Bilinear)</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Fullscreen on Start</div>
+              <span class="setting-sub">Auto-fullscreen when loading ROM</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-fullscreen-start">
+              <div class="toggle-track"></div>
+            </label>
+          </div>
         </div>
 
-        <!-- Display -->
+        <!-- Emulation -->
         <div class="sidebar-section">
-          <div class="sidebar-section-title">Display</div>
-          <div class="settings-row">
+          <div class="sidebar-section-title">Emulation</div>
+          <div class="setting-row">
             <div>
-              <span class="settings-row-label">Integer Scaling</span>
-              <span class="settings-row-sub">Crisp pixel-art rendering</span>
+              <div class="setting-label">Auto-save Interval</div>
+              <span class="setting-sub">Slot 0 background save</span>
             </div>
-            <button class="settings-toggle" id="toggle-integer-scale" title="Toggle integer scaling"></button>
+            <select class="setting-select" id="setting-autosave">
+              <option value="0">Off</option>
+              <option value="30000">30s</option>
+              <option value="45000" selected>45s</option>
+              <option value="60000">1 min</option>
+              <option value="120000">2 min</option>
+              <option value="300000">5 min</option>
+            </select>
           </div>
-          <div class="settings-row">
+          <div class="setting-row">
             <div>
-              <span class="settings-row-label">Scanlines</span>
-              <span class="settings-row-sub">Classic CRT look</span>
+              <div class="setting-label">Fast-forward Hold</div>
+              <span class="setting-sub">Hold Tab for 4× fast-forward</span>
             </div>
-            <button class="settings-toggle" id="toggle-scanlines" title="Toggle scanlines"></button>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-ff-hold" checked>
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Show FF Badge</div>
+              <span class="setting-sub">Overlay when fast-forwarding</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="setting-ff-badge" checked>
+              <div class="toggle-track"></div>
+            </label>
           </div>
         </div>
 
-        <!-- Key Bindings -->
+        <!-- Control Bindings -->
         <div class="sidebar-section">
-          <div class="sidebar-section-title">Key Bindings</div>
-          <div id="key-bindings-list"></div>
-          <button class="sb-btn danger-btn" id="sb-reset-keys" style="margin-top:var(--sp3)">
-            <span class="sb-btn-icon">↺</span>
-            <span class="sb-btn-text">Reset to Defaults<span class="sb-btn-sub">Restore original key mapping</span></span>
-          </button>
+          <div class="sidebar-section-title">Control Bindings</div>
+          <p style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:var(--sp3);line-height:1.6">
+            Click a key badge then press the key you want to assign.
+          </p>
+          <div class="ctrl-grid" id="ctrl-grid"></div>
+          <button class="ctrl-reset-btn" id="ctrl-reset">↺ Reset to Defaults</button>
+        </div>
+
+        <!-- Appearance -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Appearance</div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-label">Sidebar Default</div>
+              <span class="setting-sub">Open or closed on game start</span>
+            </div>
+            <select class="setting-select" id="setting-sidebar-default">
+              <option value="open" selected>Open</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
         </div>
 
         <!-- About -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">About</div>
           <div style="font-size:var(--xs);color:var(--text-tertiary);font-family:var(--font-mono);line-height:1.8">
-            <div>SwiftGBA <span style="color:var(--accent)">v4.0</span></div>
-            <div>Core: EmulatorJS (mGBA)</div>
-            <div style="margin-top:6px;color:var(--text-ghost)">100% local · zero uploads · no tracking</div>
+            <div>SwiftGBA v5.0</div>
+            <div>Core: GBA via EmulatorJS</div>
+            <div style="margin-top:6px;color:var(--text-ghost)">Your ROMs never leave your device.</div>
           </div>
         </div>
 
-      </div><!-- /sp-settings -->
+      </div><!-- /panel-settings -->
 
     </div><!-- /sidebar -->
   </div><!-- /emu-body -->
@@ -1132,14 +1186,8 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
   <div class="keys-box">
     <div class="keys-title font-display">Keyboard Shortcuts</div>
     <div class="keys-section">GBA Controls</div>
-    <div class="keys-grid">
-      <span class="key-chip">Z</span><span class="key-desc">A button</span>
-      <span class="key-chip">X</span><span class="key-desc">B button</span>
-      <span class="key-chip">A</span><span class="key-desc">L shoulder</span>
-      <span class="key-chip">S</span><span class="key-desc">R shoulder</span>
-      <span class="key-chip">Enter</span><span class="key-desc">Start</span>
-      <span class="key-chip">Shift</span><span class="key-desc">Select</span>
-      <span class="key-chip">← ↑ ↓ →</span><span class="key-desc">D-Pad</span>
+    <div class="keys-grid" id="keys-grid-gba">
+      <!-- populated dynamically to reflect bindings -->
     </div>
     <div class="keys-section">Emulator</div>
     <div class="keys-grid">
@@ -1147,7 +1195,7 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
       <span class="key-chip">M</span><span class="key-desc">Toggle mute</span>
       <span class="key-chip">F</span><span class="key-desc">Fullscreen</span>
       <span class="key-chip">C</span><span class="key-desc">Screenshot</span>
-      <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar</span>
+      <span class="key-chip">Tab</span><span class="key-desc">Toggle sidebar / Hold for FF</span>
       <span class="key-chip">?</span><span class="key-desc">This overlay</span>
       <span class="key-chip">Esc</span><span class="key-desc">Close overlay</span>
     </div>
@@ -1155,77 +1203,28 @@ html,body{height:100dvh;width:100vw;overflow:hidden;background:var(--bg-deep);co
     <div class="keys-grid">
       <span class="key-chip">` + 1–6</span><span class="key-desc">Quick-save slot 1–6</span>
       <span class="key-chip">Ctrl + 1–6</span><span class="key-desc">Quick-load slot 1–6</span>
-      <span class="key-chip">Slot 0</span><span class="key-desc">Automatic autosave (every 45s)</span>
+      <span class="key-chip">Slot 0</span><span class="key-desc">Auto-save (configurable interval)</span>
       <span class="key-chip">Ctrl + `</span><span class="key-desc">Open delete save picker</span>
     </div>
   </div>
 </div>
 
-<!-- Context menu -->
 <div id="ctx-menu" class="ctx-menu" style="display:none"></div>
 <div id="toast-stack"></div>
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   AUDIO FIX: Monkey-patch AudioContext to auto-resume after user gesture.
-   Chrome's autoplay policy suspends AudioContext created before user interaction.
-   When served from a web server (non-file://) Chrome's MEI is low, so ALL
-   AudioContext instances start suspended. We intercept construction and attach
-   a one-time gesture listener to resume every context ever created.
-   Source: https://developer.chrome.com/blog/web-audio-autoplay
-══════════════════════════════════════════════════════════════ */
-(function patchAudioContext() {
-  const OrigAudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!OrigAudioContext) return;
-  const _allContexts = [];
-  function resumeAll() {
-    _allContexts.forEach(ctx => {
-      try { if (ctx.state === 'suspended') ctx.resume(); } catch(e) {}
-    });
-  }
-  const gestureEvents = ['click','keydown','touchstart','pointerdown','mousedown'];
-  function onGesture() {
-    resumeAll();
-    // Keep listener alive — new contexts may be created later
-  }
-  gestureEvents.forEach(ev => document.addEventListener(ev, onGesture, { capture: true, passive: true }));
-
-  // Also expose helper for manual calls
-  window.__resumeAllAudioContexts = resumeAll;
-  window.__allAudioContexts = _allContexts;
-
-  const PatchedAC = function AudioContext(opts) {
-    const ctx = new OrigAudioContext(opts);
-    _allContexts.push(ctx);
-    // If already have user activation, resume immediately
-    try { if (ctx.state === 'suspended') ctx.resume(); } catch(e) {}
-    return ctx;
-  };
-  PatchedAC.prototype = OrigAudioContext.prototype;
-  // Copy static properties
-  Object.getOwnPropertyNames(OrigAudioContext).forEach(k => {
-    try { if (!(k in PatchedAC)) PatchedAC[k] = OrigAudioContext[k]; } catch(e) {}
-  });
-  window.AudioContext = PatchedAC;
-  if (window.webkitAudioContext) window.webkitAudioContext = PatchedAC;
-})();
-
-/* ══════════════════════════════════════════════════════════════
-   SwiftGBA — Merged v4 (current base + v9 fixes + new features)
-   KEY FIXES FROM v9:
-   ✦ EJS_core changed from 'mgba' → 'gba'  (BLACK SCREEN FIX)
-   ✦ #game div has explicit width/height CSS (EJS reads offsetWidth/offsetHeight)
-   ✦ #emu-screen uses opacity fade-in (.active + .visible) instead of display:flex only
-   ✦ idleScreen uses .hidden class instead of style.display='none'
-   ✦ Proper Chrome/Chromebook AudioContext unlock fix
-   ✦ Emu-wrap drag/drop for .state and .gba files while playing
-   ✦ Delete Save button + showConfirmDelete modal
-   ✦ deleteSlotWithConfirm function
-   ✦ Improved showStateToast with type/icon support
-   ✦ New landing page elements: sweep, corner brackets, hex deco, version badge, privacy line
-   ✦ showcase-slash2, art-glow elements
-   ✦ Keys overlay organized into sections
-   ✦ backtickHeld is now a local let variable (not window.backtickHeld)
+   SwiftGBA v5.0 — Merged (index1 base + index3 features)
+   NEW IN v5:
+   ✦ AudioContext constructor patch (intercepts EJS audio at creation time)
+   ✦ Settings panel: volume, pixel filter, control bindings, autosave interval,
+     FF hold, FF badge, fullscreen-on-start, sidebar default
+   ✦ Remappable controls with live key-binding UI
+   ✦ Battery save import/export (.sav files)
+   ✦ Fast-forward hold (Tab)
+   ✦ Settings persist to localStorage (settings only — saves use cache/manual .state)
+   ✦ All index1 features preserved: 7 slots + autosave slot 0, confirm-delete,
+     snapshot system, toolbar pill, landing animations, etc.
 ══════════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
@@ -1239,8 +1238,9 @@ const S_ROMS      = 'roms';
 const S_META      = 'meta';
 const S_STATES    = 'states';
 const NUM_SLOTS   = 7;
-const AUTOSAVE_MS = 45000;
 const EJS_CDN     = 'https://cdn.emulatorjs.org/stable/data/';
+const SAV_EXTS    = new Set(['.sav','.srm','.eep','.fla','.SAV','.SRM','.EEP','.FLA']);
+const ROM_EXTS    = new Set(['.gba','.zip','.GBA']);
 
 const SPEED_STEPS = [
   { val:0.25, label:'¼×' },
@@ -1251,6 +1251,110 @@ const SPEED_STEPS = [
   { val:4,    label:'4×' },
   { val:6,    label:'6×' },
 ];
+
+/* ── Default control bindings ── */
+const DEFAULT_BINDINGS = {
+  'A Button':   'KeyZ',
+  'B Button':   'KeyX',
+  'L Shoulder': 'KeyA',
+  'R Shoulder': 'KeyS',
+  'Start':      'Enter',
+  'Select':     'ShiftLeft',
+  'D-Up':       'ArrowUp',
+  'D-Down':     'ArrowDown',
+  'D-Left':     'ArrowLeft',
+  'D-Right':    'ArrowRight',
+};
+
+function keyLabel(code) {
+  const map = {
+    'KeyZ':'Z','KeyX':'X','KeyA':'A','KeyS':'S','KeyQ':'Q','KeyW':'W',
+    'KeyE':'E','KeyR':'R','KeyD':'D','KeyF':'F','KeyC':'C','KeyV':'V',
+    'Space':'SPC','Enter':'ENT','ShiftLeft':'⇧L','ShiftRight':'⇧R',
+    'ControlLeft':'CTRL','AltLeft':'ALT','Tab':'TAB','Escape':'ESC',
+    'ArrowUp':'↑','ArrowDown':'↓','ArrowLeft':'←','ArrowRight':'→',
+    'Digit1':'1','Digit2':'2','Digit3':'3','Digit4':'4','Digit5':'5',
+    'Digit6':'6','Digit7':'7','Digit8':'8','Digit9':'9','Digit0':'0',
+    'KeyB':'B','KeyG':'G','KeyH':'H','KeyI':'I','KeyJ':'J','KeyK':'K',
+    'KeyL':'L','KeyM':'M','KeyN':'N','KeyO':'O','KeyP':'P','KeyT':'T',
+    'KeyU':'U','KeyY':'Y','Numpad0':'N0','Numpad1':'N1','Numpad2':'N2',
+    'Numpad3':'N3','Numpad4':'N4','Numpad5':'N5','Numpad6':'N6',
+    'Numpad7':'N7','Numpad8':'N8','Numpad9':'N9',
+    'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5',
+  };
+  return map[code] || code.replace('Key','').replace('Arrow','').substring(0,5);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUDIO FIX — Patch AudioContext constructor at page load
+   
+   Root cause on hosted sites: Chrome suspends AudioContexts not
+   created within a synchronous user-gesture call stack. EJS creates
+   its AudioContext during WASM boot, which is async (well after the
+   click fires). By the time we could call resume() on it, we no
+   longer have a user-gesture stack.
+   
+   Fix: Replace window.AudioContext with a wrapper that:
+   1. Captures every instance as it's created
+   2. Immediately calls resume() (works when called within user-gesture stack)
+   3. Re-resumes all tracked contexts on every subsequent user gesture
+══════════════════════════════════════════════════════════════ */
+const _trackedContexts = new Set();
+
+(function patchAudioContext() {
+  const OrigAC = window.AudioContext || window.webkitAudioContext;
+  if (!OrigAC) return;
+  function PatchedAC(opts) {
+    const ctx = new OrigAC(opts);
+    _trackedContexts.add(ctx);
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  PatchedAC.prototype = OrigAC.prototype;
+  Object.getOwnPropertyNames(OrigAC).forEach(k => {
+    try { if (!(k in PatchedAC)) PatchedAC[k] = OrigAC[k]; } catch(e) {}
+  });
+  window.AudioContext = PatchedAC;
+  if (window.webkitAudioContext) window.webkitAudioContext = PatchedAC;
+})();
+
+function resumeAllContexts() {
+  _trackedContexts.forEach(ctx => {
+    try { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); } catch(e) {}
+  });
+  // Also scan window globals for any contexts we may have missed
+  try {
+    for (const k of Object.keys(window)) {
+      try {
+        const v = window[k];
+        if (v instanceof AudioContext && !_trackedContexts.has(v)) {
+          _trackedContexts.add(v);
+          if (v.state === 'suspended') v.resume().catch(() => {});
+        }
+      } catch(e) {}
+    }
+  } catch(e) {}
+}
+
+// Resume on every user gesture while emulator is running
+['click','keydown','touchstart','pointerdown'].forEach(ev => {
+  document.addEventListener(ev, () => {
+    resumeAllContexts();
+    if (ejsReady) applyVolumeToEmu();
+  }, { passive:true });
+});
+
+// Polling loop after game boot to aggressively resume any suspended contexts
+let _audioPollTimer = null;
+function startAudioPolling() {
+  clearInterval(_audioPollTimer);
+  let polls = 0;
+  _audioPollTimer = setInterval(() => {
+    resumeAllContexts();
+    applyVolumeToEmu();
+    if (++polls > 20) clearInterval(_audioPollTimer);
+  }, 500);
+}
 
 /* ══════════════════════════════════════════════════════════════
    STATE
@@ -1272,6 +1376,51 @@ let autosaveTimer  = null;
 let playtimeStart  = null;
 let playtimeAccum  = 0;
 let playtimeTimer  = null;
+let ctrlBindings   = { ...DEFAULT_BINDINGS };
+let listeningFor   = null;
+let ffHoldActive   = false;
+let backtickHeld   = false;
+
+/* Settings */
+let settingSound            = true;
+let settingVolume           = 100;
+let settingFilter           = 'pixelated';
+let settingFullscreenStart  = false;
+let settingFFHold           = true;
+let settingFFBadge          = true;
+let settingSidebarDefault   = 'open';
+let autosaveMs              = 45000;
+
+/* ══════════════════════════════════════════════════════════════
+   SETTINGS PERSISTENCE (localStorage — settings only)
+══════════════════════════════════════════════════════════════ */
+function saveSettings() {
+  try {
+    localStorage.setItem('swiftgba_settings', JSON.stringify({
+      sound: settingSound, volume: settingVolume,
+      filter: settingFilter, fullscreenStart: settingFullscreenStart,
+      ffHold: settingFFHold, ffBadge: settingFFBadge,
+      sidebarDefault: settingSidebarDefault,
+      autosaveMs, ctrlBindings,
+    }));
+  } catch(e) {}
+}
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem('swiftgba_settings');
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.sound           !== undefined) settingSound           = s.sound;
+    if (s.volume          !== undefined) settingVolume          = s.volume;
+    if (s.filter          !== undefined) settingFilter          = s.filter;
+    if (s.fullscreenStart !== undefined) settingFullscreenStart = s.fullscreenStart;
+    if (s.ffHold          !== undefined) settingFFHold          = s.ffHold;
+    if (s.ffBadge         !== undefined) settingFFBadge         = s.ffBadge;
+    if (s.sidebarDefault  !== undefined) settingSidebarDefault  = s.sidebarDefault;
+    if (s.autosaveMs      !== undefined) autosaveMs             = s.autosaveMs;
+    if (s.ctrlBindings    !== undefined) ctrlBindings           = { ...DEFAULT_BINDINGS, ...s.ctrlBindings };
+  } catch(e) {}
+}
 
 /* ══════════════════════════════════════════════════════════════
    DOM HELPERS
@@ -1335,7 +1484,6 @@ function toast(msg, type='info', dur=2800) {
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, dur);
 }
 
-/* In-viewport state notification — improved with type support (v9) */
 let _stateToastTimer = null;
 function showStateToast(msg, type='success') {
   clearTimeout(_stateToastTimer);
@@ -1389,7 +1537,6 @@ function download(blob, name) {
 }
 function getEmu() { return window.EJS_emulator || null; }
 
-/* ── Capture thumbnail from game canvas ── */
 function captureThumbnail() {
   try {
     const canvas = document.querySelector('#game canvas');
@@ -1401,7 +1548,6 @@ function captureThumbnail() {
   } catch(e) { return null; }
 }
 
-/* ── Try to capture current state data from EJS ── */
 function captureStateData() {
   const emu = getEmu();
   if (!emu || !emu.gameManager) return null;
@@ -1417,7 +1563,6 @@ function captureStateData() {
   return null;
 }
 
-/* ── Apply state data to running emulator ── */
 function applyStateData(data) {
   const emu = getEmu();
   if (!emu || !emu.gameManager) return false;
@@ -1435,139 +1580,28 @@ function applyStateData(data) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   AUDIO UNLOCK
+   VOLUME / MUTE APPLICATION
 ══════════════════════════════════════════════════════════════ */
-let _audioUnlocked = false;
-let _audioRetryTimer = null;
-
-function tryUnlockAudio() {
+function applyVolumeToEmu() {
   const emu = getEmu();
-  const vol = isMuted ? 0 : 1;
-  const candidates = [];
-  const addAC = ac => { if (ac instanceof AudioContext && !candidates.includes(ac)) candidates.push(ac); };
-
-  if (emu) {
-    addAC(emu.audioContext);
-    if (emu.gameManager) {
-      addAC(emu.gameManager.audioContext);
-      addAC(emu.gameManager.audio && emu.gameManager.audio.context);
-    }
-    if (emu.Module && emu.Module.SDL2) addAC(emu.Module.SDL2.audioContext);
-  }
+  if (!emu) return;
+  const vol = (isMuted || !settingSound) ? 0 : settingVolume / 100;
   try {
-    for (const k of Object.keys(window)) {
-      try {
-        const v = window[k];
-        if (v instanceof AudioContext) addAC(v);
-        if (v && typeof v === 'object') { addAC(v.audioContext); addAC(v._audioCtx); }
-      } catch(e) {}
-    }
+    if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
+    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
+      emu.gameManager.setVolume(vol);
+    if (emu.gameManager && emu.gameManager.volumeNode)
+      emu.gameManager.volumeNode.gain.value = vol;
   } catch(e) {}
-
-  let foundSuspended = false;
-  candidates.forEach(ac => {
-    try { if (ac.state === 'suspended') { ac.resume().catch(() => {}); foundSuspended = true; } } catch(e) {}
+  _trackedContexts.forEach(ctx => {
+    try { if (ctx.masterGain) ctx.masterGain.gain.value = vol; } catch(e) {}
   });
-
-  if (candidates.length === 0 && !_audioUnlocked) {
-    clearTimeout(_audioRetryTimer);
-    _audioRetryTimer = setTimeout(tryUnlockAudio, 800);
-    return;
-  }
-  if (emu) {
-    try { if (typeof emu.changeVolume === 'function') emu.changeVolume(vol); } catch(e) {}
-    try {
-      if (emu.gameManager && typeof emu.gameManager.setVolume === 'function')
-        emu.gameManager.setVolume(vol);
-    } catch(e) {}
-    try {
-      if (emu.gameManager && emu.gameManager.volumeNode)
-        emu.gameManager.volumeNode.gain.value = vol;
-    } catch(e) {}
-  }
-  if (!foundSuspended && candidates.length > 0) _audioUnlocked = true;
 }
 
-function forceResumeAllAudioContexts() {
-  // Re-create a user-gesture-linked AudioContext to unlock audio pipeline
-  try {
-    const unlockCtx = new AudioContext();
-    const buf = unlockCtx.createBuffer(1, 1, 22050);
-    const src = unlockCtx.createBufferSource();
-    src.buffer = buf;
-    src.connect(unlockCtx.destination);
-    src.start(0);
-    unlockCtx.resume().then(() => unlockCtx.close()).catch(() => {});
-  } catch(e) {}
-  // Resume ALL tracked contexts via monkey-patch helper
-  if (typeof window.__resumeAllAudioContexts === 'function') {
-    window.__resumeAllAudioContexts();
-  }
-  // Resume any existing suspended contexts from EJS directly
-  const emu = getEmu();
-  const toResume = new Set();
-  if (emu) {
-    [emu.audioContext,
-     emu.gameManager && emu.gameManager.audioContext,
-     emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
-     emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
-    ].forEach(ac => { if (ac instanceof AudioContext) toResume.add(ac); });
-  }
-  toResume.forEach(ac => ac.resume().catch(() => {}));
+function applyPixelFilter() {
+  const canvas = qs('#game canvas');
+  if (canvas) canvas.style.imageRendering = settingFilter === 'pixelated' ? 'pixelated' : 'auto';
 }
-
-function scheduleAudioPolling() {
-  _audioUnlocked = false;
-  clearTimeout(_audioRetryTimer);
-  let polls = 0;
-  function poll() {
-    if (_audioUnlocked || polls++ > 15) return;
-    tryUnlockAudio();
-    _audioRetryTimer = setTimeout(poll, 800);
-  }
-  poll();
-}
-
-['click','keydown','touchstart','pointerdown'].forEach(ev => {
-  document.addEventListener(ev, () => { if (ejsReady) tryUnlockAudio(); }, { passive:true });
-});
-
-/* Chromebook / Chrome OS AudioContext fix (v9) */
-(function installChromeAudioFix() {
-  function resumeAll() {
-    if (!$('emu-screen') || !$('emu-screen').classList.contains('active')) return;
-    let resumed = false;
-    const emu = window.EJS_emulator;
-    const candidates = new Set();
-    if (emu) {
-      [emu.audioContext,
-       emu.gameManager && emu.gameManager.audioContext,
-       emu.gameManager && emu.gameManager.audio && emu.gameManager.audio.context,
-       emu.Module && emu.Module.SDL2 && emu.Module.SDL2.audioContext,
-      ].forEach(ac => { if (ac instanceof AudioContext) candidates.add(ac); });
-    }
-    try {
-      for (const k of Object.keys(window)) {
-        try {
-          const v = window[k];
-          if (v instanceof AudioContext) candidates.add(v);
-          if (v && typeof v === 'object') {
-            if (v.audioContext instanceof AudioContext) candidates.add(v.audioContext);
-          }
-        } catch(_) {}
-      }
-    } catch(_) {}
-    candidates.forEach(ac => {
-      if (ac.state === 'suspended') { ac.resume().then(() => { resumed = true; }).catch(() => {}); }
-    });
-    if (resumed || candidates.size > 0) {
-      ['click','keydown','touchstart','pointerdown'].forEach(ev =>
-        document.removeEventListener(ev, resumeAll, true));
-    }
-  }
-  ['click','keydown','touchstart','pointerdown'].forEach(ev =>
-    document.addEventListener(ev, resumeAll, { capture: true, passive: true }));
-})();
 
 /* ══════════════════════════════════════════════════════════════
    ROM NAME CLEANER
@@ -1650,12 +1684,8 @@ async function fetchCoverArt(displayName, color) {
       if (Math.random() > 0.97) {
         ctx.shadowBlur = 8;
         ctx.shadowColor = p.hue === 280 ? 'rgba(124,58,237,.3)' : 'rgba(0,196,248,.35)';
-      } else {
-        ctx.shadowBlur = 0;
-      }
-      ctx.fillStyle = p.hue === 280
-        ? `rgba(124,58,237,${p.alpha})`
-        : `rgba(0,196,248,${p.alpha})`;
+      } else { ctx.shadowBlur = 0; }
+      ctx.fillStyle = p.hue === 280 ? `rgba(124,58,237,${p.alpha})` : `rgba(0,196,248,${p.alpha})`;
       ctx.fill();
     });
     const idle = $('idle-screen');
@@ -1721,6 +1751,126 @@ function cycleNext() {
 applyShowcase(GAMES[0], false);
 setTimeout(() => applyShowcase(GAMES[0], true), 200);
 cycleTimer = setInterval(cycleNext, 3800);
+
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR PANEL TABS
+══════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    $('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SETTINGS UI
+══════════════════════════════════════════════════════════════ */
+function initSettingsUI() {
+  $('setting-sound').checked = settingSound;
+  $('setting-volume').value  = settingVolume;
+  $('volume-sub-label').textContent = settingVolume + '%';
+  $('setting-filter').value  = settingFilter;
+  $('setting-fullscreen-start').checked = settingFullscreenStart;
+  $('setting-ff-hold').checked   = settingFFHold;
+  $('setting-ff-badge').checked  = settingFFBadge;
+  $('setting-autosave').value    = String(autosaveMs);
+  $('setting-sidebar-default').value = settingSidebarDefault;
+
+  $('setting-sound').addEventListener('change', e => {
+    settingSound = e.target.checked; saveSettings(); applyVolumeToEmu();
+  });
+  $('setting-volume').addEventListener('input', e => {
+    settingVolume = parseInt(e.target.value);
+    $('volume-sub-label').textContent = settingVolume + '%';
+    saveSettings(); applyVolumeToEmu();
+  });
+  $('setting-filter').addEventListener('change', e => {
+    settingFilter = e.target.value; applyPixelFilter(); saveSettings();
+  });
+  $('setting-fullscreen-start').addEventListener('change', e => {
+    settingFullscreenStart = e.target.checked; saveSettings();
+  });
+  $('setting-ff-hold').addEventListener('change', e => {
+    settingFFHold = e.target.checked; saveSettings();
+  });
+  $('setting-ff-badge').addEventListener('change', e => {
+    settingFFBadge = e.target.checked;
+    if (!settingFFBadge) $('ff-badge').classList.remove('visible');
+    saveSettings();
+  });
+  $('setting-autosave').addEventListener('change', e => {
+    autosaveMs = parseInt(e.target.value);
+    saveSettings();
+    if (ejsReady) startAutosave();
+  });
+  $('setting-sidebar-default').addEventListener('change', e => {
+    settingSidebarDefault = e.target.value; saveSettings();
+  });
+
+  buildCtrlGrid();
+  buildKeysGBAGrid();
+}
+
+/* ── Control binding grid ── */
+function buildCtrlGrid() {
+  const grid = $('ctrl-grid');
+  grid.innerHTML = '';
+  Object.entries(ctrlBindings).forEach(([action, code]) => {
+    const cell = document.createElement('div');
+    cell.className = 'ctrl-bind';
+    cell.innerHTML = `
+      <span class="ctrl-bind-label">${esc(action)}</span>
+      <button class="ctrl-bind-key" data-action="${esc(action)}">${esc(keyLabel(code))}</button>`;
+    grid.appendChild(cell);
+  });
+  grid.querySelectorAll('.ctrl-bind-key').forEach(btn => {
+    btn.addEventListener('click', () => startListening(btn.dataset.action, btn));
+  });
+}
+
+function buildKeysGBAGrid() {
+  const grid = $('keys-grid-gba');
+  if (!grid) return;
+  grid.innerHTML = '';
+  Object.entries(ctrlBindings).forEach(([action, code]) => {
+    grid.innerHTML += `<span class="key-chip">${esc(keyLabel(code))}</span><span class="key-desc">${esc(action)}</span>`;
+  });
+}
+
+function startListening(action, btn) {
+  if (listeningFor) cancelListening();
+  listeningFor = action;
+  btn.classList.add('listening');
+  btn.textContent = '…';
+  function onKey(e) {
+    e.preventDefault(); e.stopPropagation();
+    const code = e.code;
+    if (code === 'Escape') { cancelListening(); return; }
+    ctrlBindings[action] = code;
+    btn.classList.remove('listening');
+    btn.textContent = keyLabel(code);
+    listeningFor = null;
+    document.removeEventListener('keydown', onKey, true);
+    saveSettings();
+    buildKeysGBAGrid();
+    toast(`${action} → ${keyLabel(code)}`, 'success', 1600);
+  }
+  document.addEventListener('keydown', onKey, true);
+  listeningFor = { action, cancel: () => { document.removeEventListener('keydown', onKey, true); } };
+}
+function cancelListening() {
+  if (listeningFor && listeningFor.cancel) listeningFor.cancel();
+  listeningFor = null;
+  buildCtrlGrid();
+}
+
+$('ctrl-reset').addEventListener('click', () => {
+  ctrlBindings = { ...DEFAULT_BINDINGS };
+  saveSettings(); buildCtrlGrid(); buildKeysGBAGrid();
+  toast('Controls reset to defaults', 'info', 1800);
+});
 
 /* ══════════════════════════════════════════════════════════════
    CONTINUE BAR
@@ -1853,7 +2003,6 @@ idleScreen.addEventListener('drop', e => {
 });
 idleScreen.addEventListener('click', e => {
   if (e.target.closest('#continue-bar') || e.target.closest('#ctx-menu')) return;
-  // Pre-warm AudioContext on the user click that opens the file picker
   try { const ac = new AudioContext(); ac.resume().then(() => ac.close()); } catch(e2) {}
   $('rom-input').click();
 });
@@ -1861,7 +2010,7 @@ $('rom-input').addEventListener('change', e => {
   const f = e.target.files[0]; if (f) { launchROM(f); e.target.value = ''; }
 });
 
-/* Drag .state or .gba onto game while playing (v9) */
+/* Drag .state or .sav or .gba onto game while playing */
 const emuWrap = $('emu-wrap');
 emuWrap.addEventListener('dragover', e => {
   e.preventDefault();
@@ -1884,7 +2033,9 @@ emuWrap.addEventListener('drop', async e => {
       if (isPaused) updatePauseUI(false);
       showStateToast('State restored'); toast('State file applied ✓','success');
     } catch(err) { toast('Failed to load state: ' + (err.message || 'unknown'),'error'); }
-  } else if (ext === '.gba' || ext === '.zip') {
+  } else if (SAV_EXTS.has(ext)) {
+    importSavFile(f);
+  } else if (ROM_EXTS.has(ext)) {
     launchROM(f);
   }
 });
@@ -1895,12 +2046,10 @@ emuWrap.addEventListener('drop', async e => {
 async function launchROM(file) {
   clearInterval(cycleTimer);
   idleScreen.classList.add('fade-out');
-  // Use hidden class after fade (v9 approach — doesn't break layout)
   setTimeout(() => { idleScreen.classList.add('hidden'); }, 400);
 
   const emuScreenEl = $('emu-screen');
   emuScreenEl.classList.add('active');
-  // Trigger opacity fade-in on next frame (v9 fix)
   requestAnimationFrame(() => {
     requestAnimationFrame(() => { emuScreenEl.classList.add('visible'); });
   });
@@ -1939,8 +2088,13 @@ async function launchROM(file) {
     } catch(e) { console.warn('IDB ROM cache:', e); }
   }
 
+  setSidebar(settingSidebarDefault !== 'closed');
+
+  if (settingFullscreenStart) {
+    setTimeout(() => $('emu-wrap').requestFullscreen().catch(() => {}), 800);
+  }
+
   isPaused = false; isMuted = false; ejsReady = false;
-  _audioUnlocked = false; clearTimeout(_audioRetryTimer);
   currentSpeedIdx = 2; isFastForward = false; isSlowMotion = false;
   window.EJS_emulator = undefined;
   updatePauseUI(false);
@@ -1966,7 +2120,7 @@ function startEmulator(romURL, displayName) {
 
   window.EJS_player           = '#game';
   window.EJS_gameUrl          = romURL;
-  window.EJS_core             = 'gba';           // ← CRITICAL FIX: was 'mgba', black screen fix
+  window.EJS_core             = 'gba';          // CRITICAL: 'gba' not 'mgba' — black screen fix
   window.EJS_pathtodata       = EJS_CDN;
   window.EJS_startOnLoaded    = true;
   window.EJS_gameTitle        = displayName;
@@ -1986,13 +2140,12 @@ function startEmulator(romURL, displayName) {
     buildSaveSlots();
     hideLoadIndicator();
     updateToolbarPill(false);
+    setTimeout(() => { applyPixelFilter(); }, 100);
     setTimeout(() => {
       applySpeedToEmu(SPEED_STEPS[currentSpeedIdx].val);
-      if (isMuted) applyMuteToEmu(true);
-      scheduleAudioPolling();
+      applyVolumeToEmu();
+      startAudioPolling();
       startAutosave();
-      // Force resume all AudioContexts on game start
-      forceResumeAllAudioContexts();
     }, 400);
   };
 
@@ -2025,6 +2178,7 @@ function updateToolbarPill(paused) {
 ══════════════════════════════════════════════════════════════ */
 function startAutosave() {
   clearInterval(autosaveTimer);
+  if (!autosaveMs) return;
   autosaveTimer = setInterval(async () => {
     if (!ejsReady || isPaused || !currentRomName || !db) return;
     const stateData = captureStateData();
@@ -2043,7 +2197,7 @@ function startAutosave() {
       buildSaveSlots();
       refreshCacheLoadSub();
     } catch(e) {}
-  }, AUTOSAVE_MS);
+  }, autosaveMs);
 }
 
 window.addEventListener('beforeunload', () => {
@@ -2138,16 +2292,9 @@ function updateMuteUI(muted) {
   $('sb-mute').classList.toggle('active-state', muted);
 }
 function applyMuteToEmu(muted) {
-  const emu = getEmu(); if (!emu) return;
-  try {
-    if (!muted && emu.gameManager) {
-      const ac = emu.gameManager.audioContext;
-      if (ac && ac.state === 'suspended') ac.resume().catch(() => {});
-    }
-    const vol = muted ? 0 : 1;
-    if (typeof emu.changeVolume === 'function') emu.changeVolume(vol);
-    else if (emu.gameManager && typeof emu.gameManager.setVolume === 'function') emu.gameManager.setVolume(vol);
-  } catch(e) {}
+  isMuted = muted;
+  resumeAllContexts();
+  applyVolumeToEmu();
 }
 $('sb-mute').addEventListener('click', () => {
   const next = !isMuted; applyMuteToEmu(next); updateMuteUI(next);
@@ -2191,8 +2338,8 @@ function applySpeedUI(idx) {
     p.classList.toggle('ff-active', pv > 1 && pv === step.val);
   });
   const ffBadge = $('ff-badge');
-  if (step.val > 1) { ffBadge.textContent = `⚡ ${step.label} SPEED`; ffBadge.classList.add('visible'); }
-  else               ffBadge.classList.remove('visible');
+  if (step.val > 1 && settingFFBadge) { ffBadge.textContent = `⚡ ${step.label} SPEED`; ffBadge.classList.add('visible'); }
+  else ffBadge.classList.remove('visible');
   applySpeedToEmu(step.val);
 }
 $('speed-slider').addEventListener('input', e => applySpeedUI(parseInt(e.target.value) - 1));
@@ -2204,8 +2351,25 @@ document.querySelectorAll('.speed-preset').forEach(p => {
 });
 applySpeedUI(2);
 
+/* Fast-forward hold (Tab key) */
+document.addEventListener('keydown', e => {
+  if (e.code === 'Tab' && settingFFHold && ejsReady && !e.repeat && !listeningFor) {
+    e.preventDefault();
+    if (!ffHoldActive) {
+      ffHoldActive = true;
+      applySpeedUI(SPEED_STEPS.findIndex(s => s.val === 4));
+    }
+  }
+});
+document.addEventListener('keyup', e => {
+  if (e.code === 'Tab' && settingFFHold && ejsReady && ffHoldActive) {
+    ffHoldActive = false;
+    applySpeedUI(2);
+  }
+});
+
 /* ══════════════════════════════════════════════════════════════
-   CONFIRM DELETE MODAL (v9)
+   CONFIRM DELETE MODAL
 ══════════════════════════════════════════════════════════════ */
 function showConfirmDelete(slotLabel) {
   return new Promise(resolve => {
@@ -2246,7 +2410,7 @@ async function buildSaveSlots() {
   }
   let filledCount = 0;
 
-  /* ── Slot 0 — Autosave ── */
+  /* Slot 0 — Autosave */
   let autoMeta = null;
   try { autoMeta = await dbGet(S_STATES, `${currentRomName}::slot0`); } catch(e) {}
   if (autoMeta) {
@@ -2281,7 +2445,7 @@ async function buildSaveSlots() {
     container.appendChild(autoEl);
   }
 
-  /* ── Normal Save Slots 1–7 ── */
+  /* Normal Save Slots 1–7 */
   for (let i = 1; i <= NUM_SLOTS; i++) {
     const key = `${currentRomName}::slot${i}`;
     let meta = null;
@@ -2320,16 +2484,12 @@ async function saveToSlot(i) {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Emulator not ready yet','warn'); return; }
   const stateData = captureStateData();
-  if (!stateData) {
-    toast('Save failed — make sure the game is actively running (not at boot screen)','warn', 4000);
-    return;
-  }
+  if (!stateData) { toast('Save failed — make sure the game is actively running','warn', 4000); return; }
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, { id:`${currentRomName}::slot${i}`, data:stateData, ts:Date.now(), thumb, slotIdx:i });
     showStateToast(`Slot ${i} saved`);
-    buildSaveSlots();
-    refreshCacheLoadSub();
+    buildSaveSlots(); refreshCacheLoadSub();
   } catch(e) { toast('Failed to write save state to storage','error'); }
 }
 
@@ -2339,10 +2499,9 @@ async function loadFromSlot(i) {
     if (!meta || !meta.data) { toast('Slot is empty','error'); return; }
     if (!ejsReady) { toast('Emulator not ready','error'); return; }
     const ok = applyStateData(meta.data);
-    if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); toast('Could not apply state — emulator not responding','error'); return; }
+    if (!ok) { showStateToast(`Slot ${i} load failed`,'error'); toast('Could not apply state','error'); return; }
     if (isPaused) updatePauseUI(false);
-    showStateToast(`Slot ${i} loaded`);
-    toast(`Slot ${i} restored ✓`,'success');
+    showStateToast(`Slot ${i} loaded`); toast(`Slot ${i} restored ✓`,'success');
   } catch(e) { toast('Failed to load state','error'); }
 }
 
@@ -2356,13 +2515,12 @@ async function deleteSlot(i) {
   try {
     await dbDel(S_STATES, `${currentRomName}::slot${i}`);
     toast(`Slot ${i} deleted`,'info',1500);
-    buildSaveSlots();
-    refreshCacheLoadSub();
+    buildSaveSlots(); refreshCacheLoadSub();
   } catch(e) { toast('Delete failed','error'); }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   DELETE SLOT PICKER (v9 — improved with autosave slot support)
+   DELETE SLOT PICKER
 ══════════════════════════════════════════════════════════════ */
 async function showDeleteSlotPicker() {
   return new Promise(async resolve => {
@@ -2443,9 +2601,7 @@ async function showSlotPicker(mode) {
       const thumb = meta && meta.thumb
         ? `<img src="${meta.thumb}" alt=""><span class="slot-picker-thumb-num">${i}</span>`
         : `<span style="font-size:16px;opacity:.22">🎮</span><span class="slot-picker-thumb-num">${i}</span>`;
-      const badge = meta
-        ? `<span class="slot-picker-badge filled">FILLED</span>`
-        : `<span class="slot-picker-badge empty">EMPTY</span>`;
+      const badge = meta ? `<span class="slot-picker-badge filled">FILLED</span>` : `<span class="slot-picker-badge empty">EMPTY</span>`;
       const label = meta ? (meta.saveName || `Slot ${i}`) : `Slot ${i}`;
       const ts = meta ? timeAgo(meta.ts) : 'No save';
       return `
@@ -2532,10 +2688,7 @@ $('sb-cache-save').addEventListener('click', async () => {
   const pick = await showSlotPicker('save');
   if (!pick) return;
   const stateData = captureStateData();
-  if (!stateData) {
-    toast('Could not capture state — make sure the game is actively running (not loading)', 'warn', 4500);
-    return;
-  }
+  if (!stateData) { toast('Could not capture state — make sure the game is actively running', 'warn', 4500); return; }
   const thumb = captureThumbnail();
   try {
     await dbPut(S_STATES, {
@@ -2566,7 +2719,7 @@ $('sb-cache-load').addEventListener('click', async () => {
 });
 
 /* ══════════════════════════════════════════════════════════════
-   KEYBOARD QUICK-SAVE / QUICK-LOAD (` + 1–6) / (Ctrl+1–6)
+   KEYBOARD QUICK-SAVE / QUICK-LOAD
 ══════════════════════════════════════════════════════════════ */
 async function quickSaveSlot(i) {
   if (!currentRomName || !ejsReady) { showStateToast('Not ready','warn'); return; }
@@ -2596,7 +2749,7 @@ async function quickLoadSlot(i) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   IMPORT STATE FILE (.state) — applies LIVE, no restart
+   IMPORT STATE FILE (.state) — applies LIVE
 ══════════════════════════════════════════════════════════════ */
 $('sb-import-state').addEventListener('click', () => {
   if (!currentRomName) { toast('Load a ROM first', 'error'); return; }
@@ -2614,7 +2767,7 @@ $('state-input').addEventListener('change', async e => {
   try {
     const buf = await f.arrayBuffer();
     const ok = applyStateData(buf);
-    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state — emulator may not support this', 'error', 4000); return; }
+    if (!ok) { showStateToast('State apply failed','error'); toast('Failed to apply state', 'error', 4000); return; }
     if (isPaused) updatePauseUI(false);
     showStateToast('State restored'); toast('State file loaded — continuing from snapshot ✓', 'success');
     if (db && currentRomName) {
@@ -2627,7 +2780,6 @@ $('state-input').addEventListener('change', async e => {
   }
 });
 
-/* Export current state as .state file */
 $('sb-export-state').addEventListener('click', async () => {
   if (!currentRomName) { toast('No game loaded','error'); return; }
   if (!ejsReady)       { toast('Wait for game to start','warn'); return; }
@@ -2636,6 +2788,79 @@ $('sb-export-state').addEventListener('click', async () => {
   const baseName = currentDisplay || currentRomName.replace(/\.[^.]+$/, '');
   download(new Blob([stateData], { type:'application/octet-stream' }), `${baseName}.state`);
   toast('State file exported ✓','success');
+});
+
+/* ══════════════════════════════════════════════════════════════
+   BATTERY SAVE IMPORT (.sav)
+══════════════════════════════════════════════════════════════ */
+$('sb-import-sav').addEventListener('click', () => {
+  if (!currentRomName) { toast('Load a ROM first','error'); return; }
+  $('sav-input').click();
+});
+$('sav-input').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  e.target.value = '';
+  importSavFile(f);
+});
+
+async function importSavFile(file) {
+  if (!SAV_EXTS.has(extOf(file.name))) { toast(`Unsupported file type: ${extOf(file.name)}`, 'error'); return; }
+  if (!ejsReady) { toast('Emulator not ready — wait for game to start', 'warn'); return; }
+  const emu = getEmu();
+  if (!emu || !emu.gameManager) { toast('Emulator not ready', 'error'); return; }
+  try {
+    const u8 = new Uint8Array(await file.arrayBuffer());
+    const gm = emu.gameManager;
+    if (gm.FS && typeof gm.FS.writeFile === 'function') {
+      try { gm.FS.mkdir('/home/web_user/retroarch/userdata/saves'); } catch(e) {}
+      gm.FS.writeFile(`/home/web_user/retroarch/userdata/saves/${currentDisplay}.srm`, u8);
+      if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles();
+      toast('.sav imported — restarting to apply…', 'success', 3000);
+      setTimeout(() => {
+        try { gm.restart(); } catch(e) { startEmulator(currentRomUrl, currentDisplay); }
+        updatePauseUI(false);
+      }, 800);
+    } else {
+      if (db) await dbPut(S_META, { id:'pendsav_'+currentRomName, data:u8, fileName:file.name, ts:Date.now() });
+      toast('.sav stored — will apply on next game load', 'warn', 4000);
+    }
+  } catch(err) {
+    toast('Failed to import: ' + (err.message || 'unknown error'), 'error', 5000);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BATTERY SAVE EXPORT (.sav)
+══════════════════════════════════════════════════════════════ */
+$('sb-export-save').addEventListener('click', async () => {
+  if (!currentRomName) { toast('No game loaded','error'); return; }
+  const emu = getEmu();
+  if (emu && emu.gameManager) {
+    const gm = emu.gameManager;
+    try { if (typeof gm.saveSaveFiles === 'function') gm.saveSaveFiles(); } catch(e) {}
+    try {
+      if (typeof gm.getSaveFile === 'function') {
+        const sav = gm.getSaveFile();
+        if (sav && sav.byteLength > 0) {
+          download(new Blob([sav], { type:'application/octet-stream' }), savName(currentRomName));
+          toast('Battery save exported ✓','success'); return;
+        }
+      }
+    } catch(e) {}
+    if (gm.FS) {
+      for (const dir of ['/home/web_user/retroarch/userdata/saves/','/home/web_user/retroarch/userdata/']) {
+        try {
+          const entries = gm.FS.readdir(dir);
+          const savFile = entries.find(f => /\.(srm|sav|eep|fla)$/i.test(f));
+          if (savFile) {
+            download(new Blob([gm.FS.readFile(dir + savFile)], { type:'application/octet-stream' }), savName(currentRomName));
+            toast('Battery save exported ✓','success'); return;
+          }
+        } catch(e) {}
+      }
+    }
+  }
+  toast('No save data found — in-game save first','warn');
 });
 
 /* ══════════════════════════════════════════════════════════════
@@ -2687,10 +2912,10 @@ $('btn-keys').addEventListener('click', () => $('keys-overlay').classList.toggle
 /* ══════════════════════════════════════════════════════════════
    KEYBOARD SHORTCUTS
 ══════════════════════════════════════════════════════════════ */
-let backtickHeld = false;
-
 document.addEventListener('keydown', async e => {
   if (e.key === '`') backtickHeld = true;
+  // Don't intercept if we're listening for a binding or Tab FF hold is active
+  if (listeningFor && listeningFor.cancel) return; // key binding in progress
   if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
 
   const inEmu    = $('emu-screen').classList.contains('active');
@@ -2728,12 +2953,17 @@ document.addEventListener('keydown', async e => {
     e.preventDefault(); quickLoadSlot(parseInt(e.key, 10)); return;
   }
 
+  // Tab: handled by FF hold listener; if FF hold is off, toggle sidebar
+  if (e.code === 'Tab') {
+    if (!settingFFHold) { e.preventDefault(); setSidebar(!sidebarOpen); }
+    return;
+  }
+
   switch (e.key) {
     case 'm': case 'M': $('sb-mute').click(); break;
     case 'p': case 'P': $('sb-pause').click(); break;
     case ' ': e.preventDefault(); $('sb-pause').click(); break;
     case 'f': case 'F': $('btn-fullscreen').click(); break;
-    case 'Tab': e.preventDefault(); setSidebar(!sidebarOpen); break;
     case 'c': case 'C': takeScreenshot(); break;
   }
 });
@@ -2747,9 +2977,11 @@ $('keys-overlay').addEventListener('click', e => {
 /* ══════════════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════════════ */
+loadSettings();
 openDB()
   .then(d => { db = d; buildContinueBar(); })
   .catch(e => console.warn('IndexedDB unavailable — persistence disabled:', e));
+initSettingsUI();
 
 })();
 </script>
